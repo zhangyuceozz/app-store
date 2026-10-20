@@ -1,0 +1,9 @@
+# 缓存策略：HTML 短缓存（回头客秒开，新内容 10 分钟内生效），图标长缓存
+/*
+  Cache-Control: public, max-age=600
+
+/apps.js
+  Cache-Control: public, max-age=300
+
+/*.png
+  Cache-Control: public, max-age=604800, immutable
