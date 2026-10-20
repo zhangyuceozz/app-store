@@ -92,5 +92,28 @@ const APPS = [
     ],
   },
 
+  {
+    id: "mineradio",
+    name: "Mineradio",
+    category: "多媒体",
+    sub: "音乐播放器",
+    date: "2026-10-20",
+    tagline: "沉浸式音乐播放器",
+    description: "Mineradio 是一款以电影镜头、粒子视觉和歌词舞台为核心的沉浸式音乐播放器。支持多格式音频、内嵌与外置歌词、本地封面、迷你播放器和桌面歌词，把听歌变成一场视觉演出。",
+    icon: "apps/mineradio/icon.png",
+    downloads: [
+      { platform: "Windows", file: "/dl/apps/mineradio/download/Mineradio-2.2.0-Setup.exe", size: "111.4 MB" },
+    ],
+    install: [
+      "双击 Mineradio-2.2.0-Setup.exe，按提示完成安装。",
+      "若 SmartScreen 提示「已保护你的电脑」，点「更多信息」→「仍要运行」。",
+    ],
+    usage: [
+      "启动后添加本地音乐或登录音乐账号即可开始播放。",
+      "播放界面内置多种粒子视觉预设与歌词舞台效果，可在设置中切换。",
+      "支持外置歌词、桌面歌词与迷你播放器；手势操作可在设置里按习惯调整。",
+    ],
+  },
+
   // ↓↓↓ 新应用在这里往下加，复制 BongoCat 整块 { ... } 改内容即可 ↓↓↓
 ];

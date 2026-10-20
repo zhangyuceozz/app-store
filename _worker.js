@@ -6,6 +6,7 @@ const MAP = {
   "BongoCat-2.3.0-aarch64.dmg": "https://github.com/ayangweb/BongoCat/releases/download/v2.3.0/BongoCat-2.3.0-aarch64.dmg",
   "BongoCat-2.3.1-x64.dmg": "https://github.com/ayangweb/BongoCat/releases/download/v2.3.1/BongoCat-2.3.1-x64.dmg",
   "Winhance.Installer.exe": "https://github.com/memstechtips/Winhance/releases/download/v26.06.12/Winhance.Installer.exe",
+  "Mineradio-2.2.0-Setup.exe": "https://github.com/XxHuberrr/Mineradio-paused/releases/download/v2.2.0/Mineradio-2.2.0-Setup.exe",
 };
 
 export default {
