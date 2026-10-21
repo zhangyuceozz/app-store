@@ -20,15 +20,15 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@500;600&family=Inter:wght@400;500;600&display=swap"></noscript>
 <style>
   :root {
-    /* 色彩体系：暖纸底 · 墨色文字 · 品牌橙强调 */
-    --bg: #fcfcfb;
+    /* 色彩体系：中性净白底 · 墨色文字 · 雅致橙强调 */
+    --bg: #fafafa;
     --card: #ffffff;
-    --ink: #1c1915;
-    --muted: #6b6559;
-    --line: #e9e8e5;
-    --soft: #f4f3f0;
-    --accent: #f5491f;
-    --accent-deep: #d93a12;
+    --ink: #17171a;
+    --muted: #6f6f78;
+    --line: #e6e6ea;
+    --soft: #f3f3f5;
+    --accent: #ea580c;
+    --accent-deep: #c2410c;
     --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     --display: "Archivo Expanded", "Archivo", var(--sans);
     --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
@@ -75,13 +75,13 @@
   ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--ink) 34%, transparent); border: 3px solid transparent; background-clip: padding-box; }
   /* 内容层置于网格背景之上 */
   header, main { position: relative; z-index: 1; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 
   /* ---------- 顶栏 ---------- */
   header { position: sticky; top: 0; z-index: 50; background: var(--bg); transition: background .2s ease; }
   header.scrolled { background: color-mix(in srgb, var(--card) 84%, transparent); -webkit-backdrop-filter: saturate(180%) blur(14px); backdrop-filter: saturate(180%) blur(14px); }
 
-  .top { display: flex; align-items: center; height: 64px; gap: 22px; }
+  .top { display: flex; align-items: center; height: 72px; gap: 28px; }
 
 
   /* ---------- 品牌 logo 框 ---------- */
@@ -414,35 +414,35 @@
     80%  { transform: perspective(600px) rotateY(360deg) scale(.95); }
     100% { transform: perspective(600px) scale(1); }
   }
-  .card .c-icon { width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; }
-  .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
-  .card .c-name { font-family: var(--display); font-size: 14.5px; font-weight: 500; letter-spacing: 0; line-height: 1.3; }
-  .card .c-tag { font-size: 12.5px; color: var(--muted); line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card .c-icon { width: 48px; height: 48px; border-radius: 13px; flex-shrink: 0; }
+  .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 19px; font-weight: 600; }
+  .card .c-name { font-family: var(--display); font-size: 15px; font-weight: 500; letter-spacing: 0; line-height: 1.3; }
+  .card .c-tag { font-size: 13px; color: var(--muted); line-height: 1.65; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .card .c-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .card .c-cat { font-size: 11.5px; font-weight: 500; color: var(--muted); background: var(--soft); border-radius: 999px; padding: 2.5px 9px; white-space: nowrap; }
+  .card .c-cat { font-size: 11.5px; font-weight: 500; color: var(--muted); background: var(--soft); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
   .card .c-plat { font-size: 10.5px; color: var(--muted); opacity: .85; font-family: var(--mono); letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  .empty { color: var(--muted); padding: 88px 0; text-align: center; font-size: 14.5px; }
-  .empty .hint { font-size: 12.5px; opacity: .8; margin-top: 10px; }
+  .empty { color: var(--muted); padding: 110px 0; text-align: center; font-size: 14.5px; }
+  .empty .hint { font-size: 12.5px; opacity: .8; margin-top: 12px; }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
   .modal.open { display: block; }
   .modal .backdrop { position: absolute; inset: 0; background: rgba(12, 10, 7, 0.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); animation: fadeIn .2s ease; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal .panel { position: relative; z-index: 1; max-width: 540px; margin: 7vh auto 0; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 34px 36px; max-height: 86vh; overflow-y: auto; animation: modalIn .28s cubic-bezier(.22,1,.36,1); transition: background .25s ease; }
+  .modal .panel { position: relative; z-index: 1; max-width: 560px; margin: 7vh auto 0; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 40px 44px; max-height: 86vh; overflow-y: auto; animation: modalIn .28s cubic-bezier(.22,1,.36,1); transition: background .25s ease; }
   @keyframes modalIn { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
-  .modal .close { position: absolute; top: 20px; right: 20px; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; transition: all .25s ease; }
+  .modal .close { position: absolute; top: 22px; right: 22px; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; transition: all .25s ease; }
   .modal .close:hover { color: var(--ink); border-color: var(--ink); transform: rotate(90deg); }
-  .modal .head { display: flex; align-items: center; gap: 18px; }
-  .modal .head img, .modal .head .avatar { width: 64px; height: 64px; border-radius: 16px; }
-  .modal .head .avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 26px; font-weight: 600; }
-  .modal .head .m-name { font-family: var(--display); font-size: 25px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; }
-  .modal .head .m-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .modal .desc { margin-top: 22px; font-size: 15px; line-height: 1.75; color: var(--muted); }
-  .modal .sec { margin-top: 30px; }
-  .modal .sec h4 { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.08em; margin-bottom: 14px; }
-  .modal .dls { display: flex; flex-direction: column; gap: 12px; }
+  .modal .head { display: flex; align-items: center; gap: 20px; }
+  .modal .head img, .modal .head .avatar { width: 68px; height: 68px; border-radius: 18px; }
+  .modal .head .avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 27px; font-weight: 600; }
+  .modal .head .m-name { font-family: var(--display); font-size: 26px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; }
+  .modal .head .m-sub { font-size: 13px; color: var(--muted); margin-top: 5px; }
+  .modal .desc { margin-top: 26px; font-size: 15px; line-height: 1.8; color: var(--muted); }
+  .modal .sec { margin-top: 36px; }
+  .modal .sec h4 { font-size: 11.5px; color: var(--muted); font-weight: 600; letter-spacing: 0.12em; margin-bottom: 16px; }
+  .modal .dls { display: flex; flex-direction: column; gap: 14px; }
 
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
@@ -594,14 +594,14 @@
 
   @media (max-width: 720px) {
     .wrap { padding: 0 20px; }
-    .top { height: auto; flex-wrap: wrap; padding: 12px 0; gap: 10px 14px; }
+    .top { height: auto; flex-wrap: wrap; padding: 14px 0; gap: 12px 16px; }
     .search { order: 4; flex-basis: 100%; }
     .theme-switch { order: 2; }
-    main { flex-direction: column; gap: 24px; padding: 28px 0 96px; }
+    main { flex-direction: column; gap: 28px; padding: 36px 0 110px; }
     .side { position: static; width: 100%; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-    .card { padding: 13px; gap: 8px; }
-    .group-title { margin: 32px 0 12px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .card { padding: 16px; gap: 10px; }
+    .group-title { margin: 40px 0 14px; }
     /* 左下角平台开关：缩小并隐藏标注，不遮内容 */
     .plat-wrap { left: 12px; bottom: 12px; gap: 8px; }
     .plat-note { display: none; }
