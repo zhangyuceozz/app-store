@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>应用商店</title>
 <meta name="description" content="免费的小工具，支持 Windows 与 macOS。">
+<meta name="theme-color" content="#f4f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.ico">
 <script>
   (function () {
@@ -32,6 +34,7 @@
     --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     --display: "Archivo Expanded", "Archivo", var(--sans);
     --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color-scheme: light;
   }
   [data-theme="dark"] {
     --bg: #0a0a0c;
@@ -40,6 +43,7 @@
     --muted: #a1a1aa;
     --line: #26262b;
     --soft: #1d1d21;
+  color-scheme: dark;
   }
   @media (prefers-color-scheme: dark) {
     [data-theme="auto"] {
@@ -49,6 +53,7 @@
       --muted: #a1a1aa;
       --line: #26262b;
       --soft: #1d1d21;
+  color-scheme: dark;
     }
   }
 
@@ -389,6 +394,7 @@
   .group-title { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin: 64px 0 22px; display: flex; align-items: center; gap: 14px; }
   .group-title:first-child { margin-top: 0; }
   .group-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .group-title .gt-count { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--muted); opacity: .75; font-variant-numeric: tabular-nums; }
 
   /* 卡片网格：以后几百个软件也扛得住 */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
@@ -405,6 +411,7 @@
     border-color: color-mix(in srgb, var(--ink) 22%, var(--line));
     box-shadow: 0 12px 28px color-mix(in srgb, var(--ink) 8%, transparent);
   }
+  .card:active { transform: translateY(-1px) scale(.985); }
   /* 点击 3D 翻转特效 */
   .card.flipping { animation: card-flip .6s cubic-bezier(.4,0,.2,1) both; }
   @keyframes card-flip {
@@ -423,7 +430,7 @@
   @media (min-width: 721px) {
     .card.featured { grid-column: span 2; }
   }
-  .card .c-icon { width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0; transition: transform .25s cubic-bezier(.22,1,.36,1); }
+  .card .c-icon { width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0; border: 1px solid var(--line); transition: transform .25s cubic-bezier(.22,1,.36,1); }
   .card:hover .c-icon { transform: scale(1.05); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 22px; font-weight: 600; }
   .card .c-body { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
@@ -433,15 +440,15 @@
   .card .c-cat { font-size: 11.5px; font-weight: 500; color: var(--muted); background: var(--soft); border-radius: 999px; padding: 4px 11px; white-space: nowrap; }
   .card .c-plat { font-size: 11px; color: var(--muted); opacity: .85; font-family: var(--mono); letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  .empty { color: var(--muted); padding: 120px 0; text-align: center; font-size: 14.5px; }
-  .empty .hint { font-size: 12.5px; opacity: .8; margin-top: 12px; }
+  .empty { color: var(--ink); padding: 140px 0; text-align: center; font-size: 16px; font-weight: 500; }
+  .empty .hint { font-size: 12.5px; font-weight: 400; color: var(--muted); margin-top: 10px; }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
   .modal.open { display: block; }
   .modal .backdrop { position: absolute; inset: 0; background: rgba(10, 10, 12, 0.55); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); animation: fadeIn .2s ease; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal .panel { position: relative; z-index: 1; max-width: 580px; margin: 7vh auto 0; background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 44px 46px; max-height: 86vh; overflow-y: auto; animation: modalIn .28s cubic-bezier(.22,1,.36,1); transition: background .25s ease; box-shadow: 0 24px 64px rgba(0,0,0,.18); }
+  .modal .panel { position: relative; z-index: 1; max-width: 580px; margin: 7vh auto 0; background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 44px 46px; max-height: 86vh; overflow-y: auto; overscroll-behavior: contain; animation: modalIn .28s cubic-bezier(.22,1,.36,1); transition: background .25s ease; box-shadow: 0 24px 64px rgba(0,0,0,.18); }
   @keyframes modalIn { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
   .modal .close { position: absolute; top: 24px; right: 24px; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; transition: all .25s ease; }
   .modal .close:hover { color: var(--ink); border-color: var(--ink); transform: rotate(90deg); }
@@ -601,6 +608,10 @@
     0%, 100% { opacity: 0.4; transform: translateY(0); }
     20% { opacity: 1; transform: scale(1.15); }
     40% { opacity: 0.7; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   }
 
   @media (max-width: 720px) {
@@ -973,12 +984,12 @@
     if (!list.length) {
       listEl.innerHTML = '<div class="empty">' +
         (query ? "没找到相关的应用" : "这个分类下还没有应用") +
-        '<div class="hint">' + (query ? "换个关键词试试～" : "其他分类也许有惊喜～") + "</div></div>";
+        '<div class="hint">' + (query ? "换个关键词试试" : "看看其他分类") + "</div></div>";
       return;
     }
     var html = "";
     if (active === "最近上架" && !query) {
-      html = '<div class="group-title">最近上架</div>';
+      html = '<div class="group-title">最近上架 <span class="gt-count">' + list.length + "</span></div>";
       // 第一个应用（列表够长时）用特色大卡展示
       html += '<div class="grid">' + list.map(function (a, i) {
         return cardHtml(a, i === 0 && list.length >= 3);
@@ -993,7 +1004,7 @@
         groups[key].push(a);
       });
       Object.keys(groups).forEach(function (sub) {
-        html += '<div class="group-title">' + esc(sub) + "</div>";
+        html += '<div class="group-title">' + esc(sub) + ' <span class="gt-count">' + groups[sub].length + "</span></div>";
         html += '<div class="grid">' + groups[sub].map(function (a) { return cardHtml(a, false); }).join("") + "</div>";
       });
     }
@@ -1060,7 +1071,7 @@
     var inst = (a.install && a.install.length) ? bulletSection("安装", a.install) : "";
     var usage = (a.usage && a.usage.length) ? bulletSection("使用说明", a.usage) : "";
     panel.innerHTML =
-      '<button class="close" data-close>&times;</button>' +
+      '<button class="close" data-close aria-label="关闭">&times;</button>' +
       '<div class="head">' +
         iconHtml(a, "m-icon") +
         '<div><div class="m-name">' + esc(a.name) + "</div>" +
