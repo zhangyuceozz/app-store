@@ -7,6 +7,8 @@ const MAP = {
   "BongoCat-2.3.1-x64.dmg": "https://github.com/ayangweb/BongoCat/releases/download/v2.3.1/BongoCat-2.3.1-x64.dmg",
   "Winhance.Installer.exe": "https://github.com/memstechtips/Winhance/releases/download/v26.06.12/Winhance.Installer.exe",
   "Mineradio-2.2.0-Setup.exe": "https://github.com/XxHuberrr/Mineradio-paused/releases/download/v2.2.0/Mineradio-2.2.0-Setup.exe",
+  "pdfcraft-0.10.1-windows-x64.msi": "https://github.com/storytold/pdfcraft/releases/download/v0.10.1/pdfcraft-0.10.1-windows-x64.msi",
+  "pdfcraft-0.10.1-macos-universal.dmg": "https://github.com/storytold/pdfcraft/releases/download/v0.10.1/pdfcraft-0.10.1-macos-universal.dmg",
 };
 
 export default {

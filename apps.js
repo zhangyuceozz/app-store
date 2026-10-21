@@ -115,5 +115,29 @@ const APPS = [
     ],
   },
 
+  {
+    id: "pdfcraft",
+    name: "PdfCraft",
+    category: "实用工具",
+    sub: "PDF 工具",
+    date: "2026-10-21",
+    tagline: "纯 Rust 打造的开源 PDF 阅读编辑器",
+    description: "PdfCraft 是一个用纯 Rust 从零编写的开源 PDF 阅读器与编辑器。轻快、干净、不臃肿——打开就能读，标注、编辑、导出一步到位。",
+    icon: "apps/pdfcraft/icon.png",
+    downloads: [
+      { platform: "Windows", file: "/dl/apps/pdfcraft/download/pdfcraft-0.10.1-windows-x64.msi", size: "68.8 MB" },
+      { platform: "macOS（Intel / Apple 芯片）", file: "/dl/apps/pdfcraft/download/pdfcraft-0.10.1-macos-universal.dmg", size: "90.9 MB" },
+    ],
+    install: [
+      "Windows：双击 .msi 安装包，按提示完成安装。",
+      "macOS：双击 .dmg 把 PdfCraft 拖进「应用程序」；通用包同时支持 Intel 和 Apple 芯片，无需挑版本。",
+    ],
+    usage: [
+      "打开任意 PDF 即可流畅阅读，支持缩放、翻页与导航。",
+      "阅读之余可直接标注、编辑与导出，一个应用搞定 PDF 日常操作。",
+      "纯 Rust 原生内核，没有网页套壳，内存占用低、大文件也顺手。",
+    ],
+  },
+
   // ↓↓↓ 新应用在这里往下加，复制 BongoCat 整块 { ... } 改内容即可 ↓↓↓
 ];
