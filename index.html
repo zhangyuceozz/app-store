@@ -1098,17 +1098,13 @@
   buildCats();
   renderList();
 
-  // 进场动画：首访完整展示 2 秒，回头客 0.5 秒快速进入（localStorage 记忆，不依赖 load 事件）
-  var seen = false;
-  try { seen = localStorage.getItem("store-seen") === "1"; } catch (e) {}
   setTimeout(function () {
     var p = document.getElementById("preloader");
     if (p) {
       p.classList.add("hide");
       setTimeout(function () { p.remove(); }, 600);
     }
-    try { localStorage.setItem("store-seen", "1"); } catch (e) {}
-  }, seen ? 500 : 2000);
+  }, 2000);
 })();
 </script>
 
