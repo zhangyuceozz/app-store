@@ -34,21 +34,21 @@
     --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   }
   [data-theme="dark"] {
-    --bg: #121110;
-    --card: #1a1815;
-    --ink: #f0ede6;
-    --muted: #a49e92;
-    --line: #2c2924;
-    --soft: #232019;
+    --bg: #0e0e11;
+    --card: #17171b;
+    --ink: #f2f2f4;
+    --muted: #9c9ca6;
+    --line: #27272e;
+    --soft: #1e1e24;
   }
   @media (prefers-color-scheme: dark) {
     [data-theme="auto"] {
-      --bg: #121110;
-      --card: #1a1815;
-      --ink: #f0ede6;
-      --muted: #a49e92;
-      --line: #2c2924;
-      --soft: #232019;
+      --bg: #0e0e11;
+      --card: #17171b;
+      --ink: #f2f2f4;
+      --muted: #9c9ca6;
+      --line: #27272e;
+      --soft: #1e1e24;
     }
   }
 
@@ -164,7 +164,7 @@
   }
 
   /* ---------- 搜索框（浮动标签） ---------- */
-  .search { flex: 1; min-width: 0; position: relative; max-width: 560px; margin: 0 auto; }
+  .search { flex: 1; min-width: 0; position: relative; max-width: 600px; margin: 0 auto; }
   .search input {
     background: transparent; border: 0; border-bottom: 2px solid var(--line);
     display: block; width: 100%; padding: 15px 0 7px;
@@ -383,22 +383,22 @@
 
 
   /* ---------- 主体（左侧栏 + 内容） ---------- */
-  main { padding: 40px 0 124px; display: flex; gap: 48px; align-items: flex-start; }
-  .side { flex: 0 0 auto; position: sticky; top: 88px; }
+  main { padding: 56px 0 140px; display: flex; gap: 64px; align-items: flex-start; }
+  .side { flex: 0 0 auto; position: sticky; top: 96px; }
   .content { flex: 1; min-width: 0; }
 
-  .group-title { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin: 44px 0 16px; display: flex; align-items: center; gap: 12px; }
+  .group-title { font-size: 11.5px; font-weight: 600; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin: 56px 0 20px; display: flex; align-items: center; gap: 14px; }
   .group-title:first-child { margin-top: 0; }
   .group-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
   /* 卡片网格：以后几百个软件也扛得住 */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
 
   .card {
-    display: flex; flex-direction: column; gap: 10px;
+    display: flex; flex-direction: column; gap: 12px;
     text-align: left; font-family: inherit; color: inherit;
-    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
-    padding: 16px; cursor: pointer; position: relative;
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 20px; cursor: pointer; position: relative;
     transition: transform .2s ease, border-color .2s ease, background .25s ease;
   }
   .card:hover {
@@ -505,9 +505,9 @@
   .dl-btn .dl-input:checked ~ .dl-installed { animation: showInstalledMessage .4s ease 3.5s forwards; }
 
   @keyframes pulse {
-    0% { scale: .95; box-shadow: 0 0 0 0 rgba(245,73,31,0.6); }
-    70% { scale: 1; box-shadow: 0 0 0 16px rgba(245,73,31,0); }
-    100% { scale: .95; box-shadow: 0 0 0 0 rgba(245,73,31,0); }
+    0% { scale: .95; box-shadow: 0 0 0 0 rgba(234,88,12,0.6); }
+    70% { scale: 1; box-shadow: 0 0 0 16px rgba(234,88,12,0); }
+    100% { scale: .95; box-shadow: 0 0 0 0 rgba(234,88,12,0); }
   }
   @keyframes installing { from { height: 0; } to { height: 100%; } }
   @keyframes rotate {
@@ -706,7 +706,7 @@
   <div class="panel" id="panel"></div>
 </div>
 
-<script src="apps.js?v=3"></script>
+<script src="apps.js?v=4"></script>
 <script>
 (function () {
   var esc = function (s) {
