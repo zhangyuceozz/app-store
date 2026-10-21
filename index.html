@@ -161,24 +161,26 @@
     }
   }
 
-  /* ---------- 搜索框（胶囊输入场） ---------- */
-  .search { flex: 1; min-width: 0; position: relative; max-width: 560px; margin: 0 auto; }
-  .search-ico { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
+  /* ---------- 搜索框（浮动标签） ---------- */
+  .search { flex: 1; min-width: 0; position: relative; max-width: 600px; margin: 0 auto; }
   .search input {
-    width: 100%; height: 42px;
-    background: var(--soft); border: 1px solid transparent; border-radius: 12px;
-    padding: 0 16px 0 41px;
-    font-size: 14.5px; color: var(--ink); font-family: inherit; outline: none;
-    transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    background: transparent; border: 0; border-bottom: 2px solid var(--line);
+    display: block; width: 100%; padding: 15px 0 7px;
+    font-size: 15.5px; color: var(--ink); font-family: inherit; outline: none;
+    transition: border-color .3s ease;
   }
-  .search input::placeholder { color: var(--muted); }
-  .search input:hover { border-color: color-mix(in srgb, var(--ink) 10%, transparent); }
-  .search input:focus {
-    background: var(--card);
-    border-color: color-mix(in srgb, var(--ink) 24%, transparent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 7%, transparent);
+  .search input:focus, .search input:valid { border-bottom-color: var(--accent); }
+  .search label {
+    position: absolute; top: 14px; left: 0; pointer-events: none;
   }
-  .search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+  .search label span {
+    display: inline-block; font-size: 15.5px; color: var(--muted);
+    transition: .3s cubic-bezier(.68,-.55,.265,1.55);
+  }
+  .search input:focus + label span,
+  .search input:valid + label span {
+    color: var(--accent); transform: translateY(-27px); font-size: 11.5px; font-weight: 550;
+  }
 
   /* ---------- 主题切换按钮（日/夜，Uiverse Glassmorphism） ---------- */
   .theme-switch {
@@ -648,8 +650,8 @@
       <span class="brand-name" id="brand-name"></span>
     </div>
     <div class="search">
-      <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="搜索应用…" autocomplete="off">
+      <input id="q" type="search" required autocomplete="off">
+      <label for="q" id="q-label"></label>
     </div>
     <label class="theme-switch" title="切换深浅色">
       <input type="checkbox" class="theme-switch__checkbox">
@@ -768,6 +770,13 @@
   var catsEl = document.getElementById("cats");
   var listEl = document.getElementById("list");
   var qEl = document.getElementById("q");
+
+  // 浮动标签：每个字逐个上移
+  var qLabel = document.getElementById("q-label");
+  var ph = "搜索应用…";
+  qLabel.innerHTML = ph.split("").map(function (ch, i) {
+    return '<span style="transition-delay:' + (i * 50) + 'ms">' + esc(ch) + '</span>';
+  }).join("");
 
   var categories = CATEGORIES.slice();
   // 兜底：如果有应用的 category 不在 CATEGORIES 里，也补上显示
