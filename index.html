@@ -404,7 +404,7 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 8px;
     padding: 14px; cursor: pointer;
     transform-origin: center center;
-    transition: transform .22s ease;
+    transition: transform .28s cubic-bezier(.22,1,.36,1);
   }
   .card.is-hover { transform: scale(1.06) !important; z-index: 5; }
 
@@ -844,7 +844,7 @@
       if (sec.label) html += '<div class="ms-nav__group-label">' + esc(sec.label) + "</div>";
       sec.items.forEach(function (it) {
         html += '<button type="button" class="ms-nav__item" data-cat="' + esc(it.value) + '">' +
-          iconSvg(it.value) + '<span>' + esc(it.label) + "</span></button>";
+          '<span>' + esc(it.label) + "</span></button>";
       });
     });
     catsEl.innerHTML = html;
