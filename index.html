@@ -420,35 +420,24 @@
     80%  { transform: perspective(600px) rotateY(360deg) scale(.95); }
     100% { transform: perspective(600px) scale(1); }
   }
-  /* 特色大卡：最近上架的第一个应用，横排放大 */
-  .card.featured { flex-direction: row; align-items: center; gap: 18px; }
-  .card.featured .c-icon { width: 64px; height: 64px; border-radius: 18px; }
-  .card.featured .c-name { font-size: 19px; }
-  .card.featured .c-free { font-size: 14px; }
-  .card.featured .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-  @media (min-width: 721px) {
-    .card.featured { grid-column: span 2; }
-  }
   .card .c-icon { width: 56px; height: 56px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); transition: transform .25s cubic-bezier(.22,1,.36,1); }
   .card:hover .c-icon { transform: scale(1.05); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 22px; font-weight: 600; }
   .card .c-body { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
   .card .c-name { font-family: var(--display); font-size: 16.5px; font-weight: 600; letter-spacing: 0; line-height: 1.3; }
   .card .c-free { font-size: 13px; color: var(--muted); }
-  /* 展开内容：默认隐藏，hover 时显示 */
-  .card .c-desc { display: none; font-size: 13px; color: var(--muted); line-height: 1.6; }
-  .card .c-cat-row { display: none; font-size: 11.5px; color: var(--muted); }
-  .card .c-dl-btn { display: none; margin-top: 4px; width: 100%; padding: 10px 14px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
-  .card.is-expanded {
-    padding: 18px 22px 22px;
+  /* 展开内容：用 grid-template-rows 平滑过渡 */
+  .card .c-expand {
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows .35s cubic-bezier(.22,1,.36,1), margin .25s ease;
   }
-  .card.is-expanded .c-desc { display: block; animation: cardIn .22s ease; }
-  .card.is-expanded .c-cat-row { display: block; animation: cardIn .22s ease .04s both; }
-  .card.is-expanded .c-dl-btn { display: block; animation: cardIn .22s ease .08s both; }
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: none; }
-  }
+  .card .c-expand__inner { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding-top: 0; opacity: 0; transition: opacity .2s ease; }
+  .card.is-expanded .c-expand { grid-template-rows: 1fr; margin-top: 6px; }
+  .card.is-expanded .c-expand__inner { opacity: 1; }
+  .card .c-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .card .c-cat-row { font-size: 11.5px; color: var(--muted); }
+  .card .c-dl-btn { width: 100%; padding: 10px 14px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; }
+  .card .c-dl-btn:hover { opacity: .85; }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
@@ -627,9 +616,6 @@
     .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
     .card { padding: 18px; gap: 11px; }
     .card .c-icon { width: 48px; height: 48px; border-radius: 14px; }
-    .card.featured { gap: 14px; }
-    .card.featured .c-icon { width: 48px; height: 48px; border-radius: 14px; }
-    .card.featured .c-name { font-size: 17px; }
     .group-title { margin: 44px 0 16px; }
     /* 左下角平台开关：缩小并隐藏标注，不遮内容 */
     .plat-wrap { left: 12px; bottom: 12px; gap: 8px; }
@@ -911,16 +897,18 @@
     return ps.join(" · ");
   }
 
-  function cardHtml(a, featured) {
+  function cardHtml(a) {
     return (
-      '<button class="card' + (featured ? " featured" : "") + '" data-id="' + esc(a.id) + '">' +
+      '<button class="card" data-id="' + esc(a.id) + '">' +
         iconHtml(a, "c-icon") +
         '<div class="c-body">' +
           '<div class="c-name">' + esc(a.name) + "</div>" +
           '<div class="c-free">免费下载</div>' +
-          (a.description ? '<div class="c-desc">' + esc(a.description) + "</div>" : "") +
-          '<div class="c-cat-row">' + esc(a.category || "") + "</div>" +
-          '<div class="c-dl-btn">获取</div>' +
+          '<div class="c-expand"><div class="c-expand__inner">' +
+            (a.description ? '<div class="c-desc">' + esc(a.description) + "</div>" : "") +
+            '<div class="c-cat-row">' + esc(a.category || "") + "</div>" +
+            '<div class="c-dl-btn">获取</div>' +
+          "</div></div>" +
         "</div>" +
       "</button>"
     );
@@ -950,12 +938,9 @@
     var html = "";
     if (active === "最近上架" && !query) {
       html = '<div class="group-title">最近上架 <span class="gt-count">' + list.length + "</span></div>";
-      // 第一个应用（列表够长时）用特色大卡展示
-      html += '<div class="grid">' + list.map(function (a, i) {
-        return cardHtml(a, i === 0 && list.length >= 3);
-      }).join("") + "</div>";
+      html += '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
     } else if (query) {
-      html = '<div class="grid">' + list.map(function (a) { return cardHtml(a, false); }).join("") + "</div>";
+      html = '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
     } else {
       var groups = {};
       list.forEach(function (a) {
@@ -965,7 +950,7 @@
       });
       Object.keys(groups).forEach(function (sub) {
         html += '<div class="group-title">' + esc(sub) + ' <span class="gt-count">' + groups[sub].length + "</span></div>";
-        html += '<div class="grid">' + groups[sub].map(function (a) { return cardHtml(a, false); }).join("") + "</div>";
+        html += '<div class="grid">' + groups[sub].map(function (a) { return cardHtml(a); }).join("") + "</div>";
       });
     }
     listEl.innerHTML = html;
