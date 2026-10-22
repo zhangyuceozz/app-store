@@ -416,10 +416,10 @@
   .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; line-height: 1.25; }
   .card .c-meta { font-size: 11px; color: var(--muted); }
 
-  /* 右侧按钮组 */
-  .card .c-right { position: relative; flex-shrink: 0; }
+  /* 右侧按钮组 — 绝对定位在 card 右上角，独立不受 c-row blur 影响 */
+  .card .c-right { position: absolute; right: 14px; top: 14px; text-align: right; }
   .card .c-free { font-size: 11px; color: var(--muted); }
-  .card .c-dl-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); padding: 4px 10px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 600; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .25s ease-out; }
+  .card .c-dl-btn { display: block; padding: 4px 10px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 600; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .25s ease-out; }
   .card.is-hover .c-free { opacity: 0; transition: opacity .2s ease-in; }
   .card.is-hover .c-dl-btn { opacity: 1; pointer-events: auto; }
 
@@ -899,11 +899,11 @@
             '<div class="c-name">' + esc(a.name) + "</div>" +
             (meta ? '<div class="c-meta">' + esc(meta) + "</div>" : "") +
           "</div>" +
-          (firstDl ? '<div class="c-right">' +
-            '<div class="c-free">免费下载</div>' +
-            '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' +
-          "</div>" : "") +
         "</div>" +
+        (firstDl ? '<div class="c-right">' +
+          '<div class="c-free">免费下载</div>' +
+          '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' +
+        "</div>" : "") +
         (a.description ? '<div class="c-desc"><div>' + esc(a.description) + "</div></div>" : "") +
       "</div>"
     );
