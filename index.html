@@ -1042,13 +1042,26 @@
     var a = APPS.filter(function (x) { return x.id === id; })[0];
     if (!a || !a.preview) return;
     document.getElementById("lb-img").src = a.preview;
+    var eggs = [
+      "好看不？下一个不好再删~",
+      "按 ESC 逃跑不谢",
+      "偷偷告诉你这图是从 GitHub 扒的",
+      "空格也能关 试试？",
+      "你发现没这行字会变",
+      "作者说加个彩蛋凑字数",
+      "嘿 看够了就按 ESC",
+      "下一个彩蛋更无聊 坚持住",
+      "这张图加载慢别怪我",
+      "好了好了别看了 按 ESC"
+    ];
+    var egg = eggs[(new Date().getMinutes() + id.length) % eggs.length];
     document.getElementById("lb-caption").innerHTML =
       '<div class="lb-cat">' + esc(a.category || "") + '</div>' +
       '<div class="lb-name">' + esc(a.name) + '</div>' +
       (a.tagline ? '<div class="lb-tag">' + esc(a.tagline) + '</div>' : '') +
       '<div class="lb-divider"></div>' +
       (a.description ? '<div class="lb-desc">' + esc(a.description) + '</div>' : '') +
-      '<div class="lb-easter">好看不？下一个不好再删~</div>';
+      '<div class="lb-easter">' + esc(egg) + '</div>';
     document.getElementById("lightbox").classList.add("open");
   }
 
@@ -1073,6 +1086,7 @@
   });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { closeLightbox(); closeModal(); }
+    if (e.key === " " || e.key === "Spacebar") { if (document.getElementById("lightbox").classList.contains("open")) { e.preventDefault(); closeLightbox(); } }
   });
 
   document.getElementById("lightbox").addEventListener("click", function (e) {
