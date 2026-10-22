@@ -50,7 +50,7 @@ const APPS = [
     tagline: "会打鼓的小猫",                 // 一句话简介（卡片上显示）
     description: "BongoCat 是一只住在你桌面的小猫，会跟着键盘和鼠标一起敲鼓。",  // 详细介绍（点开后显示）
     icon: "apps/bongocat/icon.png",
-    preview: "apps/bongocat/icon.png",
+    preview: "apps/bongocat/preview.png",
     downloads: [                             // 下载项：几个平台就写几行，格式照抄
       { platform: "Windows",               file: "/dl/apps/bongocat/download/BongoCat_1.1.0_x86-setup.exe", size: "4.9 MB" },
       { platform: "macOS（Apple 芯片）",    file: "/dl/apps/bongocat/download/BongoCat-2.3.0-aarch64.dmg", size: "10.3 MB" },
