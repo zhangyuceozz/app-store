@@ -49,7 +49,8 @@ const APPS = [
     date: "2026-10-15",                      // 上架日期（YYYY-MM-DD），用于「最近上架」排序
     tagline: "会打鼓的小猫",                 // 一句话简介（卡片上显示）
     description: "BongoCat 是一只住在你桌面的小猫，会跟着键盘和鼠标一起敲鼓。",  // 详细介绍（点开后显示）
-    icon: "apps/bongocat/icon.png",          // 图标路径（可选，不写就自动用首字母）
+    icon: "apps/bongocat/icon.png",
+    preview: "apps/bongocat/icon.png",
     downloads: [                             // 下载项：几个平台就写几行，格式照抄
       { platform: "Windows",               file: "/dl/apps/bongocat/download/BongoCat_1.1.0_x86-setup.exe", size: "4.9 MB" },
       { platform: "macOS（Apple 芯片）",    file: "/dl/apps/bongocat/download/BongoCat-2.3.0-aarch64.dmg", size: "10.3 MB" },
@@ -75,6 +76,7 @@ const APPS = [
     tagline: "Windows 系统优化与定制",
     description: "Winhance 是一个 C# 开源应用，用于清理、优化和定制你的 Windows 体验。软件管理、系统优化、界面定制、自定义 ISO 制作——一站式搞定。",
     icon: "apps/winhance/icon.png",
+    preview: "apps/winhance/preview.png",
     downloads: [
       { platform: "Windows", file: "/dl/apps/winhance/download/Winhance.Installer.exe", size: "61.5 MB" },
     ],
@@ -101,6 +103,7 @@ const APPS = [
     tagline: "沉浸式音乐播放器",
     description: "Mineradio 是一款以电影镜头、粒子视觉和歌词舞台为核心的沉浸式音乐播放器。支持多格式音频、内嵌与外置歌词、本地封面、迷你播放器和桌面歌词，把听歌变成一场视觉演出。",
     icon: "apps/mineradio/icon.png",
+    preview: "apps/mineradio/preview.png",
     downloads: [
       { platform: "Windows", file: "/dl/apps/mineradio/download/Mineradio-2.2.0-Setup.exe", size: "111.4 MB" },
     ],
@@ -124,6 +127,7 @@ const APPS = [
     tagline: "纯 Rust 打造的开源 PDF 阅读编辑器",
     description: "PdfCraft 是一个用纯 Rust 从零编写的开源 PDF 阅读器与编辑器。轻快、干净、不臃肿——打开就能读，标注、编辑、导出一步到位。",
     icon: "apps/pdfcraft/icon.png",
+    preview: "apps/pdfcraft/preview.png",
     downloads: [
       { platform: "Windows", file: "/dl/apps/pdfcraft/download/pdfcraft-0.10.1-windows-x64.msi", size: "68.8 MB" },
       { platform: "macOS（Intel / Apple 芯片）", file: "/dl/apps/pdfcraft/download/pdfcraft-0.10.1-macos-universal.dmg", size: "90.9 MB" },

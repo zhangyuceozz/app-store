@@ -409,6 +409,11 @@
   }
   .card.is-hover { transform: scale(1.04) !important; z-index: 10; }
 
+  /* 预览图：卡片上半部分 */
+  .card .c-preview { width: 100%; aspect-ratio: 16/10; border-radius: 6px; overflow: hidden; background: var(--soft); margin-bottom: 4px; }
+  .card .c-preview img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease, filter .3s ease; }
+  .card.is-hover .c-preview img { transform: scale(1.06); }
+
   /* 默认内容：hover 时模糊淡出 */
   .card .c-row { display: flex; align-items: center; gap: 10px; transition: filter .25s ease, opacity .25s ease; }
   .card.is-hover .c-row { filter: blur(3px); opacity: .35; }
@@ -892,8 +897,10 @@
     var platDls = filteredDownloads(a);
     var firstDl = platDls.length ? platDls[0].file : "";
     var meta = a.category || "";
+    var preview = a.preview || "";
     return (
       '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '">' +
+        (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="lazy"></div>' : "") +
         '<div class="c-row">' +
           iconHtml(a, "c-icon") +
           '<div class="c-body">' +
