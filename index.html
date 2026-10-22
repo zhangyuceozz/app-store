@@ -423,11 +423,10 @@
   .card.is-hover .c-free { opacity: 0; transition: opacity .2s ease-in; }
   .card.is-hover .c-dl-btn { opacity: 1; pointer-events: auto; }
 
-  /* 描述：卡片内部展开，用 grid 0fr→1fr 不撑兄弟 */
-  .card .c-desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
-  .card .c-desc > div { min-height: 0; overflow: hidden; font-size: 11.5px; color: var(--muted); line-height: 1.5; opacity: 0; transition: opacity .25s ease-out .05s; }
-  .card.is-hover .c-desc { grid-template-rows: 1fr; }
-  .card.is-hover .c-desc > div { opacity: 1; }
+  /* 描述：绝对定位在 card 内底部，完全不撑布局，只做视觉动画 */
+  .card .c-desc { position: absolute; left: 14px; right: 14px; bottom: 14px; pointer-events: none; }
+  .card .c-desc > div { font-size: 11.5px; color: var(--muted); line-height: 1.5; opacity: 0; transform: translateY(8px); transition: opacity .25s ease-out, transform .3s cubic-bezier(.175,.885,.32,1.275); }
+  .card.is-hover .c-desc > div { opacity: 1; transform: translateY(0); }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
