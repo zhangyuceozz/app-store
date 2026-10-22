@@ -1041,9 +1041,12 @@
     document.getElementById("modal").classList.remove("open");
   }
 
+  var _lbCloseTimer = null;
+
   function openPreview(id) {
     var a = APPS.filter(function (x) { return x.id === id; })[0];
     if (!a || !a.preview) return;
+    clearTimeout(_lbCloseTimer);
     document.getElementById("lb-img").src = a.preview;
     var eggs = [
       "好看不？下一个不好再删~",
@@ -1075,7 +1078,8 @@
 
   function closeLightbox() {
     document.getElementById("lightbox").classList.remove("open");
-    setTimeout(function () { document.getElementById("lb-img").src = ""; }, 400);
+    clearTimeout(_lbCloseTimer);
+    _lbCloseTimer = setTimeout(function () { document.getElementById("lb-img").src = ""; }, 400);
   }
 
   document.getElementById("modal").addEventListener("click", function (e) {
