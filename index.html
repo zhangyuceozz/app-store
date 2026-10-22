@@ -399,13 +399,13 @@
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; overflow: visible; align-items: start; }
 
   .card {
-    display: flex; flex-direction: row; align-items: center; gap: 10px;
+    display: flex; flex-direction: column; gap: 6px;
     text-align: left; font-family: inherit; color: inherit;
     background: var(--card); border: 1px solid var(--line); border-radius: 8px;
-    padding: 12px 14px; cursor: pointer;
+    padding: 14px; cursor: pointer;
     transform-origin: center center;
     z-index: 1;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
   }
   .card:hover {
     transform: scale(1.06);
@@ -413,13 +413,21 @@
     z-index: 10;
   }
   .card:active { transform: scale(1.03); }
+  .card .c-row { display: flex; flex-direction: row; align-items: center; gap: 10px; }
   .card .c-icon { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
   .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
   .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 1.25; }
   .card .c-meta { font-size: 11px; color: var(--muted); }
-  .card .c-dl-btn { padding: 5px 12px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
-  .card .c-dl-btn:hover { opacity: .85; }
+  /* 右侧默认"免费下载"灰字 + hover 替换为"获取"按钮 */
+  .card .c-right { flex-shrink: 0; position: relative; width: 56px; height: 22px; }
+  .card .c-free { font-size: 11px; color: var(--muted); position: absolute; right: 0; top: 50%; transform: translateY(-50%); transition: opacity .15s ease; white-space: nowrap; }
+  .card .c-dl-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); padding: 3px 10px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 600; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .15s ease; white-space: nowrap; }
+  .card:hover .c-free { opacity: 0; }
+  .card:hover .c-dl-btn { opacity: 1; pointer-events: auto; }
+  /* 下方描述：默认 0 高 hover 展开 */
+  .card .c-desc { font-size: 11px; color: var(--muted); line-height: 1.4; max-height: 0; opacity: 0; overflow: hidden; transition: max-height .22s ease, opacity .18s ease; }
+  .card:hover .c-desc { max-height: 44px; opacity: 1; }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
@@ -880,16 +888,23 @@
   }
 
   function cardHtml(a) {
-    var firstDl = (a.downloads && a.downloads.length) ? a.downloads[0].file : "";
-    var meta = (a.category ? esc(a.category) : "") + (a.platforms ? " · " + esc(a.platforms) : "");
+    var platDls = filteredDownloads(a);
+    var firstDl = platDls.length ? platDls[0].file : "";
+    var meta = a.category || "";
     return (
       '<button class="card" data-id="' + esc(a.id) + '">' +
-        iconHtml(a, "c-icon") +
-        '<div class="c-body">' +
-          '<div class="c-name">' + esc(a.name) + "</div>" +
-          (meta ? '<div class="c-meta">' + meta + "</div>" : "") +
+        '<div class="c-row">' +
+          iconHtml(a, "c-icon") +
+          '<div class="c-body">' +
+            '<div class="c-name">' + esc(a.name) + "</div>" +
+            (meta ? '<div class="c-meta">' + esc(meta) + "</div>" : "") +
+          "</div>" +
+          (firstDl ? '<div class="c-right">' +
+            '<div class="c-free">免费下载</div>' +
+            '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' +
+          "</div>" : "") +
         "</div>" +
-        (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
+        (a.description ? '<div class="c-desc">' + esc(a.description) + "</div>" : "") +
       "</button>"
     );
   }
