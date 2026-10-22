@@ -454,6 +454,23 @@
   .modal .sec h4 { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.12em; margin-bottom: 16px; }
   .modal .dls { display: flex; flex-direction: column; gap: 14px; }
 
+  /* ---------- Lightbox 图片预览 ---------- */
+  .lightbox { display: none; position: fixed; inset: 0; z-index: 200; }
+  .lightbox.open { display: block; }
+  .lb-backdrop { position: absolute; inset: 0; background: rgba(5, 5, 7, 0.88); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); animation: fadeIn .2s ease; }
+  .lb-close { position: absolute; top: 28px; right: 36px; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(255,255,255,.06); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; z-index: 3; transition: all .25s ease; backdrop-filter: blur(8px); }
+  .lb-close:hover { background: rgba(255,255,255,.18); transform: rotate(90deg); border-color: rgba(255,255,255,.35); }
+  .lb-inner { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 48px; height: 100%; padding: 6vh 6vw; animation: lbIn .35s cubic-bezier(.22,1,.36,1); }
+  @keyframes lbIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+  .lb-image-wrap { max-width: min(68vw, 900px); max-height: 82vh; border-radius: 14px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,.5); flex-shrink: 0; }
+  .lb-image-wrap img { width: 100%; height: auto; display: block; max-height: 82vh; object-fit: contain; }
+  .lb-caption { max-width: 320px; color: rgba(255,255,255,.88); }
+  .lb-caption .lb-cat { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 14px; font-weight: 600; }
+  .lb-caption .lb-name { font-family: var(--display); font-size: 40px; font-weight: 600; line-height: 1.08; letter-spacing: -0.02em; }
+  .lb-caption .lb-tag { font-size: 15px; color: rgba(255,255,255,.6); margin-top: 12px; font-weight: 500; }
+  .lb-caption .lb-desc { font-size: 14px; color: rgba(255,255,255,.55); margin-top: 22px; line-height: 1.7; }
+  .lb-caption .lb-divider { width: 36px; height: 2px; background: var(--accent); margin: 24px 0 0; border-radius: 2px; }
+
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -715,6 +732,18 @@
 <div class="modal" id="modal">
   <div class="backdrop" data-close></div>
   <div class="panel" id="panel"></div>
+</div>
+
+<!-- 图片预览 Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-backdrop" data-close-lb></div>
+  <button class="lb-close" data-close-lb aria-label="关闭">&times;</button>
+  <div class="lb-inner">
+    <div class="lb-image-wrap">
+      <img id="lb-img" src="" alt="">
+    </div>
+    <div class="lb-caption" id="lb-caption"></div>
+  </div>
 </div>
 
 <script src="apps.js?v=5"></script>
@@ -1020,6 +1049,24 @@
     document.getElementById("modal").classList.remove("open");
   }
 
+  function openPreview(id) {
+    var a = APPS.filter(function (x) { return x.id === id; })[0];
+    if (!a || !a.preview) return;
+    document.getElementById("lb-img").src = a.preview;
+    document.getElementById("lb-caption").innerHTML =
+      '<div class="lb-cat">' + esc(a.category || "") + '</div>' +
+      '<div class="lb-name">' + esc(a.name) + '</div>' +
+      (a.tagline ? '<div class="lb-tag">' + esc(a.tagline) + '</div>' : '') +
+      '<div class="lb-divider"></div>' +
+      (a.description ? '<div class="lb-desc">' + esc(a.description) + '</div>' : '');
+    document.getElementById("lightbox").classList.add("open");
+  }
+
+  function closeLightbox() {
+    document.getElementById("lightbox").classList.remove("open");
+    setTimeout(function () { document.getElementById("lb-img").src = ""; }, 400);
+  }
+
   document.getElementById("modal").addEventListener("click", function (e) {
     if (e.target.hasAttribute && e.target.hasAttribute("data-close")) closeModal();
     // 下载按钮：事件委托（动画由 CSS checkbox 驱动）
@@ -1035,7 +1082,11 @@
     }
   });
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") closeModal();
+    if (e.key === "Escape") { closeLightbox(); closeModal(); }
+  });
+
+  document.getElementById("lightbox").addEventListener("click", function (e) {
+    if (e.target.hasAttribute && e.target.hasAttribute("data-close-lb")) closeLightbox();
   });
 
   buildCats();
@@ -1057,11 +1108,22 @@
     if (card && !card.contains(e.relatedTarget)) card.classList.remove("is-hover");
   });
   listEl.addEventListener("click", function (e) {
+    // 点击预览图 → 打开图片预览 lightbox
+    var preview = e.target.closest(".c-preview");
+    if (preview) {
+      e.stopPropagation();
+      var card = preview.closest(".card");
+      var id = card.getAttribute("data-id");
+      openPreview(id);
+      return;
+    }
+    // 点击获取 → 打开详情弹窗（里面有下载卡片）
     var dlBtn = e.target.closest(".c-dl-btn");
     if (dlBtn) {
       e.stopPropagation();
-      var file = dlBtn.getAttribute("data-file");
-      if (file) triggerDownload(file);
+      var card2 = dlBtn.closest(".card");
+      var id2 = card2.getAttribute("data-id");
+      openApp(id2);
       return;
     }
     var card = e.target.closest(".card");
