@@ -402,33 +402,32 @@
     position: relative; z-index: 1;
     display: flex; flex-direction: column; gap: 8px;
     background: var(--card); border: 1px solid var(--line); border-radius: 8px;
-    padding: 14px; cursor: pointer;
-    transition: transform .35s cubic-bezier(.175,.885,.32,1.275), box-shadow .35s ease;
+    padding: 14px; cursor: pointer; overflow: hidden;
+    transition: transform .35s cubic-bezier(.175,.885,.32,1.275);
   }
-  .card.is-hover { transform: scale(1.04) translateY(-2px) !important; box-shadow: 0 6px 20px rgba(0,0,0,.1); z-index: 10; }
-  .card.is-hover .c-row { opacity: .45; transition: opacity .28s ease-out; }
-  .card .c-row { transition: opacity .22s ease-in; }
-  .card.is-hover .c-icon { transform: scale(0.92); opacity: .6; }
+  .card.is-hover { transform: scale(1.03) !important; z-index: 10; }
 
-  /* 首行横排 */
-  .card .c-row { display: flex; align-items: center; gap: 10px; }
-  .card .c-icon { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); transition: transform .3s ease, opacity .28s ease; }
+  /* 默认内容：hover 时模糊淡出 */
+  .card .c-row { display: flex; align-items: center; gap: 10px; transition: filter .25s ease, opacity .25s ease; }
+  .card.is-hover .c-row { filter: blur(3px); opacity: .35; }
+  .card .c-icon { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
   .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; line-height: 1.25; }
   .card .c-meta { font-size: 11px; color: var(--muted); }
 
-  /* 右侧：默认灰字，hover 换按钮 */
+  /* 右侧按钮组 */
   .card .c-right { position: relative; flex-shrink: 0; }
   .card .c-free { font-size: 11px; color: var(--muted); }
   .card .c-dl-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); padding: 4px 10px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 600; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .25s ease-out; }
   .card.is-hover .c-free { opacity: 0; transition: opacity .2s ease-in; }
   .card.is-hover .c-dl-btn { opacity: 1; pointer-events: auto; }
 
-  /* 描述：hover 时绝对定位淡入展开，不参与网格布局 */
-  .card .c-desc { position: absolute; left: 14px; right: 14px; bottom: 100%; margin-bottom: 6px; max-height: 0; opacity: 0; overflow: hidden; pointer-events: none; transform: translateY(6px); }
-  .card .c-desc > div { font-size: 11.5px; color: var(--muted); line-height: 1.5; padding: 4px 8px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; }
-  .card.is-hover .c-desc { max-height: 140px; opacity: 1; transform: translateY(0); transition: max-height .3s ease-out, opacity .22s ease-out, transform .28s cubic-bezier(.175,.885,.32,1.275); }
+  /* 描述：卡片内部展开，用 grid 0fr→1fr 不撑兄弟 */
+  .card .c-desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+  .card .c-desc > div { min-height: 0; overflow: hidden; font-size: 11.5px; color: var(--muted); line-height: 1.5; opacity: 0; transition: opacity .25s ease-out .05s; }
+  .card.is-hover .c-desc { grid-template-rows: 1fr; }
+  .card.is-hover .c-desc > div { opacity: 1; }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
