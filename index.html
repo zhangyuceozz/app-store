@@ -401,23 +401,15 @@
   .card {
     display: flex; flex-direction: column; gap: 9px;
     text-align: left; font-family: inherit; color: inherit;
-    background: var(--card); border: 1px solid transparent; border-radius: 8px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
     padding: 14px; cursor: pointer; position: relative;
-    box-shadow: none;
-    transform-origin: center center;
-    backface-visibility: hidden;
-    will-change: transform;
-    z-index: 1;
-    transition:
-      transform .28s cubic-bezier(.4,0,.2,1),
-      border-color .28s ease;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
   }
   .card:hover {
-    transform: scale(1.06);
-    border-color: var(--line);
-    z-index: 10;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
   }
-  .card:active { transform: scale(1.03); transition-duration: .12s; }
+  .card:active { transform: translateY(-1px); }
   /* 点击 3D 翻转特效 */
   .card.flipping { animation: card-flip .6s cubic-bezier(.4,0,.2,1) both; }
   @keyframes card-flip {
@@ -427,33 +419,32 @@
     80%  { transform: perspective(600px) rotateY(360deg) scale(.95); }
     100% { transform: perspective(600px) scale(1); }
   }
-  .card .c-icon { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); transition: transform .38s cubic-bezier(.1,.9,.2,1); will-change: transform; }
-  .card:hover .c-icon { transform: scale(1.06); }
+  .card .c-icon { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
   .card .c-body { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
   .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 1.25; }
   .card .c-free { font-size: 11px; color: var(--muted); }
-  /* 展开内容：绝对定位浮在卡片下方，完全不撑高卡片 */
-  .card .c-expand {
-    position: absolute;
-    left: 0; right: 0; top: 100%;
-    padding-top: 8px;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
+
+  /* ---------- 卡片预览浮层（Microsoft Store 风格） ---------- */
+  .pview {
+    position: fixed; z-index: 200;
+    width: 280px;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    opacity: 0; transform: translateY(6px) scale(.98);
     pointer-events: none;
-    transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+    box-shadow: 0 12px 32px rgba(0,0,0,.2);
+    transition: opacity .18s ease, transform .18s ease;
   }
-  .card:hover .c-expand {
-    max-height: 160px;
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .card .c-expand__inner { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.1); }
-  .card .c-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
-  .card .c-cat-row { font-size: 10.5px; color: var(--muted); }
-  .card .c-dl-btn { width: 100%; padding: 7px 10px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600; cursor: pointer; text-align: left; transition: opacity .2s ease; }
-  .card .c-dl-btn:hover { opacity: .85; }
+  .pview.show { opacity: 1; transform: none; pointer-events: auto; }
+  .pview__head { display: flex; gap: 12px; margin-bottom: 10px; }
+  .pview__icon { width: 48px; height: 48px; border-radius: 10px; border: 1px solid var(--line); flex-shrink: 0; }
+  .pview__title { font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .pview__meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .pview__desc { font-size: 12px; color: var(--muted); line-height: 1.55; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .pview__btn { width: 100%; padding: 9px 14px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600; cursor: pointer; }
+  .pview__btn:hover { opacity: .85; }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
@@ -920,11 +911,6 @@
         '<div class="c-body">' +
           '<div class="c-name">' + esc(a.name) + "</div>" +
           '<div class="c-free">免费下载</div>' +
-          '<div class="c-expand"><div class="c-expand__inner">' +
-            (a.description ? '<div class="c-desc">' + esc(a.description) + "</div>" : "") +
-            '<div class="c-cat-row">' + esc(a.category || "") + "</div>" +
-            '<div class="c-dl-btn">获取</div>' +
-          "</div></div>" +
         "</div>" +
       "</button>"
     );
@@ -1070,27 +1056,95 @@
   buildCats();
   renderList();
 
-  // ---------- 卡片 hover 展开完全由 CSS :hover 控制（scale + c-expand） ----------
-  // JS 只负责 click 事件：3D 翻转 + "获取"按钮 → 打开详情弹窗
-  listEl.addEventListener("click", function (e) {
-    var dlBtn = e.target.closest(".c-dl-btn");
-    if (dlBtn) {
+  // ---------- 独立预览浮层（Microsoft Store 风格） ----------
+  var pview = document.createElement("div");
+  pview.className = "pview";
+  document.body.appendChild(pview);
+  var pviewTimer = null;
+  var pviewApp = null;
+
+  function positionPview(x, y) {
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var pw = 280, ph = pview.offsetHeight + 8;
+    var px = x + 16, py = y + 16;
+    if (px + pw > vw - 12) px = x - pw - 16;
+    if (px < 12) px = Math.max(12, vw - pw - 12);
+    if (py + ph > vh - 12) py = Math.max(12, y - ph - 8);
+    pview.style.left = px + "px";
+    pview.style.top = py + "px";
+  }
+
+  function showPview(app, x, y) {
+    var iconStr = app.icon
+      ? '<img class="pview__icon" src="' + esc(app.icon) + '" alt="">'
+      : '<div class="pview__icon" style="background:var(--soft);border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:20px;font-weight:600">' + esc((app.name || "?").charAt(0)) + "</div>";
+    pview.innerHTML =
+      '<div class="pview__head">' + iconStr +
+        '<div style="flex:1;min-width:0">' +
+          '<div class="pview__title">' + esc(app.name) + "</div>" +
+          (app.category ? '<div class="pview__meta">' + esc(app.category) + "</div>" : "") +
+        "</div>" +
+      "</div>" +
+      (app.description ? '<div class="pview__desc">' + esc(app.description) + "</div>" : "") +
+      '<button class="pview__btn" type="button">获取</button>';
+    pview.classList.add("show");
+    pview.dataset.id = app.id;
+    positionPview(x, y);
+    pviewApp = app;
+  }
+
+  function hidePview() {
+    pview.classList.remove("show");
+    pview.dataset.id = "";
+    pviewApp = null;
+  }
+
+  listEl.addEventListener("mouseover", function (e) {
+    var card = e.target.closest(".card");
+    if (!card) return;
+    var id = card.getAttribute("data-id");
+    var app = APPS.filter(function (x) { return x.id === id; })[0];
+    if (!app) return;
+    clearTimeout(pviewTimer);
+    var rect = card.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.bottom + 4;
+    pviewTimer = setTimeout(function () {
+      showPview(app, cx, cy);
+    }, 250);
+  });
+  listEl.addEventListener("mousemove", function (e) {
+    if (!pviewApp || !pview.classList.contains("show")) return;
+    var rect = e.target.closest(".card")?.getBoundingClientRect();
+    if (!rect) return;
+    positionPview(rect.left + rect.width / 2, rect.bottom + 4);
+  });
+  listEl.addEventListener("mouseout", function (e) {
+    var card = e.target.closest(".card");
+    if (!card) return;
+    clearTimeout(pviewTimer);
+    hidePview();
+  });
+
+  // 点击：3D 翻转 + 预览浮层按钮 → 打开详情
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest(".pview__btn");
+    if (btn) {
       e.stopPropagation();
-      var card = dlBtn.closest(".card");
-      var id = card.getAttribute("data-id");
-      openApp(id);
+      var id = pview.dataset.id;
+      if (id) openApp(id);
+      hidePview();
       return;
     }
     var card = e.target.closest(".card");
     if (!card) return;
-    // 3D 翻转
+    hidePview();
     if (card.dataset.flipping === "1") return;
     card.dataset.flipping = "1";
     card.classList.add("flipping");
     setTimeout(function () {
       card.classList.remove("flipping");
       card.dataset.flipping = "";
-      // 翻转完成后打开弹窗
       var id = card.getAttribute("data-id");
       openApp(id);
     }, 600);
