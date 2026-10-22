@@ -462,6 +462,7 @@
   .lb-caption .lb-tag { font-size: 15px; color: rgba(255,255,255,.6); margin-top: 12px; font-weight: 500; }
   .lb-caption .lb-desc { font-size: 14px; color: rgba(255,255,255,.55); margin-top: 22px; line-height: 1.7; }
   .lb-caption .lb-divider { width: 36px; height: 2px; background: var(--accent); margin: 24px 0 0; border-radius: 2px; }
+  .lb-caption .lb-easter { margin-top: 28px; font-size: 12px; font-style: italic; color: rgba(255,255,255,.3); letter-spacing: .04em; }
 
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
@@ -1046,7 +1047,8 @@
       '<div class="lb-name">' + esc(a.name) + '</div>' +
       (a.tagline ? '<div class="lb-tag">' + esc(a.tagline) + '</div>' : '') +
       '<div class="lb-divider"></div>' +
-      (a.description ? '<div class="lb-desc">' + esc(a.description) + '</div>' : '');
+      (a.description ? '<div class="lb-desc">' + esc(a.description) + '</div>' : '') +
+      '<div class="lb-easter">好看不？下一个不好再删~</div>';
     document.getElementById("lightbox").classList.add("open");
   }
 
