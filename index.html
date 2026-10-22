@@ -399,14 +399,14 @@
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; overflow: visible; }
 
   .card {
+    position: relative;
     display: flex; flex-direction: column; gap: 8px;
     background: var(--card); border: 1px solid var(--line); border-radius: 8px;
     padding: 14px; cursor: pointer;
     transform-origin: center center;
-    transition: transform .22s ease, box-shadow .22s ease;
+    transition: transform .22s ease;
   }
-  .card.is-hover { transform: scale(1.06) !important; box-shadow: 0 8px 22px rgba(0,0,0,.12); z-index: 5; }
-  .card.is-active { transform: scale(1.03); }
+  .card.is-hover { transform: scale(1.06) !important; z-index: 5; }
 
   /* 首行横排 */
   .card .c-row { display: flex; align-items: center; gap: 10px; }
