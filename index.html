@@ -406,21 +406,18 @@
     box-shadow: none;
     transform-origin: center center;
     backface-visibility: hidden;
-    will-change: transform, box-shadow;
+    will-change: transform;
     z-index: 1;
     transition:
-      transform .38s cubic-bezier(.1,.9,.2,1),
-      box-shadow .38s cubic-bezier(.1,.9,.2,1),
-      background-color .25s ease,
-      border-color .25s ease;
+      transform .28s cubic-bezier(.4,0,.2,1),
+      border-color .28s ease;
   }
   .card:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    transform: scale(1.06);
     border-color: var(--line);
     z-index: 10;
   }
-  .card:active { transform: translateY(-1px) scale(1.03); box-shadow: none; transition-duration: .15s; }
+  .card:active { transform: scale(1.03); transition-duration: .12s; }
   /* 点击 3D 翻转特效 */
   .card.flipping { animation: card-flip .6s cubic-bezier(.4,0,.2,1) both; }
   @keyframes card-flip {
@@ -436,10 +433,23 @@
   .card .c-body { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
   .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 1.25; }
   .card .c-free { font-size: 11px; color: var(--muted); }
-  /* 展开内容：纯 CSS :hover 触发 + 丝滑 spring 缓动 */
-  .card .c-expand { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .5s cubic-bezier(.1,.9,.2,1), opacity .38s ease, margin .38s ease; }
-  .card:hover .c-expand { max-height: 300px; opacity: 1; margin-top: 4px; }
-  .card .c-expand__inner { display: flex; flex-direction: column; gap: 10px; }
+  /* 展开内容：绝对定位浮在卡片下方，完全不撑高卡片 */
+  .card .c-expand {
+    position: absolute;
+    left: 0; right: 0; top: 100%;
+    padding-top: 8px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+  }
+  .card:hover .c-expand {
+    max-height: 160px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .card .c-expand__inner { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.1); }
   .card .c-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
   .card .c-cat-row { font-size: 10.5px; color: var(--muted); }
   .card .c-dl-btn { width: 100%; padding: 7px 10px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600; cursor: pointer; text-align: left; transition: opacity .2s ease; }
