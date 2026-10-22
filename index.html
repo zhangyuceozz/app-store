@@ -399,16 +399,13 @@
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; overflow: visible; align-items: start; }
 
   .card {
-    display: grid; grid-template-columns: 44px 1fr; grid-template-rows: auto 1fr;
-    gap: 10px 12px;
+    display: flex; flex-direction: row; align-items: center; gap: 10px;
     text-align: left; font-family: inherit; color: inherit;
     background: var(--card); border: 1px solid var(--line); border-radius: 8px;
-    padding: 14px; cursor: pointer; position: relative;
+    padding: 12px 14px; cursor: pointer;
     transform-origin: center center;
-    overflow: visible;
     z-index: 1;
-    min-height: 90px;
-    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
   }
   .card:hover {
     transform: scale(1.06);
@@ -416,30 +413,13 @@
     z-index: 10;
   }
   .card:active { transform: scale(1.03); }
-  .card .c-icon { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); grid-row: 1 / span 2; }
+  .card .c-icon { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
-  .card .c-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; position: relative; }
-  .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 1.25; padding-right: 60px; }
-  .card .c-free { font-size: 11px; color: var(--muted); position: absolute; right: 0; top: 0; transition: opacity .15s ease; }
-  .card:hover .c-free { opacity: 0; }
-  /* hover 态：右侧"获取"按钮 + 下方描述 */
-  .card .c-expand {
-    grid-column: 2;
-    display: contents;
-  }
-  .card .c-dl-btn {
-    position: absolute; right: 0; top: 0;
-    padding: 5px 10px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 600; cursor: pointer;
-    opacity: 0; pointer-events: none; transition: opacity .15s ease;
-  }
-  .card:hover .c-dl-btn { opacity: 1; pointer-events: auto; }
-  .card .c-desc {
-    grid-column: 2;
-    font-size: 11px; color: var(--muted); line-height: 1.4;
-    opacity: 0; max-height: 0; overflow: hidden;
-    transition: opacity .18s ease, max-height .18s ease;
-  }
-  .card:hover .c-desc { opacity: 1; max-height: 40px; }
+  .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 1.25; }
+  .card .c-meta { font-size: 11px; color: var(--muted); }
+  .card .c-dl-btn { padding: 5px 12px; border: 0; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+  .card .c-dl-btn:hover { opacity: .85; }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
@@ -901,15 +881,15 @@
 
   function cardHtml(a) {
     var firstDl = (a.downloads && a.downloads.length) ? a.downloads[0].file : "";
+    var meta = (a.category ? esc(a.category) : "") + (a.platforms ? " · " + esc(a.platforms) : "");
     return (
       '<button class="card" data-id="' + esc(a.id) + '">' +
         iconHtml(a, "c-icon") +
         '<div class="c-body">' +
           '<div class="c-name">' + esc(a.name) + "</div>" +
-          '<div class="c-free">获取下载</div>' +
-          (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
+          (meta ? '<div class="c-meta">' + meta + "</div>" : "") +
         "</div>" +
-        (a.description ? '<div class="c-desc">' + esc(a.description) + "</div>" : "") +
+        (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
       "</button>"
     );
   }
