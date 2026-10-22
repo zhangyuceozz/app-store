@@ -395,8 +395,8 @@
   .group-title::after { content: "\203A"; color: var(--muted); font-size: 22px; font-weight: 400; margin-left: 4px; line-height: 1; }
   .group-title .gt-count { margin-left: auto; }
 
-  /* 卡片网格：以后几百个软件也扛得住 */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
+  /* 卡片网格：允许 hover scale 溢出 */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; overflow: visible; }
 
   .card {
     display: flex; flex-direction: column; gap: 13px;
@@ -404,13 +404,16 @@
     background: var(--card); border: 1px solid transparent; border-radius: 8px;
     padding: 22px; cursor: pointer; position: relative;
     box-shadow: 0 1px 2px rgba(0,0,0,.05);
-    transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, background .25s ease;
+    transition: transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s cubic-bezier(.22,1,.36,1), background .25s ease;
+    transform-origin: center center;
+    z-index: 1;
   }
   .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 16px 40px rgba(0,0,0,.18);
+    z-index: 10;
   }
-  .card:active { transform: translateY(0) scale(.99); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+  .card:active { transform: translateY(0) scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
   /* 点击 3D 翻转特效 */
   .card.flipping { animation: card-flip .6s cubic-bezier(.4,0,.2,1) both; }
   @keyframes card-flip {
@@ -420,23 +423,19 @@
     80%  { transform: perspective(600px) rotateY(360deg) scale(.95); }
     100% { transform: perspective(600px) scale(1); }
   }
-  .card .c-icon { width: 56px; height: 56px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); transition: transform .25s cubic-bezier(.22,1,.36,1); }
-  .card:hover .c-icon { transform: scale(1.05); }
+  .card .c-icon { width: 56px; height: 56px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); transition: transform .35s cubic-bezier(.22,1,.36,1); }
+  .card:hover .c-icon { transform: scale(1.08); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 22px; font-weight: 600; }
   .card .c-body { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
   .card .c-name { font-family: var(--display); font-size: 16.5px; font-weight: 600; letter-spacing: 0; line-height: 1.3; }
   .card .c-free { font-size: 13px; color: var(--muted); }
-  /* 展开内容：用 grid-template-rows 平滑过渡 */
-  .card .c-expand {
-    display: grid; grid-template-rows: 0fr;
-    transition: grid-template-rows .35s cubic-bezier(.22,1,.36,1), margin .25s ease;
-  }
-  .card .c-expand__inner { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding-top: 0; opacity: 0; transition: opacity .2s ease; }
-  .card.is-expanded .c-expand { grid-template-rows: 1fr; margin-top: 6px; }
-  .card.is-expanded .c-expand__inner { opacity: 1; }
+  /* 展开内容：hover 时丝滑淡入（由 :hover 直接触发，无需 JS） */
+  .card .c-expand { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .45s cubic-bezier(.22,1,.36,1), opacity .3s ease, margin .3s ease; }
+  .card:hover .c-expand { max-height: 300px; opacity: 1; margin-top: 4px; }
+  .card .c-expand__inner { display: flex; flex-direction: column; gap: 10px; }
   .card .c-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
   .card .c-cat-row { font-size: 11.5px; color: var(--muted); }
-  .card .c-dl-btn { width: 100%; padding: 10px 14px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; }
+  .card .c-dl-btn { width: 100%; padding: 10px 14px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; transition: opacity .2s ease; }
   .card .c-dl-btn:hover { opacity: .85; }
 
   /* ---------- 弹窗 ---------- */
@@ -1054,28 +1053,8 @@
   buildCats();
   renderList();
 
-  // ---------- 卡片 hover 原地展开（300ms 延迟） ----------
-  var expandTimer = null;
-  var expandedCard = null;
-
-  listEl.addEventListener("mouseover", function (e) {
-    var c = e.target.closest(".card");
-    if (!c || c === expandedCard) return;
-    clearTimeout(expandTimer);
-    if (expandedCard) { expandedCard.classList.remove("is-expanded"); expandedCard = null; }
-    expandTimer = setTimeout(function () {
-      c.classList.add("is-expanded");
-      expandedCard = c;
-    }, 300);
-  });
-  listEl.addEventListener("mouseout", function (e) {
-    var c = e.target.closest(".card");
-    if (!c) return;
-    clearTimeout(expandTimer);
-    c.classList.remove("is-expanded");
-    if (expandedCard === c) expandedCard = null;
-  });
-  // "获取"按钮点击 → 打开详情弹窗（阻止冒泡，不触发 card 的 3D 翻转）
+  // ---------- 卡片 hover 展开完全由 CSS :hover 控制（scale + c-expand） ----------
+  // JS 只负责 click 事件：3D 翻转 + "获取"按钮 → 打开详情弹窗
   listEl.addEventListener("click", function (e) {
     var dlBtn = e.target.closest(".c-dl-btn");
     if (dlBtn) {
@@ -1083,7 +1062,21 @@
       var card = dlBtn.closest(".card");
       var id = card.getAttribute("data-id");
       openApp(id);
+      return;
     }
+    var card = e.target.closest(".card");
+    if (!card) return;
+    // 3D 翻转
+    if (card.dataset.flipping === "1") return;
+    card.dataset.flipping = "1";
+    card.classList.add("flipping");
+    setTimeout(function () {
+      card.classList.remove("flipping");
+      card.dataset.flipping = "";
+      // 翻转完成后打开弹窗
+      var id = card.getAttribute("data-id");
+      openApp(id);
+    }, 600);
   });
 
   setTimeout(function () {
