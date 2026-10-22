@@ -399,18 +399,20 @@
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; overflow: visible; align-items: start; }
 
   .card {
-    position: relative;
+    position: relative; z-index: 1;
     display: flex; flex-direction: column; gap: 8px;
     background: var(--card); border: 1px solid var(--line); border-radius: 8px;
     padding: 14px; cursor: pointer;
-    transition: transform var(--wa-transition-fast, .25s) ease-out;
+    transition: transform .35s cubic-bezier(.175,.885,.32,1.275), box-shadow .35s ease;
   }
-  .card.is-hover { transform: translateY(-3px) !important; z-index: 5; }
-  .card.is-hover .c-icon { transform: scale(0.92); }
+  .card.is-hover { transform: scale(1.04) translateY(-2px) !important; box-shadow: 0 6px 20px rgba(0,0,0,.1); z-index: 10; }
+  .card.is-hover .c-row { opacity: .45; transition: opacity .28s ease-out; }
+  .card .c-row { transition: opacity .22s ease-in; }
+  .card.is-hover .c-icon { transform: scale(0.92); opacity: .6; }
 
   /* 首行横排 */
   .card .c-row { display: flex; align-items: center; gap: 10px; }
-  .card .c-icon { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); transition: transform var(--wa-transition-fast, .25s) ease-out; }
+  .card .c-icon { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); transition: transform .3s ease, opacity .28s ease; }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
   .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; line-height: 1.25; }
@@ -424,9 +426,9 @@
   .card.is-hover .c-dl-btn { opacity: 1; pointer-events: auto; }
 
   /* 描述：hover 时绝对定位淡入展开，不参与网格布局 */
-  .card .c-desc { position: absolute; left: 14px; right: 14px; bottom: 100%; margin-bottom: 6px; max-height: 0; opacity: 0; overflow: hidden; pointer-events: none; }
-  .card .c-desc > div { font-size: 11.5px; color: var(--muted); line-height: 1.5; padding: 4px 8px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
-  .card.is-hover .c-desc { max-height: 120px; opacity: 1; transition: max-height .25s ease-out, opacity .2s ease-out; }
+  .card .c-desc { position: absolute; left: 14px; right: 14px; bottom: 100%; margin-bottom: 6px; max-height: 0; opacity: 0; overflow: hidden; pointer-events: none; transform: translateY(6px); }
+  .card .c-desc > div { font-size: 11.5px; color: var(--muted); line-height: 1.5; padding: 4px 8px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; }
+  .card.is-hover .c-desc { max-height: 140px; opacity: 1; transform: translateY(0); transition: max-height .3s ease-out, opacity .22s ease-out, transform .28s cubic-bezier(.175,.885,.32,1.275); }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
