@@ -435,31 +435,20 @@
   .card .c-body { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
   .card .c-name { font-family: var(--display); font-size: 16.5px; font-weight: 600; letter-spacing: 0; line-height: 1.3; }
   .card .c-free { font-size: 13px; color: var(--muted); }
-
-  .empty { color: var(--ink); padding: 140px 0; text-align: center; font-size: 16px; font-weight: 500; }
-  .empty .hint { font-size: 12.5px; font-weight: 400; color: var(--muted); margin-top: 10px; }
-
-  /* ---------- Hover 预览弹窗（Microsoft Store 风格） ---------- */
-  .preview {
-    position: fixed;
-    z-index: 90;
-    width: 320px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 16px 40px rgba(0,0,0,.24);
-    opacity: 0;
-    transform: translateY(6px);
-    pointer-events: none;
-    transition: opacity .18s ease, transform .18s ease;
+  /* 展开内容：默认隐藏，hover 时显示 */
+  .card .c-desc { display: none; font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .card .c-cat-row { display: none; font-size: 11.5px; color: var(--muted); }
+  .card .c-dl-btn { display: none; margin-top: 4px; width: 100%; padding: 10px 14px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .2s; }
+  .card.is-expanded {
+    padding: 18px 22px 22px;
   }
-  .preview.show { opacity: 1; transform: translateY(0); }
-  .preview__head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
-  .preview__icon { width: 48px; height: 48px; border-radius: 10px; border: 1px solid var(--line); flex-shrink: 0; }
-  .preview__name { font-family: var(--display); font-size: 16px; font-weight: 600; line-height: 1.3; }
-  .preview__cat { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .preview__desc { font-size: 13px; color: var(--muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .card.is-expanded .c-desc { display: block; animation: cardIn .22s ease; }
+  .card.is-expanded .c-cat-row { display: block; animation: cardIn .22s ease .04s both; }
+  .card.is-expanded .c-dl-btn { display: block; animation: cardIn .22s ease .08s both; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
@@ -929,6 +918,9 @@
         '<div class="c-body">' +
           '<div class="c-name">' + esc(a.name) + "</div>" +
           '<div class="c-free">免费下载</div>' +
+          (a.description ? '<div class="c-desc">' + esc(a.description) + "</div>" : "") +
+          '<div class="c-cat-row">' + esc(a.category || "") + "</div>" +
+          '<div class="c-dl-btn">获取</div>' +
         "</div>" +
       "</button>"
     );
@@ -1077,61 +1069,37 @@
   buildCats();
   renderList();
 
-  // ---------- Hover 预览弹窗 ----------
-  var previewEl = document.createElement("div");
-  previewEl.className = "preview";
-  document.body.appendChild(previewEl);
-  var previewTimer = null;
-
-  function showPreview(app, rect) {
-    var iconHtmlStr = app.icon
-      ? '<img class="preview__icon" src="' + esc(app.icon) + '" alt="">'
-      : '<div class="preview__icon" style="background:var(--soft);border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:22px;font-weight:600">' + esc((app.name || "?").charAt(0)) + "</div>";
-    previewEl.innerHTML =
-      '<div class="preview__head">' + iconHtmlStr +
-        '<div><div class="preview__name">' + esc(app.name) + "</div>" +
-        '<div class="preview__cat">' + esc(app.category || "") + "</div></div>" +
-      "</div>" +
-      (app.description ? '<div class="preview__desc">' + esc(app.description) + "</div>" : "");
-    // 智能定位：右侧优先，溢出则改到左侧；下方溢出则改上方
-    var vw = window.innerWidth, vh = window.innerHeight;
-    var pw = 320, ph = previewEl.offsetHeight + 20;
-    var px, py;
-    if (rect.right + 16 + pw <= vw) px = rect.right + 16;
-    else if (rect.left - 16 - pw >= 0) px = rect.left - 16 - pw;
-    else px = Math.max(16, Math.min(vw - pw - 16, rect.left + rect.width / 2 - pw / 2));
-    if (rect.bottom + 16 + ph <= vh) py = rect.bottom + 16;
-    else if (rect.top - 16 - ph >= 0) py = rect.top - 16 - ph;
-    else py = Math.max(16, vh - ph - 16);
-    previewEl.style.left = px + "px";
-    previewEl.style.top = py + "px";
-    previewEl.classList.add("show");
-  }
-
-  function hidePreview() {
-    previewEl.classList.remove("show");
-  }
+  // ---------- 卡片 hover 原地展开（300ms 延迟） ----------
+  var expandTimer = null;
+  var expandedCard = null;
 
   listEl.addEventListener("mouseover", function (e) {
     var c = e.target.closest(".card");
-    if (!c) return;
-    clearTimeout(previewTimer);
-    var id = c.getAttribute("data-id");
-    var app = APPS.filter(function (x) { return x.id === id; })[0];
-    if (!app) return;
-    previewTimer = setTimeout(function () {
-      var rect = c.getBoundingClientRect();
-      showPreview(app, rect);
+    if (!c || c === expandedCard) return;
+    clearTimeout(expandTimer);
+    if (expandedCard) { expandedCard.classList.remove("is-expanded"); expandedCard = null; }
+    expandTimer = setTimeout(function () {
+      c.classList.add("is-expanded");
+      expandedCard = c;
     }, 300);
   });
   listEl.addEventListener("mouseout", function (e) {
     var c = e.target.closest(".card");
     if (!c) return;
-    clearTimeout(previewTimer);
-    hidePreview();
+    clearTimeout(expandTimer);
+    c.classList.remove("is-expanded");
+    if (expandedCard === c) expandedCard = null;
   });
-  // 卡片滚动时弹窗关闭
-  window.addEventListener("scroll", hidePreview, { passive: true });
+  // "获取"按钮点击 → 打开详情弹窗（阻止冒泡，不触发 card 的 3D 翻转）
+  listEl.addEventListener("click", function (e) {
+    var dlBtn = e.target.closest(".c-dl-btn");
+    if (dlBtn) {
+      e.stopPropagation();
+      var card = dlBtn.closest(".card");
+      var id = card.getAttribute("data-id");
+      openApp(id);
+    }
+  });
 
   setTimeout(function () {
     var p = document.getElementById("preloader");
