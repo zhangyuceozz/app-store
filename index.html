@@ -1051,13 +1051,18 @@
       "偷偷告诉你这图是从 GitHub 扒的",
       "空格也能关 试试？",
       "你发现没这行字会变",
-      "作者说加个彩蛋凑字数",
       "嘿 看够了就按 ESC",
       "下一个彩蛋更无聊 坚持住",
       "这张图加载慢别怪我",
-      "好了好了别看了 按 ESC"
+      "好了好了别看了 按 ESC",
+      "404 彩蛋不存在",
+      "彩蛋加载失败 请稍后再试",
+      "这行字是唯一的彩蛋 骗你的",
+      "作者说彩蛋不能太多",
+      "你是第 " + Math.floor(Math.random()*9000+1000) + " 个看到这行的",
+      "还在看？按 ESC 啦"
     ];
-    var egg = eggs[(new Date().getMinutes() + id.length) % eggs.length];
+    var egg = eggs[Math.floor(Math.random() * eggs.length)];
     document.getElementById("lb-caption").innerHTML =
       '<div class="lb-cat">' + esc(a.category || "") + '</div>' +
       '<div class="lb-name">' + esc(a.name) + '</div>' +
