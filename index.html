@@ -72,7 +72,7 @@
   ::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ink) 20%, transparent); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; }
   ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--ink) 34%, transparent); border: 3px solid transparent; background-clip: padding-box; }
   header, main { position: relative; z-index: 1; }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+  .wrap { max-width: 1600px; margin: 0 auto; padding: 0 48px; }
 
   /* ---------- 顶栏 ---------- */
   header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid transparent; transition: background .2s ease, border-color .2s ease; }
@@ -81,9 +81,9 @@
   .top { display: flex; align-items: center; height: 76px; gap: 24px; }
 
   /* ---------- 品牌（去框，裸 logo + 站名） ---------- */
-  .brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
-  .brand-logo { width: 30px; height: 30px; border-radius: 9px; object-fit: cover; display: block; border: 1px solid var(--line); }
-  .brand-name { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: 0.01em; color: var(--ink); white-space: nowrap; }
+  .brand { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .brand-logo { width: 22px; height: 22px; border-radius: 6px; object-fit: cover; display: block; border: 1px solid var(--line); }
+  .brand-name { font-family: var(--display); font-size: 13px; font-weight: 600; letter-spacing: 0; color: var(--ink); white-space: nowrap; }
 
   /* ---------- 平台选择：拟物拨杆（Uiverse by Yaya12085 · 左下角固定） ---------- */
   .plat-wrap {
@@ -317,7 +317,7 @@
 
   /* ---------- 左侧导航（Microsoft Fluent NavigationView） ---------- */
   .ms-nav {
-    width: 200px;
+    width: 160px;
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -327,7 +327,7 @@
     font-weight: 600;
     color: var(--muted);
     letter-spacing: 0.04em;
-    padding: 16px 14px 6px;
+    padding: 12px 10px 4px;
   }
   .ms-nav__group-label:first-child { padding-top: 0; }
   .ms-nav__item {
@@ -385,8 +385,8 @@
   }
 
   /* ---------- 主体（左侧栏 + 内容） ---------- */
-  main { padding: 60px 0 160px; display: flex; gap: 64px; align-items: flex-start; }
-  .side { flex: 0 0 auto; position: sticky; top: 100px; }
+  main { padding: 48px 0 160px; display: flex; gap: 48px; align-items: flex-start; }
+  .side { flex: 0 0 auto; position: sticky; top: 80px; }
   .content { flex: 1; min-width: 0; }
 
   .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 52px 0 20px; display: flex; align-items: center; gap: 8px; }
@@ -396,7 +396,7 @@
   .group-title .gt-count { margin-left: auto; }
 
   /* 卡片网格 */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; overflow: visible; align-items: start; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; overflow: visible; align-items: start; }
 
   .card {
     position: relative; z-index: 1;
