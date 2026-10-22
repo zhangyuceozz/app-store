@@ -396,27 +396,25 @@
   .group-title .gt-count { margin-left: auto; }
 
   /* 卡片网格 */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; overflow: visible; align-items: stretch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; overflow: visible; align-items: start; }
 
   .card {
     position: relative; z-index: 1;
-    display: flex; flex-direction: column; gap: 8px;
-    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    padding: 14px; cursor: pointer; overflow: hidden;
-    aspect-ratio: 1 / 1;
-    min-height: 0;
+    display: flex; flex-direction: column; gap: 6px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px; cursor: pointer; overflow: hidden;
     transition: transform .35s cubic-bezier(.175,.885,.32,1.275);
   }
   .card.is-hover { transform: scale(1.04) !important; z-index: 10; }
 
   /* 默认内容：hover 时模糊淡出 */
-  .card .c-row { display: flex; align-items: center; gap: 10px; transition: filter .25s ease, opacity .25s ease; }
+  .card .c-row { display: flex; align-items: center; gap: 8px; transition: filter .25s ease, opacity .25s ease; }
   .card.is-hover .c-row { filter: blur(3px); opacity: .35; }
-  .card .c-icon { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
-  .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
-  .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-right: 52px; }
-  .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card .c-meta { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .c-icon { width: 36px; height: 36px; border-radius: 7px; flex-shrink: 0; border: 1px solid var(--line); }
+  .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 14px; font-weight: 600; }
+  .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding-right: 44px; }
+  .card .c-name { font-family: var(--display); font-size: 13px; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .c-meta { font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* 右侧按钮组 — 绝对定位在 card 右上角，独立不受 c-row blur 影响 */
   .card .c-right { position: absolute; right: 14px; top: 14px; text-align: right; }
