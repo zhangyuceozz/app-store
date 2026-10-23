@@ -501,6 +501,25 @@
     to   { transform: translateY(110vh) rotate(720deg); opacity: 0.8; }
   }
 
+  /* ---------- Toast 提示 ---------- */
+  .egg-toast { position: fixed; top: 24px; left: 50%; transform: translate(-50%, -20px); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; z-index: 100000; opacity: 0; transition: opacity .3s ease, transform .3s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); pointer-events: none; }
+  .egg-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- 开发者模式侧栏项 ---------- */
+  .dev-mode-item { margin-top: 12px; padding: 8px 12px; border-radius: 8px; font-size: 12px; color: var(--accent); font-weight: 600; cursor: pointer; animation: fadeSlideIn .4s ease; }
+  .dev-mode-item:hover { background: rgba(245,73,31,.08); }
+  .dev-badge { margin-right: 6px; }
+  @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- 卡片跳舞 ---------- */
+  .card.card-dance { animation: cardDance .6s ease; }
+  @keyframes cardDance {
+    0%, 100% { transform: none; }
+    25%      { transform: rotate(-4deg) translateY(-4px); }
+    50%      { transform: rotate(3deg) translateY(-2px); }
+    75%      { transform: rotate(-2deg) translateY(-6px); }
+  }
+
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -786,7 +805,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=12"></script>
+<script src="apps.js?v=13"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1321,6 +1340,87 @@
       }
     }
   })();
+
+  // ============== 彩蛋 5：双击品牌名 → toast 提示 ==============
+  (function brandDblClick() {
+    var bn = document.getElementById("brand-name");
+    if (!bn) return;
+    bn.addEventListener("dblclick", function () {
+      bn.style.color = "var(--accent)";
+      setTimeout(function () { bn.style.color = ""; }, 150);
+      setTimeout(function () { bn.style.color = "var(--accent)"; }, 300);
+      setTimeout(function () { bn.style.color = ""; }, 450);
+      showToast("👋 嘿，别点我啦~");
+    });
+  })();
+
+  // ============== 彩蛋 6：侧栏滚到底部 → 开发者模式 ==============
+  (function devMode() {
+    var nav = document.querySelector(".ms-nav");
+    if (!nav) return;
+    var triggered = false;
+    nav.addEventListener("scroll", function () {
+      if (triggered) return;
+      if (nav.scrollTop + nav.clientHeight >= nav.scrollHeight - 10) {
+        triggered = true;
+        // 侧栏最后加一个隐藏项
+        var item = document.createElement("div");
+        item.className = "nav-cat dev-mode-item";
+        item.innerHTML = '<span class="dev-badge">🧪</span> 开发者模式';
+        item.addEventListener("click", function () {
+          showToast("🛠️ 控制台已解锁调试信息（按 F12）");
+          console.log("%c=== 开发者模式 ===", "font-size:16px;color:#f5491f;font-weight:bold;");
+          console.log("应用数量:", APPS.length);
+          console.log("分类数量:", CATEGORIES.length);
+          console.log("Worker 地址: /dl/apps/:id/download/:file");
+          console.log("源: https://github.com/zhangyuceozz/app-store");
+        });
+        nav.appendChild(item);
+        showToast("🧪 发现隐藏分类！");
+      }
+    });
+  })();
+
+  // ============== 彩蛋 7：快速 hover 5 张卡片 → 集体跳舞 ==============
+  (function cardDance() {
+    var cards = [];
+    var lastHover = 0;
+    document.querySelector(".grid").addEventListener("mouseover", function (e) {
+      var c = e.target.closest(".card");
+      if (!c) return;
+      var now = Date.now();
+      if (now - lastHover > 1500) cards = []; // 1.5s 内没继续重置
+      lastHover = now;
+      if (cards.indexOf(c) === -1) cards.push(c);
+      if (cards.length >= 5) {
+        cards = [];
+        triggerCardDance();
+      }
+    });
+    function triggerCardDance() {
+      var all = document.querySelectorAll(".card");
+      all.forEach(function (c, i) {
+        setTimeout(function () {
+          c.classList.add("card-dance");
+          setTimeout(function () { c.classList.remove("card-dance"); }, 600);
+        }, i * 50);
+      });
+      console.log("%c💃 卡片跳舞！", "font-size:18px;color:#f5491f;font-weight:bold;");
+    }
+  })();
+
+  // ============== 通用 Toast 组件 ==============
+  function showToast(msg) {
+    var t = document.createElement("div");
+    t.textContent = msg;
+    t.className = "egg-toast";
+    document.body.appendChild(t);
+    requestAnimationFrame(function () { t.classList.add("show"); });
+    setTimeout(function () {
+      t.classList.remove("show");
+      setTimeout(function () { t.remove(); }, 300);
+    }, 2000);
+  }
 })();
 </script>
 
