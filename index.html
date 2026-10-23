@@ -786,7 +786,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=11"></script>
+<script src="apps.js?v=12"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1271,7 +1271,7 @@
 
   // ============== 彩蛋 3：搜索框输入"彩蛋" → 解锁隐藏分类 ==============
   (function searchEgg() {
-    var input = document.getElementById("search");
+    var input = document.getElementById("q");
     if (!input) return;
     var originalCategories = null;
     input.addEventListener("input", function () {
