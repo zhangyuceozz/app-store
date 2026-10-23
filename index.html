@@ -488,6 +488,19 @@
   .egg-close { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
   .egg-close:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,73,31,.35); }
 
+  /* ---------- Konami 彩虹模式 ---------- */
+  body.rainbow-mode { animation: rainbowHue 10s linear infinite; }
+  @keyframes rainbowHue {
+    from { filter: hue-rotate(0deg); }
+    to   { filter: hue-rotate(360deg); }
+  }
+
+  /* ---------- 表情雨下落 ---------- */
+  @keyframes eggFall {
+    from { transform: translateY(-40px) rotate(0deg); opacity: 1; }
+    to   { transform: translateY(110vh) rotate(720deg); opacity: 0.8; }
+  }
+
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -773,7 +786,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=10"></script>
+<script src="apps.js?v=11"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1234,6 +1247,79 @@
       if (e.target.id === "egg") document.getElementById("egg").classList.remove("open");
     });
   }
+
+  // ============== 彩蛋 2：Konami Code → 全局彩虹 ==============
+  (function konami() {
+    var SEQ = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
+    var buf = [];
+    document.addEventListener("keydown", function (e) {
+      buf.push(e.key);
+      if (buf.length > SEQ.length) buf.shift();
+      if (buf.join(",") === SEQ.join(",")) triggerRainbow();
+    });
+    var rainbowOn = false;
+    function triggerRainbow() {
+      rainbowOn = !rainbowOn;
+      document.body.classList.toggle("rainbow-mode", rainbowOn);
+      if (rainbowOn) {
+        console.log("%c🌈 KONAMI! 彩虹模式 ON", "font-size:18px;color:#f5491f;font-weight:bold;");
+      } else {
+        console.log("%c彩虹模式 OFF", "font-size:14px;color:#888;");
+      }
+    }
+  })();
+
+  // ============== 彩蛋 3：搜索框输入"彩蛋" → 解锁隐藏分类 ==============
+  (function searchEgg() {
+    var input = document.getElementById("search");
+    if (!input) return;
+    var originalCategories = null;
+    input.addEventListener("input", function () {
+      if (input.value.trim() === "彩蛋" || input.value.trim() === "konami" || input.value.trim() === "42") {
+        // 解锁：用 CATEGORIES 注入一个隐藏分类
+        if (CATEGORIES.indexOf("🔮 神秘") === -1) {
+          CATEGORIES.push("🔮 神秘");
+          // 给所有应用加这个 sub（让它们出现在神秘里）
+          APPS.forEach(function (a) { a.sub = a.sub || "🔮 神秘"; });
+          console.log("%c🔮 隐藏分类解锁！点侧栏的「神秘」看看", "font-size:16px;color:#f5491f;font-weight:bold;");
+          buildCats();
+          renderList();
+        }
+      }
+    });
+  })();
+
+  // ============== 彩蛋 4：连点品牌名 5 次 → 表情雨 ==============
+  (function confetti() {
+    var brandName = document.getElementById("brand-name");
+    if (!brandName) return;
+    var count = 0;
+    var lastTime = 0;
+    var EMOJIS = ["🎉","🎊","✨","💫","🌟","🎈","🎁","🔥","💖","🚀","🌈","🍕","🐱","👾","🎮"];
+    brandName.addEventListener("click", function () {
+      var now = Date.now();
+      if (now - lastTime > 2000) count = 0; // 2 秒内没连续点重置
+      lastTime = now;
+      if (++count >= 5) {
+        count = 0;
+        triggerConfetti();
+      }
+    });
+    function triggerConfetti() {
+      console.log("%c🎊 表情雨！", "font-size:18px;color:#f5491f;font-weight:bold;");
+      for (var i = 0; i < 40; i++) {
+        (function (delay) {
+          setTimeout(function () {
+            var el = document.createElement("div");
+            el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+            el.style.cssText = "position:fixed;left:" + (Math.random() * 100) + "vw;top:-40px;font-size:" + (16 + Math.random() * 20) + "px;z-index:99999;pointer-events:none;animation:eggFall " + (2 + Math.random() * 3) + "s linear forwards;";
+            document.body.appendChild(el);
+            setTimeout(function () { el.remove(); }, 5000);
+          }, delay);
+        })(i * 50);
+      }
+    }
+  })();
 })();
 </script>
 
