@@ -520,6 +520,17 @@
     75%      { transform: rotate(-2deg) translateY(-6px); }
   }
 
+  /* ---------- typo 纠正提示 ---------- */
+  .typo-tip { position: absolute; top: 100%; left: 12px; margin-top: 4px; font-size: 11px; color: #999; opacity: 1; transition: opacity .4s ease; pointer-events: none; white-space: nowrap; z-index: 10; font-style: italic; }
+
+  /* ---------- 凌晨彩蛋 ---------- */
+  body.night-owl .card { filter: brightness(.9); transition: filter 1s ease; }
+  .night-tip { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%) translateY(10px); font-size: 11px; color: rgba(0,0,0,.25); font-style: italic; opacity: 0; transition: opacity 1.5s ease, transform 1.5s ease; pointer-events: none; z-index: 1; }
+  .night-tip.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- logo 眨眼 ---------- */
+  body.idle .brand-logo { transition: opacity .1s ease; }
+
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -1407,6 +1418,75 @@
       });
       console.log("%c💃 卡片跳舞！", "font-size:18px;color:#f5491f;font-weight:bold;");
     }
+  })();
+
+  // ============== 彩蛋 8：搜索框 typo 自动纠正 + 小字提示 ==============
+  (function typoFix() {
+    var input = document.getElementById("q");
+    if (!input) return;
+    var TYPOS = {
+      "ytt-dlp": "yt-dlp", "ytdlp": "yt-dlp", "yt dlp": "yt-dlp",
+      "崩嘎猫": "bongocat", "邦邦猫": "bongocat",
+      "winsance": "winhance", "winance": "winhance",
+      "mineradio": "mineradio", "mine radio": "mineradio",
+      "pdfcarft": "pdfcraft", "pdf carft": "pdfcraft",
+    };
+    input.addEventListener("input", function () {
+      var v = input.value.trim().toLowerCase();
+      for (var wrong in TYPOS) {
+        if (v === wrong) {
+          var right = TYPOS[wrong];
+          input.value = right;
+          input.blur();
+          // 小字提示
+          var tip = document.createElement("div");
+          tip.className = "typo-tip";
+          tip.textContent = "知道你在找 " + right + " 帮你改好了 :)";
+          input.parentElement.appendChild(tip);
+          setTimeout(function () {
+            tip.style.opacity = "0";
+            setTimeout(function () { tip.remove(); }, 400);
+          }, 2200);
+          break;
+        }
+      }
+    });
+  })();
+
+  // ============== 彩蛋 9：凌晨彩蛋 ==============
+  (function lateNight() {
+    var h = new Date().getHours();
+    if (h >= 2 && h < 5) {
+      document.body.classList.add("night-owl");
+      var tip = document.createElement("div");
+      tip.className = "night-tip";
+      tip.textContent = "熬夜不好 但我也没睡";
+      document.body.appendChild(tip);
+      setTimeout(function () { tip.classList.add("show"); }, 500);
+    }
+  })();
+
+  // ============== 彩蛋 10：logo 偷偷眨眼 ==============
+  (function logoBlink() {
+    var brand = document.querySelector(".brand-logo");
+    if (!brand) return;
+    var idleTimer;
+    function resetIdle() {
+      clearTimeout(idleTimer);
+      document.body.classList.remove("idle");
+      idleTimer = setTimeout(function () {
+        document.body.classList.add("idle");
+        brand.style.opacity = "0.2";
+        setTimeout(function () { brand.style.opacity = "1"; }, 120);
+        setTimeout(function () { brand.style.opacity = "0.2"; }, 400);
+        setTimeout(function () { brand.style.opacity = "1"; }, 520);
+      }, 30000); // 30 秒没动
+    }
+    // 各种活动重置
+    ["mousemove","keydown","scroll","click","touchstart"].forEach(function(e){
+      document.addEventListener(e, resetIdle);
+    });
+    resetIdle();
   })();
 
   // ============== 通用 Toast 组件 ==============
