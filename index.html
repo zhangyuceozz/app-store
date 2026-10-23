@@ -531,6 +531,15 @@
   /* ---------- logo 眨眼 ---------- */
   body.idle .brand-logo { transition: opacity .1s ease; }
 
+  /* ---------- icon 跳动 ---------- */
+  @keyframes iconTalk {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    20%      { transform: translateY(-3px) rotate(-2deg); }
+    40%      { transform: translateY(0) rotate(1deg); }
+    60%      { transform: translateY(-2px) rotate(-1deg); }
+    80%      { transform: translateY(0) rotate(0); }
+  }
+
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -1420,7 +1429,7 @@
     }
   })();
 
-  // ============== 彩蛋 8：搜索框 typo 自动纠正 + 小字提示 ==============
+  // ============== 彩蛋 8：搜索框 typo 自动纠正 ==============
   (function typoFix() {
     var input = document.getElementById("q");
     if (!input) return;
@@ -1428,25 +1437,17 @@
       "ytt-dlp": "yt-dlp", "ytdlp": "yt-dlp", "yt dlp": "yt-dlp",
       "崩嘎猫": "bongocat", "邦邦猫": "bongocat",
       "winsance": "winhance", "winance": "winhance",
-      "mineradio": "mineradio", "mine radio": "mineradio",
       "pdfcarft": "pdfcraft", "pdf carft": "pdfcraft",
     };
+    var lastFixed = "";
     input.addEventListener("input", function () {
       var v = input.value.trim().toLowerCase();
+      if (v === lastFixed) return;
       for (var wrong in TYPOS) {
         if (v === wrong) {
-          var right = TYPOS[wrong];
-          input.value = right;
-          input.blur();
-          // 小字提示
-          var tip = document.createElement("div");
-          tip.className = "typo-tip";
-          tip.textContent = "知道你在找 " + right + " 帮你改好了 :)";
-          input.parentElement.appendChild(tip);
-          setTimeout(function () {
-            tip.style.opacity = "0";
-            setTimeout(function () { tip.remove(); }, 400);
-          }, 2200);
+          lastFixed = TYPOS[wrong];
+          input.value = TYPOS[wrong];
+          showToast("知道你在找 " + TYPOS[wrong] + " 帮你改好了 :)");
           break;
         }
       }
@@ -1487,6 +1488,52 @@
       document.addEventListener(e, resetIdle);
     });
     resetIdle();
+  })();
+
+  // ============== 彩蛋 11：窗口太窄 ==============
+  (function windowNarrow() {
+    function check() {
+      if (window.innerWidth < 360 && !document.body.classList.contains("narrow-warn")) {
+        document.body.classList.add("narrow-warn");
+        showToast("别挤我 喘不过气了 >_<");
+        setTimeout(function () { document.body.classList.remove("narrow-warn"); }, 3000);
+      }
+    }
+    window.addEventListener("resize", check);
+  })();
+
+  // ============== 彩蛋 12：刷新计数 ==============
+  (function refreshCount() {
+    var key = "chovy_refresh_count";
+    var count = parseInt(localStorage.getItem(key) || "0", 10) + 1;
+    localStorage.setItem(key, count);
+    if (count >= 10 && !localStorage.getItem("chovy_refresh_celebrated")) {
+      localStorage.setItem("chovy_refresh_celebrated", "1");
+      // 弹窗：你真喜欢这个站啊
+      var body = document.getElementById("egg-body");
+      body.innerHTML = '<p>你真喜欢这个站啊 ♥</p><p>刷新了 <span class="egg-highlight">' + count + '</span> 次才发现这个彩蛋。</p><p>说真的 谢谢你。</p>';
+      document.getElementById("egg").classList.add("open");
+      console.log("%c♥ 刷新彩蛋！你真喜欢这个站啊", "font-size:20px;color:#f5491f;font-weight:bold;");
+    }
+  })();
+
+  // ============== 彩蛋 13：连点 3 张 icon ==============
+  (function iconTalk() {
+    var lastIcon = null;
+    var hits = 0;
+    document.querySelector(".grid").addEventListener("click", function (e) {
+      var img = e.target.closest(".c-icon, .c-preview img");
+      if (!img) { hits = 0; return; }
+      if (img === lastIcon) { hits = 1; }
+      hits++;
+      lastIcon = img;
+      if (hits >= 3) {
+        hits = 0;
+        img.style.animation = "none";
+        img.offsetHeight; // 强制 reflow
+        img.style.animation = "iconTalk .5s ease";
+      }
+    });
   })();
 
   // ============== 通用 Toast 组件 ==============
