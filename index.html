@@ -1275,13 +1275,14 @@
     if (!input) return;
     var originalCategories = null;
     input.addEventListener("input", function () {
-      if (input.value.trim() === "彩蛋" || input.value.trim() === "konami" || input.value.trim() === "42") {
+      if (input.value.trim() === "98k") {
         // 解锁：用 CATEGORIES 注入一个隐藏分类
         if (CATEGORIES.indexOf("🔮 神秘") === -1) {
           CATEGORIES.push("🔮 神秘");
           // 给所有应用加这个 sub（让它们出现在神秘里）
           APPS.forEach(function (a) { a.sub = a.sub || "🔮 神秘"; });
           console.log("%c🔮 隐藏分类解锁！点侧栏的「神秘」看看", "font-size:16px;color:#f5491f;font-weight:bold;");
+          input.value = ""; // 清空搜索框，显示全部
           buildCats();
           renderList();
         }
