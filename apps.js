@@ -149,7 +149,7 @@ const APPS = [
     name: "yt-dlp",
     category: "实用工具",
     sub: "视频下载",
-    date: "2026-08-19",
+    date: "2026-10-23",
     tagline: "全能视频下载命令行工具",
     description: "yt-dlp 是一个功能强大的命令行视频下载工具，支持 YouTube、Bilibili、Twitter、TikTok、Vimeo 等数千个网站的视频和音频下载。基于 Python，开源免费，持续更新。",
     icon: "apps/yt-dlp/icon.png",

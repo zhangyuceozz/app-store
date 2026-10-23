@@ -742,7 +742,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=8"></script>
+<script src="apps.js?v=9"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -948,10 +948,13 @@
 
   function renderList() {
     var list = APPS.filter(matches);
+    // 默认按上架日期升序（先来后到）
+    list = list.slice().sort(function (a, b) {
+      return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
+    });
     if (active === "最近上架" && !query) {
-      list = list.slice().sort(function (a, b) {
-        return (b.date || "0000-00-00").localeCompare(a.date || "0000-00-00");
-      }).slice(0, 10);
+      // 最近上架 = 最新在前（降序）
+      list = list.slice().reverse().slice(0, 10);
     }
     if (!list.length) {
       listEl.innerHTML = '<div class="empty">' +
