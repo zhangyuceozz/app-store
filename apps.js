@@ -144,4 +144,33 @@ const APPS = [
   },
 
   // ↓↓↓ 新应用在这里往下加，复制 BongoCat 整块 { ... } 改内容即可 ↓↓↓
+  {
+    id: "yt-dlp",
+    name: "yt-dlp",
+    category: "实用工具",
+    sub: "视频下载",
+    date: "2026-08-19",
+    tagline: "全能视频下载命令行工具",
+    description: "yt-dlp 是一个功能强大的命令行视频下载工具，支持 YouTube、Bilibili、Twitter、TikTok、Vimeo 等数千个网站的视频和音频下载。基于 Python，开源免费，持续更新。",
+    icon: "apps/yt-dlp/icon.png",
+    preview: "apps/yt-dlp/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)",  file: "/dl/apps/yt-dlp/download/yt-dlp.exe",          size: "17.8 MB" },
+      { platform: "Windows (ARM64)", file: "/dl/apps/yt-dlp/download/yt-dlp_arm64.exe",   size: "21.2 MB" },
+      { platform: "Linux (x64)",    file: "/dl/apps/yt-dlp/download/yt-dlp_linux",          size: "13.5 MB" },
+      { platform: "源码包",          file: "/dl/apps/yt-dlp/download/yt-dlp.tar.gz",       size: "6.0 MB" },
+    ],
+    install: [
+      "Windows：下载 .exe 后直接双击或放入 PATH 目录即可命令行使用。",
+      "macOS：brew install yt-dlp（推荐），或 pip install yt-dlp。",
+      "Linux：包管理器安装（apt/dnf/pacman 搜 yt-dlp），或 pip install yt-dlp。",
+    ],
+    usage: [
+      "最简用法：yt-dlp <视频 URL>",
+      "下载指定格式：yt-dlp -f bestvideo+bestaudio <URL>",
+      "下载整个播放列表：yt-dlp <播放列表 URL>",
+      "仅提取音频：yt-dlp -x --audio-format mp3 <URL>",
+      "yt-dlp 是命令行工具，在终端/PowerShell 里运行。",
+    ],
+  },
 ];
