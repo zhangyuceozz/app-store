@@ -488,10 +488,6 @@
   .egg-close { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
   .egg-close:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,73,31,.35); }
 
-  /* ---------- Toast 提示 ---------- */
-  .egg-toast { position: fixed; top: 24px; left: 50%; transform: translate(-50%, -20px); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; z-index: 100000; opacity: 0; transition: opacity .3s ease, transform .3s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); pointer-events: none; }
-  .egg-toast.show { opacity: 1; transform: translate(-50%, 0); }
-
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -777,7 +773,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=14"></script>
+<script src="apps.js?v=15"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1280,18 +1276,6 @@
     }
   })();
 
-  // ============== 通用 Toast 组件 ==============
-  function showToast(msg) {
-    var t = document.createElement("div");
-    t.textContent = msg;
-    t.className = "egg-toast";
-    document.body.appendChild(t);
-    requestAnimationFrame(function () { t.classList.add("show"); });
-    setTimeout(function () {
-      t.classList.remove("show");
-      setTimeout(function () { t.remove(); }, 300);
-    }, 2000);
-  }
 })();
 </script>
 
