@@ -19,12 +19,21 @@ const MAP = {
   "yt-dlp.tar.gz": "/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.tar.gz",
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
+  // Pap.er v5.6.0 (macOS 静态壁纸) — 官方 CDN（非 GitHub）
+  "pap.er_v5.6.0.dmg": "https://updates.paperapp.net/app/pap.er_v5.6.0_66_579927f3a0325d.dmg",
 };
 
-async function fetchUpstream(path) {
-  // 先试 ghproxy 镜像（国内快 3-5 倍），超时/失败 fallback GitHub 直链
-  const mirror = MIRROR + GH + path;
-  const direct = GH + path;
+async function fetchUpstream(upstreamPath) {
+  // 绝对 URL（非 GitHub 来源，比如官方 CDN）→ 直接 fetch
+  if (upstreamPath.startsWith("http://") || upstreamPath.startsWith("https://")) {
+    return fetch(upstreamPath, {
+      cf: { cacheEverything: true, cacheTtl: 86400 },
+      headers: { "User-Agent": "ChovyStore/1.0" },
+    });
+  }
+  // GitHub 相对路径 → 先走 ghproxy 镜像再 fallback 直链
+  const mirror = MIRROR + GH + upstreamPath;
+  const direct = GH + upstreamPath;
   try {
     const resp = await fetch(mirror, {
       cf: { cacheEverything: true, cacheTtl: 86400 },
@@ -34,7 +43,6 @@ async function fetchUpstream(path) {
     if (resp.ok) return resp;
     throw new Error("mirror HTTP " + resp.status);
   } catch (e) {
-    console.log("mirror miss:", e.message, "fallback GitHub");
     return fetch(direct, {
       cf: { cacheEverything: true, cacheTtl: 86400 },
       headers: { "User-Agent": "ChovyStore/1.0" },

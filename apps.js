@@ -145,6 +145,31 @@ const APPS = [
 
   // ↓↓↓ 新应用在这里往下加，复制 BongoCat 整块 { ... } 改内容即可 ↓↓↓
   {
+    id: "paper",
+    name: "Pap.er",
+    category: "桌面美化",
+    sub: "静态壁纸",
+    date: "2026-10-25",
+    tagline: "编辑精选的 5K HD 壁纸每日更新",
+    description: "Pap.er 是一款专为 macOS 设计的壁纸应用。自 2017 年上线至今，编辑团队每日从全球摄影师和设计师作品中精选 5K 高清壁纸，支持一键换壁纸、定时自动切换、导入本地图片，完全免费、无需账号、下载即用。",
+    icon: "apps/paper/icon.png",
+    preview: "apps/paper/preview.jpg",
+    downloads: [
+      { platform: "macOS（Apple 芯片 / Intel 通用）", file: "/dl/apps/paper/download/pap.er_v5.6.0.dmg", size: "42 MB" },
+    ],
+    install: [
+      "双击 pap.er_v5.6.0.dmg，把 Pap.er 拖进「应用程序」文件夹。",
+      "首次打开若提示「无法验证开发者」，右键点图标选「打开」→「打开」。",
+      "要求 macOS 11 Big Sur 或更高版本。",
+    ],
+    usage: [
+      "启动后直接进入壁纸库，每日更新编辑精选的 5K 高清壁纸。",
+      "点一张 → 一键换桌面壁纸；也可以同时换桌面和锁屏。",
+      "设置里可调自动切换频率：每周 / 每天 / 每小时。",
+      "支持把自己的图片加入壁纸库（放指定文件夹即可）。",
+    ],
+  },
+  {
     id: "lively",
     name: "Lively Wallpaper",
     category: "桌面美化",
