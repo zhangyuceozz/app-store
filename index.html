@@ -1059,14 +1059,13 @@
     document.body.classList.add("mystery-mode");
     setCatState();
     renderList();
-    // 尝试浏览器原生全屏（需要用户手势，可能被拒）
+    // 尝试浏览器原生全屏
     try {
       var el = document.documentElement;
       if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen();
       else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
     } catch (e) {}
-    setTimeout(injectFxBtn, 0);
-    setupExitTap();
+    setTimeout(injectMysteryBtns, 0);
   }
 
   function exitMystery() {
@@ -1076,62 +1075,33 @@
       else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
     } catch (e) {}
     removeFxBtn();
-    teardownExitTap();
     active = "系统工具";
     setCatState();
     renderList();
   }
 
-  // 5 连点屏幕退出
-  var tapCount = 0, tapTimer = null;
-  function setupExitTap() {
-    tapCount = 0;
-    document.addEventListener("click", onScreenTap, true);
-    // Esc 退出全屏时自动清 mystery-mode
-    document.addEventListener("fullscreenchange", onFsChange);
-    document.addEventListener("webkitfullscreenchange", onFsChange);
-  }
-  function teardownExitTap() {
-    document.removeEventListener("click", onScreenTap, true);
-    document.removeEventListener("fullscreenchange", onFsChange);
-    document.removeEventListener("webkitfullscreenchange", onFsChange);
-  }
-  function onFsChange() {
-    // 已不在全屏但 body 还在神秘 → 说明用户按了 Esc，手动清
-    var isFs = document.fullscreenElement || document.webkitFullscreenElement;
-    if (!isFs && document.body.classList.contains("mystery-mode")) {
-      exitMystery();
-    }
-  }
-  function onScreenTap(e) {
-    // 点特效按钮不算
-    if (e.target.closest("#fx-random")) return;
-    tapCount++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(function () { tapCount = 0; }, 1200); // 1.2s 内连点
-    if (tapCount >= 5) {
-      tapCount = 0;
-      teardownExitTap();
-      exitMystery();
-    }
-  }
-
-  function injectFxBtn() {
-    // 只在神秘分类页面存在，且没有特效按钮时注入
+  function injectMysteryBtns() {
     if (document.getElementById("fx-random")) return;
-    var btn = document.createElement("button");
-    btn.id = "fx-random";
-    btn.textContent = "🎲 特效";
-    btn.style.cssText = "position:fixed;right:24px;bottom:24px;background:#1a1a1a;color:#fff;border:none;border-radius:24px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;z-index:9997;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:transform .15s ease;";
-    btn.addEventListener("click", function () {
+    var fxBtn = document.createElement("button");
+    fxBtn.id = "fx-random";
+    fxBtn.textContent = "🎲 特效";
+    fxBtn.style.cssText = "position:fixed;right:24px;bottom:24px;background:#1a1a1a;color:#fff;border:none;border-radius:24px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;z-index:9997;box-shadow:0 4px 16px rgba(0,0,0,.2);";
+    fxBtn.addEventListener("click", function () {
       if (FX_MODULES.length === 0) { console.log("%c还没有特效 等你提供", "color:#999"); return; }
-      if (activeFx !== null) {
-        // 再点一次 = 换一个随机的
-        stopFx();
-      }
+      if (activeFx !== null) stopFx();
       startRandomFx();
+      fxBtn.textContent = "🎲 " + FX_MODULES[activeFx].name + " · 换";
     });
-    document.body.appendChild(btn);
+    document.body.appendChild(fxBtn);
+
+    var exBtn = document.createElement("button");
+    exBtn.id = "fx-exit";
+    exBtn.textContent = "✕ 退出";
+    exBtn.style.cssText = "position:fixed;left:24px;bottom:24px;background:none;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.25);border-radius:24px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;z-index:9997;transition:color .15s ease,border-color .15s ease;";
+    exBtn.addEventListener("click", function () { exitMystery(); });
+    exBtn.addEventListener("mouseenter", function () { exBtn.style.color = "#fff"; exBtn.style.borderColor = "rgba(255,255,255,.7)"; });
+    exBtn.addEventListener("mouseleave", function () { exBtn.style.color = "rgba(255,255,255,.55)"; exBtn.style.borderColor = "rgba(255,255,255,.25)"; });
+    document.body.appendChild(exBtn);
   }
 
   function startRandomFx() {
@@ -1165,8 +1135,8 @@
 
   function removeFxBtn() {
     stopFx();
-    var btn = document.getElementById("fx-random");
-    if (btn) btn.remove();
+    var a = document.getElementById("fx-random"); if (a) a.remove();
+    var b = document.getElementById("fx-exit"); if (b) b.remove();
   }
 
   // 离开神秘分类自动关特效
