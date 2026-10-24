@@ -473,16 +473,6 @@
   .lb-caption .lb-divider { width: 36px; height: 2px; background: var(--accent); margin: 24px 0 0; border-radius: 2px; }
   .lb-caption .lb-easter { margin-top: 28px; font-size: 12px; font-style: italic; color: rgba(255,255,255,.3); letter-spacing: .04em; }
 
-  /* ---------- 彩蛋弹窗 ---------- */
-  .egg-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
-  .egg-overlay.open { display: flex; }
-  .egg-card { background: #ffffff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 32px 36px; max-width: 360px; animation: fadeIn .2s ease-out; }
-  .egg-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
-  .egg-body { font-size: 15px; color: #1a1a1a; line-height: 1.75; margin-bottom: 22px; }
-  .egg-body p { margin: 0 0 10px; }
-  .egg-close { width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .egg-close:hover { background: #333; }
-
   /* ---------- 神秘模式：沉浸式全屏 ---------- */
   body.mystery-mode {
     background: #000 !important;
@@ -764,15 +754,6 @@
       <img id="lb-img" src="" alt="">
     </div>
     <div class="lb-caption" id="lb-caption"></div>
-  </div>
-</div>
-
-<!-- 彩蛋弹窗 -->
-<div class="egg-overlay" id="egg">
-  <div class="egg-card">
-    <div class="egg-title">嘿，被你发现了</div>
-    <div class="egg-body" id="egg-body"></div>
-    <button class="egg-close" id="egg-close">知道了</button>
   </div>
 </div>
 
@@ -1364,53 +1345,6 @@
       setTimeout(function () { p.remove(); }, 600);
     }
   }, 2000);
-
-  // ============== 彩蛋：长按品牌 logo 1.5s ==============
-  var brand = document.querySelector(".brand");
-  var holdTimer = null;
-  var EASTER_EGGS = [
-    "<p style='font-size:15px;line-height:1.7'>这个站没有框架、没有构建，浏览器打开就能跑。<br><span style='color:#f5491f'>谢谢你愿意读到这里。</span></p>",
-    "<p style='font-size:15px;line-height:1.7'>hover 改了不知道多少版，现在终于丝滑了。<br>如果你也喜欢折腾，<span style='color:#f5491f'>开干吧，别等。</span></p>",
-    "<p style='font-size:15px;line-height:1.7'>这里每个软件都是我在 GitHub 上一个个翻 Release 扒的。<br>控制台里也藏了东西，F12 看看。</p>",
-    "<p style='font-size:15px;line-height:1.7'>熬夜改代码的时候总觉得自己在做点有用的事。<br>后来发现——它还真的是。</p>",
-    "<p style='font-size:15px;line-height:1.7'>你是第 812 个触发这个彩蛋的人。<br>不，我瞎编的。但<span style='color:#f5491f'>你是特别的</span>。</p>",
-    "<p style='font-size:15px;line-height:1.7'>据说长按 logo 的人运气都不会太差。<br>我也是据说的。</p>",
-  ];
-  if (brand) {
-    function startHold() {
-      clearTimeout(holdTimer);
-      brand.classList.add("holding");
-      holdTimer = setTimeout(triggerEgg, 1500);
-    }
-    function cancelHold() {
-      clearTimeout(holdTimer);
-      brand.classList.remove("holding");
-    }
-    brand.addEventListener("mousedown", startHold);
-    brand.addEventListener("mouseup", cancelHold);
-    brand.addEventListener("mouseleave", cancelHold);
-    brand.addEventListener("touchstart", startHold, { passive: true });
-    brand.addEventListener("touchend", cancelHold);
-    brand.addEventListener("touchcancel", cancelHold);
-
-    function triggerEgg() {
-      cancelHold();
-      // 随机一条
-      var body = document.getElementById("egg-body");
-      body.innerHTML = EASTER_EGGS[Math.floor(Math.random() * EASTER_EGGS.length)];
-      document.getElementById("egg").classList.add("open");
-      // 控制台彩蛋
-      console.log("%c🎂 你发现了彩蛋！", "font-size:28px;color:#f5491f;font-weight:bold;");
-      console.log("%c长按 logo 可以再触发一次~", "font-size:14px;color:#666;");
-    }
-
-    document.getElementById("egg-close").addEventListener("click", function () {
-      document.getElementById("egg").classList.remove("open");
-    });
-    document.getElementById("egg").addEventListener("click", function (e) {
-      if (e.target.id === "egg") document.getElementById("egg").classList.remove("open");
-    });
-  }
 
   // ============== 神秘模式入口 ==============
   function injectMysteryCat() {
