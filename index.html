@@ -487,18 +487,10 @@
   body.mystery-mode {
     background: #000 !important;
     position: fixed; inset: 0; overflow: hidden;
+    z-index: 0;
   }
-  body.mystery-mode .top,
-  body.mystery-mode .side,
-  body.mystery-mode .search,
-  body.mystery-mode .theme-switch,
-  body.mystery-mode .psw,
-  body.mystery-mode .group-title { display: none !important; }
-  body.mystery-mode main,
-  body.mystery-mode .content,
-  body.mystery-mode .grid { display: none !important; }
-  body.mystery-mode .mystery-empty { display: block !important; }
-  .mystery-empty { display: none; }
+  /* 核弹级：body 下所有直接子元素全隐，只留浮动按钮 */
+  body.mystery-mode > *:not(#fx-random):not(#fx-exit) { display: none !important; }
 
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
