@@ -483,6 +483,17 @@
   .egg-close { width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
   .egg-close:hover { background: #333; }
 
+  /* ---------- 神秘模式：沉浸式 ---------- */
+  body.mystery-mode .top,
+  body.mystery-mode .side,
+  body.mystery-mode .search-bar,
+  body.mystery-mode .group-title { display: none !important; }
+  body.mystery-mode main,
+  body.mystery-mode .content,
+  body.mystery-mode .grid { display: none !important; }
+  body.mystery-mode .mystery-empty { display: block !important; }
+  .mystery-empty { display: none; }
+
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -1035,15 +1046,47 @@
   var activeFx = null;
 
   function renderFxGallery() {
-    // 沉浸式：特效全由浮动按钮触发，页面只留提示
-    var html = '<div class="fx-gallery" style="opacity:.15;text-align:center;padding:120px 20px;">';
-    html += '<div style="font-size:13px;color:var(--muted);">输入 98k 退出神秘</div>';
-    html += '</div>';
-    // 注入浮动按钮
-    setTimeout(function () {
-      injectFxBtn();
-    }, 0);
-    return html;
+    // 沉浸式：整个 UI 隐掉，只剩浮动特效按钮
+    return '<div class="mystery-empty"></div>';
+  }
+
+  function enterMystery() {
+    active = "🔮 神秘";
+    document.body.classList.add("mystery-mode");
+    setCatState();
+    renderList();
+    setTimeout(injectFxBtn, 0);
+    setupExitTap();
+  }
+
+  function exitMystery() {
+    document.body.classList.remove("mystery-mode");
+    removeFxBtn();
+    active = "系统工具";
+    setCatState();
+    renderList();
+  }
+
+  // 5 连点屏幕退出
+  var tapCount = 0, tapTimer = null;
+  function setupExitTap() {
+    tapCount = 0;
+    document.addEventListener("click", onScreenTap, true);
+  }
+  function teardownExitTap() {
+    document.removeEventListener("click", onScreenTap, true);
+  }
+  function onScreenTap(e) {
+    // 点特效按钮不算
+    if (e.target.closest("#fx-random")) return;
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(function () { tapCount = 0; }, 1200); // 1.2s 内连点
+    if (tapCount >= 5) {
+      tapCount = 0;
+      teardownExitTap();
+      exitMystery();
+    }
   }
 
   function injectFxBtn() {
@@ -1324,21 +1367,10 @@
       input.value = "";
       if (!unlocked) {
         unlocked = true;
-        console.log("%c🔮 隐藏分类解锁！点侧栏的「神秘」看看", "font-size:16px;color:#f5491f;font-weight:bold;");
+        console.log("%c🔮 神秘模式已解锁！输入 98k 或点侧栏「神秘」进入", "font-size:16px;color:#f5491f;font-weight:bold;");
         injectMysteryCat();
       }
-      // 如果当前在神秘分类 → 退出
-      if (active === "🔮 神秘") {
-        active = "系统工具";
-        removeFxBtn();
-        setCatState();
-        renderList();
-      } else {
-        // 切到神秘
-        active = "🔮 神秘";
-        setCatState();
-        renderList();
-      }
+      enterMystery();
     });
 
     function injectMysteryCat() {
@@ -1350,10 +1382,7 @@
       btn.dataset.cat = "🔮 神秘";
       btn.innerHTML = '<span>🔮 神秘</span>';
       btn.addEventListener("click", function () {
-        active = "🔮 神秘";
-        setCatState();
-        renderList();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        enterMystery();
       });
       catsEl.appendChild(btn);
     }
