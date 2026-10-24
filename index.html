@@ -473,12 +473,12 @@
   /* ---------- 彩蛋弹窗 ---------- */
   .egg-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
   .egg-overlay.open { display: flex; }
-  .egg-card { background: var(--card); border: 1px solid var(--line); border-radius: 2px; padding: 28px 32px; max-width: 360px; animation: fadeIn .2s ease-out; }
-  .egg-title { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 12px; letter-spacing: .08em; text-transform: uppercase; }
-  .egg-body { font-size: 14px; color: var(--ink); line-height: 1.7; margin-bottom: 18px; }
-  .egg-body p { margin: 0 0 8px; }
-  .egg-close { width: 100%; padding: 10px; background: var(--ink); color: #fff; border: none; border-radius: 2px; font-size: 13px; font-weight: 600; cursor: pointer; }
-  .egg-close:hover { opacity: .85; }
+  .egg-card { background: #ffffff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 32px 36px; max-width: 360px; animation: fadeIn .2s ease-out; }
+  .egg-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
+  .egg-body { font-size: 15px; color: #1a1a1a; line-height: 1.75; margin-bottom: 22px; }
+  .egg-body p { margin: 0 0 10px; }
+  .egg-close { width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .egg-close:hover { background: #333; }
 
   /* ---------- 特效画廊 ---------- */
   .fx-gallery { padding: 24px 4px; }
@@ -772,7 +772,7 @@
 <!-- 彩蛋弹窗 -->
 <div class="egg-overlay" id="egg">
   <div class="egg-card">
-    <div class="egg-title">EASTER EGG</div>
+    <div class="egg-title">嘿，被你发现了</div>
     <div class="egg-body" id="egg-body"></div>
     <button class="egg-close" id="egg-close">知道了</button>
   </div>
@@ -1317,6 +1317,7 @@
     "<p style='font-size:15px;line-height:1.7'>这里每个软件都是我在 GitHub 上一个个翻 Release 扒的。<br>控制台里也藏了东西，F12 看看。</p>",
     "<p style='font-size:15px;line-height:1.7'>熬夜改代码的时候总觉得自己在做点有用的事。<br>后来发现——它还真的是。</p>",
     "<p style='font-size:15px;line-height:1.7'>你是第 812 个触发这个彩蛋的人。<br>不，我瞎编的。但<span style='color:#f5491f'>你是特别的</span>。</p>",
+    "<p style='font-size:15px;line-height:1.7'>据说长按 logo 的人运气都不会太差。<br>我也是据说的。</p>",
   ];
   if (brand) {
     function startHold() {
