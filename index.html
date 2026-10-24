@@ -480,20 +480,6 @@
   .egg-close { width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
   .egg-close:hover { background: #333; }
 
-  /* ---------- 特效画廊 ---------- */
-  .fx-gallery { padding: 24px 4px; }
-  .fx-title { font-size: 20px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-  .fx-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
-  .fx-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px; }
-  .fx-item { background: var(--card); border: 1px solid var(--line); border-radius: 2px; padding: 14px 12px; text-align: left; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
-  .fx-item:hover { border-color: var(--ink); }
-  .fx-item.on { border-color: var(--accent); background: rgba(245,73,31,.04); }
-  .fx-name { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
-  .fx-desc-sm { font-size: 11px; color: var(--muted); }
-  .fx-stop { background: none; border: 1px solid var(--line); border-radius: 2px; padding: 8px 16px; font-size: 12px; color: var(--muted); cursor: pointer; }
-  .fx-stop:hover { border-color: var(--ink); color: var(--ink); }
-  @keyframes rippleAnim { from { transform: translate(-50%,-50%) scale(0); opacity: 1; } to { transform: translate(-50%,-50%) scale(4); opacity: 0; } }
-
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -919,6 +905,9 @@
     catsEl.querySelectorAll(".ms-nav__item").forEach(function (btn) {
       btn.addEventListener("click", function () {
         stopFx();
+        if (active === "🔮 神秘" && btn.getAttribute("data-cat") !== "🔮 神秘") {
+          removeFxBtn();
+        }
         active = btn.getAttribute("data-cat");
         setCatState();
         renderList();
@@ -1038,92 +1027,52 @@
 
   /* ============== 特效系统（插拔式） ============== */
   var FX_MODULES = [
-    {
-      name: "光晕",
-      desc: "鼠标跟随渐变光圈",
-      onStart: function () {
-        var dot = document.createElement("div");
-        dot.id = "fx-aura";
-        dot.style.cssText = "position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(245,73,31,.25) 0%,transparent 70%);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);mix-blend-mode:multiply;";
-        document.body.appendChild(dot);
-        window.addEventListener("mousemove", auraMove);
-        function auraMove(e) { dot.style.left = e.clientX + "px"; dot.style.top = e.clientY + "px"; }
-      },
-      onStop: function () {
-        var dot = document.getElementById("fx-aura");
-        if (dot) dot.remove();
-        window.removeEventListener("mousemove", window._auraMove);
-      }
-    },
-    {
-      name: "粒子",
-      desc: "光标拖一串小球",
-      onStart: function () {
-        var particles = [];
-        var colors = ["#f5491f","#ff6b3d","#ff9870","#ffb89a","#ffffff"];
-        document.addEventListener("mousemove", spawn);
-        document.addEventListener("fx:stop", kill);
-        function spawn(e) {
-          var p = document.createElement("div");
-          var size = Math.random() * 6 + 3;
-          p.style.cssText = "position:fixed;width:"+size+"px;height:"+size+"px;background:"+colors[Math.floor(Math.random()*colors.length)]+";border-radius:50%;pointer-events:none;z-index:9999;left:"+e.clientX+"px;top:"+e.clientY+"px;transform:translate(-50%,-50%);transition:transform 1s ease-out,opacity 1s ease-out;opacity:1;";
-          document.body.appendChild(p);
-          requestAnimationFrame(function(){
-            p.style.transform = "translate(-50%,-50%) translateY("+(Math.random()*60+20)+"px) scale(0)";
-            p.style.opacity = "0";
-          });
-          setTimeout(function(){ p.remove(); }, 1000);
-        }
-        function kill(){ document.removeEventListener("mousemove", spawn); document.removeEventListener("fx:stop", kill); }
-      },
-      onStop: function () { document.dispatchEvent(new Event("fx:stop")); }
-    },
-    {
-      name: "涟漪",
-      desc: "鼠标点击扩散圆环",
-      onStart: function () {
-        document.addEventListener("click", ripple);
-        document.addEventListener("fx:stop", kill);
-        function ripple(e) {
-          var r = document.createElement("div");
-          r.style.cssText = "position:fixed;width:10px;height:10px;border:2px solid #f5491f;border-radius:50%;pointer-events:none;z-index:9999;left:"+e.clientX+"px;top:"+e.clientY+"px;transform:translate(-50%,-50%);animation:rippleAnim .8s ease-out forwards;";
-          document.body.appendChild(r);
-          setTimeout(function(){ r.remove(); }, 800);
-        }
-        function kill(){ document.removeEventListener("click", ripple); document.removeEventListener("fx:stop", kill); }
-      },
-      onStop: function () { document.dispatchEvent(new Event("fx:stop")); }
-    }
+    // ↓ 特效等你提供，格式: { name, onStart, onStop }
   ];
   var activeFx = null;
 
   function renderFxGallery() {
-    var html = '<div class="fx-gallery">';
-    html += '<div class="fx-title">🔮 特效实验室</div>';
-    html += '<div class="fx-desc">鼠标移动试试 · 点按钮切换 · 点"关闭特效"还原</div>';
-    html += '<div class="fx-list">';
-    FX_MODULES.forEach(function (fx, i) {
-      html += '<button class="fx-item" data-fx="' + i + '">';
-      html += '<div class="fx-name">' + esc(fx.name) + '</div>';
-      html += '<div class="fx-desc-sm">' + esc(fx.desc) + '</div>';
-      html += '</button>';
-    });
+    // 沉浸式：特效全由浮动按钮触发，页面只留提示
+    var html = '<div class="fx-gallery" style="opacity:.15;text-align:center;padding:120px 20px;">';
+    html += '<div style="font-size:13px;color:var(--muted);">输入 98k 退出神秘</div>';
     html += '</div>';
-    html += '<button class="fx-stop" id="fx-stop">✕ 关闭特效</button>';
-    html += '</div>';
-    // 点击绑定
+    // 注入浮动按钮
     setTimeout(function () {
-      document.querySelectorAll(".fx-item").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var idx = parseInt(btn.dataset.fx, 10);
-          startFx(idx);
-          document.querySelectorAll(".fx-item").forEach(function (b) { b.classList.remove("on"); });
-          btn.classList.add("on");
-        });
-      });
-      document.getElementById("fx-stop").addEventListener("click", stopFx);
+      injectFxBtn();
     }, 0);
     return html;
+  }
+
+  function injectFxBtn() {
+    // 只在神秘分类页面存在，且没有特效按钮时注入
+    if (document.getElementById("fx-random")) return;
+    var btn = document.createElement("button");
+    btn.id = "fx-random";
+    btn.textContent = "🎲 特效";
+    btn.style.cssText = "position:fixed;right:24px;bottom:24px;background:#1a1a1a;color:#fff;border:none;border-radius:24px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;z-index:9997;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:transform .15s ease;";
+    btn.addEventListener("click", function () {
+      if (FX_MODULES.length === 0) { console.log("%c还没有特效 等你提供", "color:#999"); return; }
+      if (activeFx !== null) {
+        // 再点一次 = 换一个随机的
+        stopFx();
+      }
+      startRandomFx();
+    });
+    document.body.appendChild(btn);
+  }
+
+  function startRandomFx() {
+    if (!FX_MODULES.length) return;
+    // 随机选一个（不等于当前的）
+    var next;
+    if (FX_MODULES.length === 1) {
+      next = 0;
+    } else {
+      do { next = Math.floor(Math.random() * FX_MODULES.length); } while (next === activeFx);
+    }
+    startFx(next);
+    var btn = document.getElementById("fx-random");
+    if (btn) btn.textContent = "🎲 " + FX_MODULES[next].name + " · 点我换";
   }
 
   function startFx(idx) {
@@ -1137,7 +1086,14 @@
       FX_MODULES[activeFx].onStop();
       activeFx = null;
     }
-    document.querySelectorAll(".fx-item").forEach(function (b) { b.classList.remove("on"); });
+    var btn = document.getElementById("fx-random");
+    if (btn) btn.textContent = "🎲 特效";
+  }
+
+  function removeFxBtn() {
+    stopFx();
+    var btn = document.getElementById("fx-random");
+    if (btn) btn.remove();
   }
 
   // 离开神秘分类自动关特效
@@ -1361,12 +1317,23 @@
     if (!input) return;
     var unlocked = false;
     input.addEventListener("input", function () {
-      if (unlocked) return;
-      if (input.value.trim() === "98k") {
+      if (input.value.trim() !== "98k") return;
+      input.value = "";
+      if (!unlocked) {
         unlocked = true;
         console.log("%c🔮 隐藏分类解锁！点侧栏的「神秘」看看", "font-size:16px;color:#f5491f;font-weight:bold;");
         injectMysteryCat();
-        input.value = "";
+      }
+      // 如果当前在神秘分类 → 退出
+      if (active === "🔮 神秘") {
+        active = "系统工具";
+        removeFxBtn();
+        setCatState();
+        renderList();
+      } else {
+        // 切到神秘
+        active = "🔮 神秘";
+        setCatState();
         renderList();
       }
     });
