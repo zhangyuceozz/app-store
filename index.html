@@ -474,14 +474,81 @@
   .lb-caption .lb-easter { margin-top: 28px; font-size: 12px; font-style: italic; color: rgba(255,255,255,.3); letter-spacing: .04em; }
 
   /* ---------- 彩蛋弹窗 ---------- */
-  .egg-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
+  .egg-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,10,10,.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9999;
+    animation: eggBgIn .25s ease-out;
+  }
   .egg-overlay.open { display: flex; }
-  .egg-card { background: #ffffff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 32px 36px; max-width: 360px; animation: fadeIn .2s ease-out; }
-  .egg-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
-  .egg-body { font-size: 15px; color: #1a1a1a; line-height: 1.75; margin-bottom: 22px; }
-  .egg-body p { margin: 0 0 10px; }
-  .egg-close { width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .egg-close:hover { background: #333; }
+
+  .egg-card {
+    position: relative;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 28px 30px 24px;
+    max-width: 380px; width: calc(100% - 48px);
+    box-shadow:
+      0 24px 60px rgba(0,0,0,.25),
+      0 2px 8px rgba(0,0,0,.08);
+    animation: eggPopIn .32s cubic-bezier(.2,.9,.3,1.2);
+    overflow: hidden;
+  }
+  /* 左侧品牌色装饰条 */
+  .egg-card::before {
+    content: "";
+    position: absolute; left: 0; top: 18px; bottom: 18px;
+    width: 3px; border-radius: 2px;
+    background: linear-gradient(180deg, #f5491f, #ff8a4d);
+  }
+  /* 右上小彩蛋角标 */
+  .egg-card::after {
+    content: "彩蛋";
+    position: absolute; right: 14px; top: 12px;
+    font-size: 10px; font-weight: 600; letter-spacing: .5px;
+    color: #f5491f; background: rgba(245,73,31,.08);
+    padding: 2px 8px; border-radius: 10px;
+  }
+
+  .egg-title {
+    font-size: 16px; font-weight: 700;
+    color: #1a1a1a; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .egg-title::before {
+    content: "🥚"; font-size: 18px;
+  }
+
+  .egg-body {
+    font-size: 14.5px; color: #333;
+    line-height: 1.85; margin-bottom: 24px;
+    padding-left: 4px;
+  }
+  .egg-body p { margin: 0 0 8px; }
+  .egg-body p:last-child { margin-bottom: 0; }
+
+  .egg-close {
+    width: 100%; padding: 11px;
+    background: #1a1a1a; color: #fff;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .egg-close:hover { background: #f5491f; }
+  .egg-close:active { transform: scale(.98); }
+
+  @keyframes eggBgIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes eggPopIn {
+    from { opacity: 0; transform: scale(.9) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
 
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
