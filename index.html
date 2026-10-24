@@ -471,7 +471,6 @@
   .lb-caption .lb-tag { font-size: 15px; color: rgba(255,255,255,.6); margin-top: 12px; font-weight: 500; }
   .lb-caption .lb-desc { font-size: 14px; color: rgba(255,255,255,.55); margin-top: 22px; line-height: 1.7; }
   .lb-caption .lb-divider { width: 36px; height: 2px; background: var(--accent); margin: 24px 0 0; border-radius: 2px; }
-  .lb-caption .lb-easter { margin-top: 28px; font-size: 12px; font-style: italic; color: rgba(255,255,255,.3); letter-spacing: .04em; }
 
   /* ---------- 彩蛋弹窗 ---------- */
   .egg-overlay {
@@ -1119,31 +1118,12 @@
     if (!a || !a.preview) return;
     clearTimeout(_lbCloseTimer);
     document.getElementById("lb-img").src = a.preview;
-    var eggs = [
-      "好看不？下一个不好再删~",
-      "按 ESC 逃跑不谢",
-      "偷偷告诉你这图是从 GitHub 扒的",
-      "空格也能关 试试？",
-      "你发现没这行字会变",
-      "嘿 看够了就按 ESC",
-      "下一个彩蛋更无聊 坚持住",
-      "这张图加载慢别怪我",
-      "好了好了别看了 按 ESC",
-      "404 彩蛋不存在",
-      "彩蛋加载失败 请稍后再试",
-      "这行字是唯一的彩蛋 骗你的",
-      "作者说彩蛋不能太多",
-      "你是第 " + Math.floor(Math.random()*9000+1000) + " 个看到这行的",
-      "还在看？按 ESC 啦"
-    ];
-    var egg = eggs[Math.floor(Math.random() * eggs.length)];
     document.getElementById("lb-caption").innerHTML =
       '<div class="lb-cat">' + esc(a.category || "") + '</div>' +
       '<div class="lb-name">' + esc(a.name) + '</div>' +
       (a.tagline ? '<div class="lb-tag">' + esc(a.tagline) + '</div>' : '') +
       '<div class="lb-divider"></div>' +
-      (a.description ? '<div class="lb-desc">' + esc(a.description) + '</div>' : '') +
-      '<div class="lb-easter">' + esc(egg) + '</div>';
+      (a.description ? '<div class="lb-desc">' + esc(a.description) + '</div>' : '');
     document.getElementById("lightbox").classList.add("open");
   }
 
