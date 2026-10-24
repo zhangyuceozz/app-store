@@ -488,57 +488,9 @@
   .egg-close { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
   .egg-close:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,73,31,.35); }
 
-  /* ---------- Konami 彩虹模式 ---------- */
-  body.rainbow-mode { animation: rainbowHue 10s linear infinite; }
-  @keyframes rainbowHue {
-    from { filter: hue-rotate(0deg); }
-    to   { filter: hue-rotate(360deg); }
-  }
-
-  /* ---------- 表情雨下落 ---------- */
-  @keyframes eggFall {
-    from { transform: translateY(-40px) rotate(0deg); opacity: 1; }
-    to   { transform: translateY(110vh) rotate(720deg); opacity: 0.8; }
-  }
-
   /* ---------- Toast 提示 ---------- */
   .egg-toast { position: fixed; top: 24px; left: 50%; transform: translate(-50%, -20px); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; z-index: 100000; opacity: 0; transition: opacity .3s ease, transform .3s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); pointer-events: none; }
   .egg-toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-  /* ---------- 开发者模式侧栏项 ---------- */
-  .dev-mode-item { margin-top: 12px; padding: 8px 12px; border-radius: 8px; font-size: 12px; color: var(--accent); font-weight: 600; cursor: pointer; animation: fadeSlideIn .4s ease; }
-  .dev-mode-item:hover { background: rgba(245,73,31,.08); }
-  .dev-badge { margin-right: 6px; }
-  @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-  /* ---------- 卡片跳舞 ---------- */
-  .card.card-dance { animation: cardDance .6s ease; }
-  @keyframes cardDance {
-    0%, 100% { transform: none; }
-    25%      { transform: rotate(-4deg) translateY(-4px); }
-    50%      { transform: rotate(3deg) translateY(-2px); }
-    75%      { transform: rotate(-2deg) translateY(-6px); }
-  }
-
-  /* ---------- typo 纠正提示 ---------- */
-  .typo-tip { position: absolute; top: 100%; left: 12px; margin-top: 4px; font-size: 11px; color: #999; opacity: 1; transition: opacity .4s ease; pointer-events: none; white-space: nowrap; z-index: 10; font-style: italic; }
-
-  /* ---------- 凌晨彩蛋 ---------- */
-  body.night-owl .card { filter: brightness(.9); transition: filter 1s ease; }
-  .night-tip { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%) translateY(10px); font-size: 11px; color: rgba(0,0,0,.25); font-style: italic; opacity: 0; transition: opacity 1.5s ease, transform 1.5s ease; pointer-events: none; z-index: 1; }
-  .night-tip.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* ---------- logo 眨眼 ---------- */
-  body.idle .brand-logo { transition: opacity .1s ease; }
-
-  /* ---------- icon 跳动 ---------- */
-  @keyframes iconTalk {
-    0%, 100% { transform: translateY(0) rotate(0); }
-    20%      { transform: translateY(-3px) rotate(-2deg); }
-    40%      { transform: translateY(0) rotate(1deg); }
-    60%      { transform: translateY(-2px) rotate(-1deg); }
-    80%      { transform: translateY(0) rotate(0); }
-  }
 
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
@@ -1287,146 +1239,22 @@
     });
   }
 
-  // ============== 彩蛋 2：Konami Code → 全局彩虹 ==============
-  (function konami() {
-    var SEQ = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
-    var buf = [];
-    document.addEventListener("keydown", function (e) {
-      buf.push(e.key);
-      if (buf.length > SEQ.length) buf.shift();
-      if (buf.join(",") === SEQ.join(",")) triggerRainbow();
-    });
-    var rainbowOn = false;
-    function triggerRainbow() {
-      rainbowOn = !rainbowOn;
-      document.body.classList.toggle("rainbow-mode", rainbowOn);
-      if (rainbowOn) {
-        console.log("%c🌈 KONAMI! 彩虹模式 ON", "font-size:18px;color:#f5491f;font-weight:bold;");
-      } else {
-        console.log("%c彩虹模式 OFF", "font-size:14px;color:#888;");
-      }
-    }
-  })();
-
-  // ============== 彩蛋 3：搜索框输入"彩蛋" → 解锁隐藏分类 ==============
+  // ============== 彩蛋 3：搜索框输入 98k → 解锁隐藏分类 ==============
   (function searchEgg() {
     var input = document.getElementById("q");
     if (!input) return;
-    var originalCategories = null;
     input.addEventListener("input", function () {
       if (input.value.trim() === "98k") {
-        // 解锁：用 CATEGORIES 注入一个隐藏分类
         if (CATEGORIES.indexOf("🔮 神秘") === -1) {
           CATEGORIES.push("🔮 神秘");
-          // 给所有应用加这个 sub（让它们出现在神秘里）
           APPS.forEach(function (a) { a.sub = a.sub || "🔮 神秘"; });
           console.log("%c🔮 隐藏分类解锁！点侧栏的「神秘」看看", "font-size:16px;color:#f5491f;font-weight:bold;");
-          input.value = ""; // 清空搜索框，显示全部
+          input.value = "";
           buildCats();
           renderList();
         }
       }
     });
-  })();
-
-  // ============== 彩蛋 4：连点品牌名 5 次 → 表情雨 ==============
-  (function confetti() {
-    var brandName = document.getElementById("brand-name");
-    if (!brandName) return;
-    var count = 0;
-    var lastTime = 0;
-    var EMOJIS = ["🎉","🎊","✨","💫","🌟","🎈","🎁","🔥","💖","🚀","🌈","🍕","🐱","👾","🎮"];
-    brandName.addEventListener("click", function () {
-      var now = Date.now();
-      if (now - lastTime > 2000) count = 0; // 2 秒内没连续点重置
-      lastTime = now;
-      if (++count >= 5) {
-        count = 0;
-        triggerConfetti();
-      }
-    });
-    function triggerConfetti() {
-      console.log("%c🎊 表情雨！", "font-size:18px;color:#f5491f;font-weight:bold;");
-      for (var i = 0; i < 40; i++) {
-        (function (delay) {
-          setTimeout(function () {
-            var el = document.createElement("div");
-            el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-            el.style.cssText = "position:fixed;left:" + (Math.random() * 100) + "vw;top:-40px;font-size:" + (16 + Math.random() * 20) + "px;z-index:99999;pointer-events:none;animation:eggFall " + (2 + Math.random() * 3) + "s linear forwards;";
-            document.body.appendChild(el);
-            setTimeout(function () { el.remove(); }, 5000);
-          }, delay);
-        })(i * 50);
-      }
-    }
-  })();
-
-  // ============== 彩蛋 5：双击品牌名 → toast 提示 ==============
-  (function brandDblClick() {
-    var bn = document.getElementById("brand-name");
-    if (!bn) return;
-    bn.addEventListener("dblclick", function () {
-      bn.style.color = "var(--accent)";
-      setTimeout(function () { bn.style.color = ""; }, 150);
-      setTimeout(function () { bn.style.color = "var(--accent)"; }, 300);
-      setTimeout(function () { bn.style.color = ""; }, 450);
-      showToast("👋 嘿，别点我啦~");
-    });
-  })();
-
-  // ============== 彩蛋 6：侧栏滚到底部 → 开发者模式 ==============
-  (function devMode() {
-    var nav = document.querySelector(".ms-nav");
-    if (!nav) return;
-    var triggered = false;
-    nav.addEventListener("scroll", function () {
-      if (triggered) return;
-      if (nav.scrollTop + nav.clientHeight >= nav.scrollHeight - 10) {
-        triggered = true;
-        // 侧栏最后加一个隐藏项
-        var item = document.createElement("div");
-        item.className = "nav-cat dev-mode-item";
-        item.innerHTML = '<span class="dev-badge">🧪</span> 开发者模式';
-        item.addEventListener("click", function () {
-          showToast("🛠️ 控制台已解锁调试信息（按 F12）");
-          console.log("%c=== 开发者模式 ===", "font-size:16px;color:#f5491f;font-weight:bold;");
-          console.log("应用数量:", APPS.length);
-          console.log("分类数量:", CATEGORIES.length);
-          console.log("Worker 地址: /dl/apps/:id/download/:file");
-          console.log("源: https://github.com/zhangyuceozz/app-store");
-        });
-        nav.appendChild(item);
-        showToast("🧪 发现隐藏分类！");
-      }
-    });
-  })();
-
-  // ============== 彩蛋 7：快速 hover 5 张卡片 → 集体跳舞 ==============
-  (function cardDance() {
-    var cards = [];
-    var lastHover = 0;
-    document.querySelector(".grid").addEventListener("mouseover", function (e) {
-      var c = e.target.closest(".card");
-      if (!c) return;
-      var now = Date.now();
-      if (now - lastHover > 1500) cards = []; // 1.5s 内没继续重置
-      lastHover = now;
-      if (cards.indexOf(c) === -1) cards.push(c);
-      if (cards.length >= 5) {
-        cards = [];
-        triggerCardDance();
-      }
-    });
-    function triggerCardDance() {
-      var all = document.querySelectorAll(".card");
-      all.forEach(function (c, i) {
-        setTimeout(function () {
-          c.classList.add("card-dance");
-          setTimeout(function () { c.classList.remove("card-dance"); }, 600);
-        }, i * 50);
-      });
-      console.log("%c💃 卡片跳舞！", "font-size:18px;color:#f5491f;font-weight:bold;");
-    }
   })();
 
   // ============== 彩蛋 8：搜索框 typo 自动纠正 ==============
@@ -1450,88 +1278,6 @@
           showToast("知道你在找 " + TYPOS[wrong] + " 帮你改好了 :)");
           break;
         }
-      }
-    });
-  })();
-
-  // ============== 彩蛋 9：凌晨彩蛋 ==============
-  (function lateNight() {
-    var h = new Date().getHours();
-    if (h >= 2 && h < 5) {
-      document.body.classList.add("night-owl");
-      var tip = document.createElement("div");
-      tip.className = "night-tip";
-      tip.textContent = "熬夜不好 但我也没睡";
-      document.body.appendChild(tip);
-      setTimeout(function () { tip.classList.add("show"); }, 500);
-    }
-  })();
-
-  // ============== 彩蛋 10：logo 偷偷眨眼 ==============
-  (function logoBlink() {
-    var brand = document.querySelector(".brand-logo");
-    if (!brand) return;
-    var idleTimer;
-    function resetIdle() {
-      clearTimeout(idleTimer);
-      document.body.classList.remove("idle");
-      idleTimer = setTimeout(function () {
-        document.body.classList.add("idle");
-        brand.style.opacity = "0.2";
-        setTimeout(function () { brand.style.opacity = "1"; }, 120);
-        setTimeout(function () { brand.style.opacity = "0.2"; }, 400);
-        setTimeout(function () { brand.style.opacity = "1"; }, 520);
-      }, 30000); // 30 秒没动
-    }
-    // 各种活动重置
-    ["mousemove","keydown","scroll","click","touchstart"].forEach(function(e){
-      document.addEventListener(e, resetIdle);
-    });
-    resetIdle();
-  })();
-
-  // ============== 彩蛋 11：窗口太窄 ==============
-  (function windowNarrow() {
-    function check() {
-      if (window.innerWidth < 360 && !document.body.classList.contains("narrow-warn")) {
-        document.body.classList.add("narrow-warn");
-        showToast("别挤我 喘不过气了 >_<");
-        setTimeout(function () { document.body.classList.remove("narrow-warn"); }, 3000);
-      }
-    }
-    window.addEventListener("resize", check);
-  })();
-
-  // ============== 彩蛋 12：刷新计数 ==============
-  (function refreshCount() {
-    var key = "chovy_refresh_count";
-    var count = parseInt(localStorage.getItem(key) || "0", 10) + 1;
-    localStorage.setItem(key, count);
-    if (count >= 10 && !localStorage.getItem("chovy_refresh_celebrated")) {
-      localStorage.setItem("chovy_refresh_celebrated", "1");
-      // 弹窗：你真喜欢这个站啊
-      var body = document.getElementById("egg-body");
-      body.innerHTML = '<p>你真喜欢这个站啊 ♥</p><p>刷新了 <span class="egg-highlight">' + count + '</span> 次才发现这个彩蛋。</p><p>说真的 谢谢你。</p>';
-      document.getElementById("egg").classList.add("open");
-      console.log("%c♥ 刷新彩蛋！你真喜欢这个站啊", "font-size:20px;color:#f5491f;font-weight:bold;");
-    }
-  })();
-
-  // ============== 彩蛋 13：连点 3 张 icon ==============
-  (function iconTalk() {
-    var lastIcon = null;
-    var hits = 0;
-    document.querySelector(".grid").addEventListener("click", function (e) {
-      var img = e.target.closest(".c-icon, .c-preview img");
-      if (!img) { hits = 0; return; }
-      if (img === lastIcon) { hits = 1; }
-      hits++;
-      lastIcon = img;
-      if (hits >= 3) {
-        hits = 0;
-        img.style.animation = "none";
-        img.offsetHeight; // 强制 reflow
-        img.style.animation = "iconTalk .5s ease";
       }
     });
   })();
