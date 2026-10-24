@@ -777,6 +777,7 @@
 </div>
 
 <script src="apps.js?v=15"></script>
+<script src="splash-cursor.js"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1038,8 +1039,61 @@
   });
 
   /* ============== 特效系统（插拔式） ============== */
+  var _fxInst = null;
   var FX_MODULES = [
-    // ↓ 特效等你提供，格式: { name, onStart, onStop }
+    {
+      name: "流体",
+      onStart: function () {
+        _fxInst = createSplashCursor({ rainbow: true, size: 1, force: 3, swirl: 3, trail: 1, shading: 1, glow: 0.5, quality: 'high', clickSplash: true, intro: true, zIndex: 9996 });
+        document.body.appendChild(_fxInst.container);
+        _fxInst.start();
+      },
+      onStop: function () {
+        if (_fxInst) { _fxInst.stop(); if (_fxInst.container.parentNode) _fxInst.container.parentNode.removeChild(_fxInst.container); _fxInst = null; }
+      }
+    },
+    {
+      name: "光晕",
+      onStart: function () {
+        var dot = document.createElement("div");
+        dot.id = "fx-aura";
+        dot.style.cssText = "position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(245,73,31,.25) 0%,transparent 70%);pointer-events:none;z-index:9996;transform:translate(-50%,-50%);mix-blend-mode:screen;";
+        document.body.appendChild(dot);
+        document.addEventListener("mousemove", auraMove);
+        function auraMove(e) { dot.style.left = e.clientX + "px"; dot.style.top = e.clientY + "px"; }
+        window._fxAuraCleanup = function () { document.removeEventListener("mousemove", auraMove); };
+      },
+      onStop: function () {
+        var dot = document.getElementById("fx-aura"); if (dot) dot.remove();
+        if (window._fxAuraCleanup) window._fxAuraCleanup();
+      }
+    },
+    {
+      name: "粒子",
+      onStart: function () {
+        document.addEventListener("mousemove", spawn);
+        window._fxPList = [];
+        function spawn(e) {
+          var colors = ["#f5491f","#ff6b3d","#ffd166","#4f8cff","#2dd4bf","#ff3f8b"];
+          var p = document.createElement("div");
+          var size = Math.random() * 7 + 2;
+          var color = colors[Math.floor(Math.random()*colors.length)];
+          p.style.cssText = "position:fixed;width:"+size+"px;height:"+size+"px;background:"+color+";border-radius:50%;pointer-events:none;z-index:9996;left:"+e.clientX+"px;top:"+e.clientY+"px;transform:translate(-50%,-50%);transition:transform 1.2s ease-out,opacity 1.2s ease-out;opacity:1;box-shadow:0 0 "+(size*3)+"px "+color+";";
+          document.body.appendChild(p);
+          requestAnimationFrame(function(){
+            p.style.transform = "translate("+(Math.random()*20-10)+"px,"+(Math.random()*80+20)+"px) scale(0)";
+            p.style.opacity = "0";
+          });
+          window._fxPList.push(p);
+          setTimeout(function(){ p.remove(); }, 1200);
+        }
+        window._fxPCleanup = function () { document.removeEventListener("mousemove", spawn); };
+      },
+      onStop: function () {
+        document.querySelectorAll("#fx-particle").forEach(function(e){e.remove();});
+        if (window._fxPCleanup) window._fxPCleanup();
+      }
+    }
   ];
   var activeFx = null;
 
