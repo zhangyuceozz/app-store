@@ -1412,36 +1412,19 @@
     });
   }
 
-  // ============== 彩蛋：搜索框输入 98k → 解锁隐藏分类 ==============
-  (function searchEgg() {
-    var input = document.getElementById("q");
-    if (!input) return;
-    var unlocked = false;
-    input.addEventListener("input", function () {
-      if (input.value.trim() !== "98k") return;
-      input.value = "";
-      if (!unlocked) {
-        unlocked = true;
-        console.log("%c🔮 神秘模式已解锁！输入 98k 或点侧栏「神秘」进入", "font-size:16px;color:#f5491f;font-weight:bold;");
-        injectMysteryCat();
-      }
-      enterMystery();
-    });
-
-    function injectMysteryCat() {
-      var catsEl = document.getElementById("cats");
-      if (!catsEl || catsEl.querySelector('[data-cat="🔮 神秘"]')) return;
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "ms-nav__item";
-      btn.dataset.cat = "🔮 神秘";
-      btn.innerHTML = '<span>🔮 神秘</span>';
-      btn.addEventListener("click", function () {
-        enterMystery();
-      });
-      catsEl.appendChild(btn);
-    }
-  })();
+  // ============== 神秘模式入口 ==============
+  function injectMysteryCat() {
+    var catsEl = document.getElementById("cats");
+    if (!catsEl || catsEl.querySelector('[data-cat="🔮 神秘"]')) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "ms-nav__item";
+    btn.dataset.cat = "🔮 神秘";
+    btn.innerHTML = '<span>🔮 神秘</span>';
+    btn.addEventListener("click", function () { enterMystery(); });
+    catsEl.appendChild(btn);
+  }
+  injectMysteryCat();
 
 })();
 </script>
