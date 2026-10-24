@@ -813,6 +813,11 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  // 控制台彩蛋：页面一加载就打
+  console.log("%c👋 欢迎来到 Chovy Store", "font-size:20px;color:#f5491f;font-weight:bold;");
+  console.log("%c想看点有意思的？长按左上角 logo 试试。", "font-size:13px;color:#888;");
+  console.log("%c或者你就是个喜欢看控制台的人，那我们是同类。", "font-size:12px;color:#aaa;font-style:italic;");
+
   var catsEl = document.getElementById("cats");
   var listEl = document.getElementById("list");
   var qEl = document.getElementById("q");
@@ -1193,6 +1198,12 @@
     "<p style='font-size:15px;line-height:1.7'>熬夜改代码的时候总觉得自己在做点有用的事。<br>后来发现——它还真的是。</p>",
     "<p style='font-size:15px;line-height:1.7'>你是第 812 个触发这个彩蛋的人。<br>不，我瞎编的。但<span style='color:#f5491f'>你是特别的</span>。</p>",
     "<p style='font-size:15px;line-height:1.7'>据说长按 logo 的人运气都不会太差。<br>我也是据说的。</p>",
+    "<p style='font-size:15px;line-height:1.7'>这个站从 0 到 1 写了三晚，改样式改到凌晨四点。<br><span style='color:#f5491f'>值得。</span></p>",
+    "<p style='font-size:15px;line-height:1.7'>你现在看到的每一个像素，都被改过至少 5 次。<br>好东西是磨出来的，包括这个彩蛋。</p>",
+    "<p style='font-size:15px;line-height:1.7'>没有埋点，不统计你是谁，不知道你从哪来。<br><span style='color:#f5491f'>你只是来了，看了，走了。</span>这挺好的。</p>",
+    "<p style='font-size:15px;line-height:1.7'>想让我加什么软件？随便说。<br>反正我也不一定加，但<span style='color:#f5491f'>你说了我就开心</span>。</p>",
+    "<p style='font-size:15px;line-height:1.7'>这是第 N 版文案了，每次改都觉得上一版好蠢。<br>你现在看到的这一版，下个月我也会觉得蠢。</p>",
+    "<p style='font-size:15px;line-height:1.7'>好了，别长按了。<br><span style='color:#f5491f'>去用软件吧。</span></p>",
   ];
   if (brand) {
     function startHold() {
