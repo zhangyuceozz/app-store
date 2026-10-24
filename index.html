@@ -471,18 +471,14 @@
   .lb-caption .lb-easter { margin-top: 28px; font-size: 12px; font-style: italic; color: rgba(255,255,255,.3); letter-spacing: .04em; }
 
   /* ---------- 彩蛋弹窗 ---------- */
-  .egg-overlay { position: fixed; inset: 0; background: rgba(5,5,7,.88); backdrop-filter: blur(20px); display: none; align-items: center; justify-content: center; z-index: 9999; animation: lbIn .35s ease; }
+  .egg-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
   .egg-overlay.open { display: flex; }
-  .egg-card { background: #fff; border-radius: 16px; padding: 40px 44px; max-width: 380px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,.3); animation: eggIn .4s cubic-bezier(.34,1.56,.64,1); }
-  @keyframes eggIn { from { opacity: 0; transform: scale(.7) translateY(20px); } to { opacity: 1; transform: none; } }
-  .egg-emoji { font-size: 56px; margin-bottom: 8px; animation: eggBounce 2s infinite ease-in-out; }
-  @keyframes eggBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-  .egg-title { font-family: var(--display); font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 20px; letter-spacing: -0.01em; }
-  .egg-body { font-size: 14px; color: #555; line-height: 1.8; text-align: left; margin-bottom: 24px; }
-  .egg-body p { margin: 0 0 10px; }
-  .egg-body .egg-highlight { color: var(--accent); font-weight: 600; }
-  .egg-close { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
-  .egg-close:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,73,31,.35); }
+  .egg-card { background: var(--card); border: 1px solid var(--line); border-radius: 2px; padding: 28px 32px; max-width: 360px; animation: fadeIn .2s ease-out; }
+  .egg-title { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .egg-body { font-size: 14px; color: var(--ink); line-height: 1.7; margin-bottom: 18px; }
+  .egg-body p { margin: 0 0 8px; }
+  .egg-close { width: 100%; padding: 10px; background: var(--ink); color: #fff; border: none; border-radius: 2px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .egg-close:hover { opacity: .85; }
 
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
@@ -762,10 +758,9 @@
 <!-- 彩蛋弹窗 -->
 <div class="egg-overlay" id="egg">
   <div class="egg-card">
-    <div class="egg-emoji">🎂</div>
-    <div class="egg-title">恭喜！你发现了彩蛋</div>
+    <div class="egg-title">EASTER EGG</div>
     <div class="egg-body" id="egg-body"></div>
-    <button class="egg-close" id="egg-close">好哒</button>
+    <button class="egg-close" id="egg-close">知道了</button>
   </div>
 </div>
 
