@@ -490,7 +490,9 @@
   }
   body.mystery-mode .top,
   body.mystery-mode .side,
-  body.mystery-mode .search-bar,
+  body.mystery-mode .search,
+  body.mystery-mode .theme-switch,
+  body.mystery-mode .psw,
   body.mystery-mode .group-title { display: none !important; }
   body.mystery-mode main,
   body.mystery-mode .content,
@@ -1054,7 +1056,12 @@
     return '<div class="mystery-empty"></div>';
   }
 
+  var savedMysteryTheme = null;
   function enterMystery() {
+    // 强制锁死深色主题，防止系统切换导致背景变色
+    savedMysteryTheme = document.documentElement.getAttribute("data-theme");
+    document.documentElement.setAttribute("data-theme", "dark");
+
     active = "🔮 神秘";
     document.body.classList.add("mystery-mode");
     setCatState();
@@ -1070,6 +1077,11 @@
 
   function exitMystery() {
     document.body.classList.remove("mystery-mode");
+    // 恢复之前的主题
+    if (savedMysteryTheme) {
+      document.documentElement.setAttribute("data-theme", savedMysteryTheme);
+      savedMysteryTheme = null;
+    }
     try {
       if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
       else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
