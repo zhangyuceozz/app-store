@@ -473,15 +473,6 @@
   .lb-caption .lb-divider { width: 36px; height: 2px; background: var(--accent); margin: 24px 0 0; border-radius: 2px; }
   .lb-caption .lb-easter { margin-top: 28px; font-size: 12px; font-style: italic; color: rgba(255,255,255,.3); letter-spacing: .04em; }
 
-  /* ---------- 神秘模式：沉浸式全屏 ---------- */
-  body.mystery-mode {
-    background: #000 !important;
-    position: fixed; inset: 0; overflow: hidden;
-    z-index: 0;
-  }
-  /* 核弹级：body 下所有直接子元素全隐，只留浮动按钮 */
-  body.mystery-mode > *:not(#fx-random):not(#fx-exit) { display: none !important; }
-
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
     background: var(--soft); border: 2px solid var(--accent);
@@ -758,7 +749,6 @@
 </div>
 
 <script src="apps.js?v=15"></script>
-<script src="splash-cursor.js"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -898,10 +888,6 @@
     catsEl.innerHTML = html;
     catsEl.querySelectorAll(".ms-nav__item").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        stopFx();
-        if (active === "🔮 神秘" && btn.getAttribute("data-cat") !== "🔮 神秘") {
-          removeFxBtn();
-        }
         active = btn.getAttribute("data-cat");
         setCatState();
         renderList();
@@ -959,8 +945,6 @@
   }
 
   function matches(a) {
-    // 彩蛋：神秘分类 = 特效画廊（不走应用过滤）
-    if (active === "🔮 神秘") return false; // 让 renderList 走 empty 分支
     if (active !== "最近上架" && a.category !== active) return false;
     if (!filteredDownloads(a).length) return false;
     if (!query) return true;
@@ -969,11 +953,6 @@
   }
 
   function renderList() {
-    // 神秘分类 = 特效画廊
-    if (active === "🔮 神秘") {
-      listEl.innerHTML = renderFxGallery();
-      return;
-    }
     var list = APPS.filter(matches);
     // 默认按上架日期升序（先来后到）
     list = list.slice().sort(function (a, b) {
@@ -1019,167 +998,6 @@
     }, 150);
   });
 
-  /* ============== 特效系统（插拔式） ============== */
-  var _fxInst = null;
-  var FX_MODULES = [
-    {
-      name: "流体",
-      onStart: function () {
-        _fxInst = createSplashCursor({ rainbow: true, size: 1, force: 3, swirl: 3, trail: 1, shading: 1, glow: 0.5, quality: 'high', clickSplash: true, intro: true, zIndex: 9996 });
-        document.body.appendChild(_fxInst.container);
-        _fxInst.start();
-      },
-      onStop: function () {
-        if (_fxInst) { _fxInst.stop(); if (_fxInst.container.parentNode) _fxInst.container.parentNode.removeChild(_fxInst.container); _fxInst = null; }
-      }
-    },
-    {
-      name: "光晕",
-      onStart: function () {
-        var dot = document.createElement("div");
-        dot.id = "fx-aura";
-        dot.style.cssText = "position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(245,73,31,.25) 0%,transparent 70%);pointer-events:none;z-index:9996;transform:translate(-50%,-50%);mix-blend-mode:screen;";
-        document.body.appendChild(dot);
-        document.addEventListener("mousemove", auraMove);
-        function auraMove(e) { dot.style.left = e.clientX + "px"; dot.style.top = e.clientY + "px"; }
-        window._fxAuraCleanup = function () { document.removeEventListener("mousemove", auraMove); };
-      },
-      onStop: function () {
-        var dot = document.getElementById("fx-aura"); if (dot) dot.remove();
-        if (window._fxAuraCleanup) window._fxAuraCleanup();
-      }
-    },
-    {
-      name: "粒子",
-      onStart: function () {
-        document.addEventListener("mousemove", spawn);
-        window._fxPList = [];
-        function spawn(e) {
-          var colors = ["#f5491f","#ff6b3d","#ffd166","#4f8cff","#2dd4bf","#ff3f8b"];
-          var p = document.createElement("div");
-          var size = Math.random() * 7 + 2;
-          var color = colors[Math.floor(Math.random()*colors.length)];
-          p.style.cssText = "position:fixed;width:"+size+"px;height:"+size+"px;background:"+color+";border-radius:50%;pointer-events:none;z-index:9996;left:"+e.clientX+"px;top:"+e.clientY+"px;transform:translate(-50%,-50%);transition:transform 1.2s ease-out,opacity 1.2s ease-out;opacity:1;box-shadow:0 0 "+(size*3)+"px "+color+";";
-          document.body.appendChild(p);
-          requestAnimationFrame(function(){
-            p.style.transform = "translate("+(Math.random()*20-10)+"px,"+(Math.random()*80+20)+"px) scale(0)";
-            p.style.opacity = "0";
-          });
-          window._fxPList.push(p);
-          setTimeout(function(){ p.remove(); }, 1200);
-        }
-        window._fxPCleanup = function () { document.removeEventListener("mousemove", spawn); };
-      },
-      onStop: function () {
-        document.querySelectorAll("#fx-particle").forEach(function(e){e.remove();});
-        if (window._fxPCleanup) window._fxPCleanup();
-      }
-    }
-  ];
-  var activeFx = null;
-
-  function renderFxGallery() {
-    // 沉浸式：整个 UI 隐掉，只剩浮动特效按钮
-    return '<div class="mystery-empty"></div>';
-  }
-
-  var savedMysteryTheme = null;
-  function enterMystery() {
-    // 强制锁死深色主题，防止系统切换导致背景变色
-    savedMysteryTheme = document.documentElement.getAttribute("data-theme");
-    document.documentElement.setAttribute("data-theme", "dark");
-
-    active = "🔮 神秘";
-    document.body.classList.add("mystery-mode");
-    setCatState();
-    renderList();
-    // 尝试浏览器原生全屏
-    try {
-      var el = document.documentElement;
-      if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    } catch (e) {}
-    setTimeout(injectMysteryBtns, 0);
-  }
-
-  function exitMystery() {
-    document.body.classList.remove("mystery-mode");
-    // 恢复之前的主题
-    if (savedMysteryTheme) {
-      document.documentElement.setAttribute("data-theme", savedMysteryTheme);
-      savedMysteryTheme = null;
-    }
-    try {
-      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
-      else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
-    } catch (e) {}
-    removeFxBtn();
-    active = "系统工具";
-    setCatState();
-    renderList();
-  }
-
-  function injectMysteryBtns() {
-    if (document.getElementById("fx-random")) return;
-    var fxBtn = document.createElement("button");
-    fxBtn.id = "fx-random";
-    fxBtn.textContent = "🎲 特效";
-    fxBtn.style.cssText = "position:fixed;right:24px;bottom:24px;background:#1a1a1a;color:#fff;border:none;border-radius:24px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;z-index:9997;box-shadow:0 4px 16px rgba(0,0,0,.2);";
-    fxBtn.addEventListener("click", function () {
-      if (FX_MODULES.length === 0) { console.log("%c还没有特效 等你提供", "color:#999"); return; }
-      if (activeFx !== null) stopFx();
-      startRandomFx();
-      fxBtn.textContent = "🎲 " + FX_MODULES[activeFx].name + " · 换";
-    });
-    document.body.appendChild(fxBtn);
-
-    var exBtn = document.createElement("button");
-    exBtn.id = "fx-exit";
-    exBtn.textContent = "✕ 退出";
-    exBtn.style.cssText = "position:fixed;left:24px;bottom:24px;background:none;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.25);border-radius:24px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;z-index:9997;transition:color .15s ease,border-color .15s ease;";
-    exBtn.addEventListener("click", function () { exitMystery(); });
-    exBtn.addEventListener("mouseenter", function () { exBtn.style.color = "#fff"; exBtn.style.borderColor = "rgba(255,255,255,.7)"; });
-    exBtn.addEventListener("mouseleave", function () { exBtn.style.color = "rgba(255,255,255,.55)"; exBtn.style.borderColor = "rgba(255,255,255,.25)"; });
-    document.body.appendChild(exBtn);
-  }
-
-  function startRandomFx() {
-    if (!FX_MODULES.length) return;
-    // 随机选一个（不等于当前的）
-    var next;
-    if (FX_MODULES.length === 1) {
-      next = 0;
-    } else {
-      do { next = Math.floor(Math.random() * FX_MODULES.length); } while (next === activeFx);
-    }
-    startFx(next);
-    var btn = document.getElementById("fx-random");
-    if (btn) btn.textContent = "🎲 " + FX_MODULES[next].name + " · 点我换";
-  }
-
-  function startFx(idx) {
-    stopFx();
-    activeFx = idx;
-    FX_MODULES[idx].onStart();
-  }
-
-  function stopFx() {
-    if (activeFx !== null) {
-      FX_MODULES[activeFx].onStop();
-      activeFx = null;
-    }
-    var btn = document.getElementById("fx-random");
-    if (btn) btn.textContent = "🎲 特效";
-  }
-
-  function removeFxBtn() {
-    stopFx();
-    var a = document.getElementById("fx-random"); if (a) a.remove();
-    var b = document.getElementById("fx-exit"); if (b) b.remove();
-  }
-
-  // 离开神秘分类自动关特效
-  var origSetCat = active; // 不存也行
   function bulletSection(title, items) {
     return (
       '<div class="sec"><h4>' + esc(title) + "</h4><ul>" +
@@ -1345,20 +1163,6 @@
       setTimeout(function () { p.remove(); }, 600);
     }
   }, 2000);
-
-  // ============== 神秘模式入口 ==============
-  function injectMysteryCat() {
-    var catsEl = document.getElementById("cats");
-    if (!catsEl || catsEl.querySelector('[data-cat="🔮 神秘"]')) return;
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "ms-nav__item";
-    btn.dataset.cat = "🔮 神秘";
-    btn.innerHTML = '<span>🔮 神秘</span>';
-    btn.addEventListener("click", function () { enterMystery(); });
-    catsEl.appendChild(btn);
-  }
-  injectMysteryCat();
 
 })();
 </script>
