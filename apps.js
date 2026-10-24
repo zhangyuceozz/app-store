@@ -145,6 +145,32 @@ const APPS = [
 
   // ↓↓↓ 新应用在这里往下加，复制 BongoCat 整块 { ... } 改内容即可 ↓↓↓
   {
+    id: "lively",
+    name: "Lively Wallpaper",
+    category: "桌面美化",
+    sub: "动态壁纸",
+    date: "2026-10-24",
+    tagline: "免费开源的 Windows 动态壁纸",
+    description: "Lively Wallpaper 是一款免费开源的 Windows 动态壁纸引擎。支持视频、GIF、HTML 网页、GLSL 着色器、YouTube 链接等多种壁纸格式，多显示器支持，游戏自动暂停，资源占用低。2023 微软商店应用大奖得主。",
+    icon: "apps/lively/icon.png",
+    preview: "apps/lively/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)", file: "/dl/apps/lively/download/lively_setup_x86_full_v2210.exe", size: "218 MB" },
+    ],
+    install: [
+      "双击 lively_setup_x86_full_v2210.exe，按提示完成安装。",
+      "若 SmartScreen 提示「已保护你的电脑」，点「更多信息」→「仍要运行」。",
+      "首次启动若提示缺少 WebView2 Runtime（用于 HTML/网页壁纸），按提示安装即可。",
+    ],
+    usage: [
+      "启动后内置壁纸库会自动展示——流体模拟、粒子效果、交互式可视化，点一下就上桌面。",
+      "也可以把本地视频、GIF、HTML 文件或 YouTube 链接拖进窗口，一秒变成动态壁纸。",
+      "支持多显示器：每张屏幕独立壁纸、横跨所有屏幕、或网格布局。",
+      "玩游戏或全屏应用时自动暂停壁纸播放，CPU/GPU 占用降为零。",
+      "系统托盘图标可随时暂停/恢复，设置里能调播放质量、性能配置和暂停规则。",
+    ],
+  },
+  {
     id: "yt-dlp",
     name: "yt-dlp",
     category: "实用工具",
