@@ -974,6 +974,13 @@
   }
 
   function matches(a) {
+    // 彩蛋：神秘分类 = 显示所有应用（包括控制台彩蛋）
+    if (active === "🔮 神秘") {
+      if (!filteredDownloads(a).length) return false;
+      if (!query) return true;
+      var hay = [a.name, a.tagline, a.description, a.category].join(" ").toLowerCase();
+      return hay.indexOf(query) !== -1;
+    }
     if (active !== "最近上架" && a.category !== active) return false;
     if (!filteredDownloads(a).length) return false;
     if (!query) return true;
@@ -1239,47 +1246,41 @@
     });
   }
 
-  // ============== 彩蛋 3：搜索框输入 98k → 解锁隐藏分类 ==============
+  // ============== 彩蛋：搜索框输入 98k → 解锁隐藏分类 ==============
   (function searchEgg() {
     var input = document.getElementById("q");
     if (!input) return;
+    var unlocked = false;
     input.addEventListener("input", function () {
+      if (unlocked) return;
       if (input.value.trim() === "98k") {
-        if (CATEGORIES.indexOf("🔮 神秘") === -1) {
-          CATEGORIES.push("🔮 神秘");
-          APPS.forEach(function (a) { a.sub = a.sub || "🔮 神秘"; });
-          console.log("%c🔮 隐藏分类解锁！点侧栏的「神秘」看看", "font-size:16px;color:#f5491f;font-weight:bold;");
-          input.value = "";
-          buildCats();
-          renderList();
-        }
+        unlocked = true;
+        // 控制台彩蛋
+        console.log("%c🔮 隐藏分类解锁！点侧栏的「神秘」看看", "font-size:16px;color:#f5491f;font-weight:bold;");
+        // 动态注入一个侧栏分类（不靠改 apps.js 的 CATEGORIES，因为 buildCats 会重建）
+        injectMysteryCat();
+        input.value = "";
+        renderList();
       }
     });
-  })();
 
-  // ============== 彩蛋 8：搜索框 typo 自动纠正 ==============
-  (function typoFix() {
-    var input = document.getElementById("q");
-    if (!input) return;
-    var TYPOS = {
-      "ytt-dlp": "yt-dlp", "ytdlp": "yt-dlp", "yt dlp": "yt-dlp",
-      "崩嘎猫": "bongocat", "邦邦猫": "bongocat",
-      "winsance": "winhance", "winance": "winhance",
-      "pdfcarft": "pdfcraft", "pdf carft": "pdfcraft",
-    };
-    var lastFixed = "";
-    input.addEventListener("input", function () {
-      var v = input.value.trim().toLowerCase();
-      if (v === lastFixed) return;
-      for (var wrong in TYPOS) {
-        if (v === wrong) {
-          lastFixed = TYPOS[wrong];
-          input.value = TYPOS[wrong];
-          showToast("知道你在找 " + TYPOS[wrong] + " 帮你改好了 :)");
-          break;
-        }
-      }
-    });
+    function injectMysteryCat() {
+      // 侧栏加"神秘"分类
+      var catsEl = document.getElementById("cats");
+      if (!catsEl || document.querySelector('[data-cat="🔮 神秘"]')) return;
+      var item = document.createElement("div");
+      item.className = "nav-cat";
+      item.dataset.cat = "🔮 神秘";
+      item.innerHTML = '<span class="nav-emoji">🔮</span> 神秘';
+      item.addEventListener("click", function () {
+        document.querySelectorAll(".nav-cat").forEach(function (c) { c.classList.remove("on"); });
+        item.classList.add("on");
+        currentCat = "🔮 神秘";
+        renderList();
+      });
+      catsEl.appendChild(item);
+      showToast("🔮 解锁隐藏分类！");
+    }
   })();
 
   // ============== 通用 Toast 组件 ==============
