@@ -407,30 +407,35 @@
 
   .card {
     position: relative; z-index: 1;
-    display: flex; flex-direction: column; gap: 6px;
-    background: var(--card); border: 1px solid var(--line); border-radius: 2px;
-    padding: 12px; cursor: pointer; overflow: hidden;
+    display: flex; flex-direction: column; gap: 8px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    transition: transform .2s ease-out;
+    transition: transform .28s cubic-bezier(.175,.885,.32,1.275);
   }
-  .card.is-hover { transform: scale(1.02) !important; z-index: 10; }
+  .card.is-hover { transform: scale(1.04) !important; z-index: 10; }
 
   /* 预览图 */
-  .card .c-preview { position: relative; width: 100%; aspect-ratio: 16/10; border-radius: 0; overflow: hidden; background: var(--soft); margin-bottom: 2px; cursor: pointer; border: 1px solid var(--line); }
-  .card .c-preview img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease-out; }
-  .card.is-hover .c-preview img { transform: scale(1.03); }
+  .card .c-preview { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; background: var(--soft); margin-bottom: 2px; cursor: zoom-in; }
+  .card .c-preview img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s cubic-bezier(.175,.885,.32,1.275); }
+  .card.is-hover .c-preview img { transform: scale(1.06); }
+  /* 蒙层 */
+  .card .c-preview::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,.55), rgba(0,0,0,.15)); opacity: 0; transition: opacity .25s ease; pointer-events: none; }
+  .card.is-hover .c-preview::after { opacity: 1; }
+  .card .c-preview .zoom-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 6px; color: #fff; font-size: 12px; font-weight: 600; opacity: 0; transition: opacity .25s ease; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,.4); }
+  .card.is-hover .c-preview .zoom-hint { opacity: 1; }
 
   /* 默认内容：hover 淡出 */
-  .card .c-row { display: flex; align-items: center; gap: 10px; transition: opacity .2s ease-out; }
-  .card.is-hover .c-row { opacity: .3; }
-  .card .c-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; border: 1px solid var(--line); }
+  .card .c-row { display: flex; align-items: center; gap: 10px; transition: opacity .25s ease, filter .25s ease; }
+  .card.is-hover .c-row { opacity: .3; filter: blur(3px); }
+  .card .c-icon { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 16px; font-weight: 600; }
   .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-  .card .c-name { font-family: var(--display); font-size: 13px; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .card .c-meta { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* 获取按钮：hover 时出现 */
-  .card .c-dl-btn { display: block; width: 100%; padding: 6px 10px; border: 1px solid var(--ink); border-radius: 2px; background: var(--card); color: var(--ink); font-size: 12px; font-weight: 600; cursor: pointer; opacity: 0; pointer-events: none; margin-top: auto; transition: opacity .2s ease-out; }
+  .card .c-dl-btn { display: block; width: 100%; padding: 8px 12px; border: none; border-radius: 8px; background: #1a1a1a; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; opacity: 0; pointer-events: none; margin-top: auto; transition: opacity .25s ease; }
   .card.is-hover .c-dl-btn { opacity: 1; pointer-events: auto; }
 
   /* ---------- 弹窗 ---------- */
@@ -951,7 +956,7 @@
     var preview = a.preview || "";
     return (
       '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '">' +
-        (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="lazy"></div>' : "") +
+        (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="lazy"><div class="zoom-hint">🔍 点击预览</div></div>' : "") +
         '<div class="c-row">' +
           iconHtml(a, "c-icon") +
           '<div class="c-body">' +
