@@ -483,7 +483,11 @@
   .egg-close { width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
   .egg-close:hover { background: #333; }
 
-  /* ---------- 神秘模式：沉浸式 ---------- */
+  /* ---------- 神秘模式：沉浸式全屏 ---------- */
+  body.mystery-mode {
+    background: #000 !important;
+    position: fixed; inset: 0; overflow: hidden;
+  }
   body.mystery-mode .top,
   body.mystery-mode .side,
   body.mystery-mode .search-bar,
@@ -1055,13 +1059,24 @@
     document.body.classList.add("mystery-mode");
     setCatState();
     renderList();
+    // 尝试浏览器原生全屏（需要用户手势，可能被拒）
+    try {
+      var el = document.documentElement;
+      if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    } catch (e) {}
     setTimeout(injectFxBtn, 0);
     setupExitTap();
   }
 
   function exitMystery() {
     document.body.classList.remove("mystery-mode");
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } catch (e) {}
     removeFxBtn();
+    teardownExitTap();
     active = "系统工具";
     setCatState();
     renderList();
@@ -1072,9 +1087,21 @@
   function setupExitTap() {
     tapCount = 0;
     document.addEventListener("click", onScreenTap, true);
+    // Esc 退出全屏时自动清 mystery-mode
+    document.addEventListener("fullscreenchange", onFsChange);
+    document.addEventListener("webkitfullscreenchange", onFsChange);
   }
   function teardownExitTap() {
     document.removeEventListener("click", onScreenTap, true);
+    document.removeEventListener("fullscreenchange", onFsChange);
+    document.removeEventListener("webkitfullscreenchange", onFsChange);
+  }
+  function onFsChange() {
+    // 已不在全屏但 body 还在神秘 → 说明用户按了 Esc，手动清
+    var isFs = document.fullscreenElement || document.webkitFullscreenElement;
+    if (!isFs && document.body.classList.contains("mystery-mode")) {
+      exitMystery();
+    }
   }
   function onScreenTap(e) {
     // 点特效按钮不算
