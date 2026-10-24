@@ -19,6 +19,9 @@ const MAP = {
   "yt-dlp.tar.gz": "/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.tar.gz",
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
+  // Mirage v1.1.5 (macOS 小红车)
+  "Mirage-523-c5fda60e16ba-macOS-arm64.zip": "/laobamac/MirageWallpaper/releases/download/v1.1.5/Mirage-523-c5fda60e16ba-macOS-arm64.zip",
+  "Mirage-523-c5fda60e16ba-macOS-x86_64.zip": "/laobamac/MirageWallpaper/releases/download/v1.1.5/Mirage-523-c5fda60e16ba-macOS-x86_64.zip",
 };
 
 async function fetchUpstream(path) {
