@@ -145,33 +145,6 @@ const APPS = [
 
   // ↓↓↓ 新应用在这里往下加，复制 BongoCat 整块 { ... } 改内容即可 ↓↓↓
   {
-    id: "mirage",
-    name: "Mirage",
-    category: "桌面美化",
-    sub: "动态壁纸",
-    date: "2026-10-25",
-    tagline: "macOS 上的小红车动态壁纸引擎",
-    description: "Mirage 是一款原生 macOS 动态壁纸引擎，完全兼容 Wallpaper Engine 的 scene / web / video 壁纸格式。支持 Steam Workshop 订阅，多显示器、菜单栏控制、开机自启，免费开源（GPL-3.0）。",
-    icon: "apps/mirage/icon.png",
-    preview: "apps/mirage/preview.webp",
-    downloads: [
-      { platform: "macOS（Apple 芯片）", file: "/dl/apps/mirage/download/Mirage-523-c5fda60e16ba-macOS-arm64.zip", size: "110 MB" },
-      { platform: "macOS（Intel）",    file: "/dl/apps/mirage/download/Mirage-523-c5fda60e16ba-macOS-x86_64.zip", size: "115 MB" },
-    ],
-    install: [
-      "下载解压 .zip，把 Mirage.app 拖进「应用程序」。",
-      "首次打开若提示「无法验证开发者」，右键点图标选「打开」→「打开」。",
-      "系统设置 → 隐私与安全 → 完全磁盘访问权限，勾选 Mirage（用于读取 Steam 壁纸目录）。",
-    ],
-    usage: [
-      "启动后菜单栏会出现 Mirage 图标，点开即可选壁纸。",
-      "内置 Steam Workshop 浏览器，搜索/下载/订阅 Wallpaper Engine 壁纸一键搞定。",
-      "支持三种壁纸类型：Scene（3D 着色器）、Web（HTML/JS）、Video（视频）。",
-      "每张显示器可独立壁纸，支持 Spaces 切换时保持壁纸。",
-      "设置里可调播放质量、性能配置、开机自启。",
-    ],
-  },
-  {
     id: "lively",
     name: "Lively Wallpaper",
     category: "桌面美化",
