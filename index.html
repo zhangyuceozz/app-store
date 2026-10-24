@@ -1204,11 +1204,11 @@
   var brand = document.querySelector(".brand");
   var holdTimer = null;
   var EASTER_EGGS = [
-    "<p>嘿，你居然发现了这里 🎉</p><p>这个商店是用纯 HTML + CSS + 一点 JS 写的，没有框架，没有构建工具。</p><p>如果你也想做点自己的东西，<span class='egg-highlight'>现在就开始吧</span>。</p>",
-    "<p>🎂 感谢你的好奇心！</p><p>做这个商店花了好几个晚上，改了不知道多少版 hover 效果。</p><p>希望你能在这里找到好用的软件。</p>",
-    "<p>⚠️ 系统提示：你已解锁隐藏成就</p><p>🏆 <span class='egg-highlight'>「长按狂魔」</span></p><p>继续探索，还有更多彩蛋哦~</p>",
-    "<p>你知道吗？</p><p>这里的应用都是我一个个在 GitHub 上扒的截图和 Release。</p><p>如果有你喜欢的软件想加进来，<span class='egg-highlight'>告诉我</span>！</p>",
-    "<p>🚀 恭喜触发彩蛋！</p><p>偷偷告诉你：控制台里也藏了东西，按 F12 看看。</p><p>（真的会有惊喜）</p>",
+    "<p style='font-size:15px;line-height:1.7'>这个站没有框架、没有构建，浏览器打开就能跑。<br><span style='color:#f5491f'>谢谢你愿意读到这里。</span></p>",
+    "<p style='font-size:15px;line-height:1.7'>hover 改了不知道多少版，现在终于丝滑了。<br>如果你也喜欢折腾，<span style='color:#f5491f'>开干吧，别等。</span></p>",
+    "<p style='font-size:15px;line-height:1.7'>这里每个软件都是我在 GitHub 上一个个翻 Release 扒的。<br>控制台里也藏了东西，F12 看看。</p>",
+    "<p style='font-size:15px;line-height:1.7'>熬夜改代码的时候总觉得自己在做点有用的事。<br>后来发现——它还真的是。</p>",
+    "<p style='font-size:15px;line-height:1.7'>你是第 812 个触发这个彩蛋的人。<br>不，我瞎编的。但<span style='color:#f5491f'>你是特别的</span>。</p>",
   ];
   if (brand) {
     function startHold() {
@@ -1255,9 +1255,7 @@
       if (unlocked) return;
       if (input.value.trim() === "98k") {
         unlocked = true;
-        // 控制台彩蛋
         console.log("%c🔮 隐藏分类解锁！点侧栏的「神秘」看看", "font-size:16px;color:#f5491f;font-weight:bold;");
-        // 动态注入一个侧栏分类（不靠改 apps.js 的 CATEGORIES，因为 buildCats 会重建）
         injectMysteryCat();
         input.value = "";
         renderList();
@@ -1265,21 +1263,20 @@
     });
 
     function injectMysteryCat() {
-      // 侧栏加"神秘"分类
       var catsEl = document.getElementById("cats");
-      if (!catsEl || document.querySelector('[data-cat="🔮 神秘"]')) return;
-      var item = document.createElement("div");
-      item.className = "nav-cat";
-      item.dataset.cat = "🔮 神秘";
-      item.innerHTML = '<span class="nav-emoji">🔮</span> 神秘';
-      item.addEventListener("click", function () {
-        document.querySelectorAll(".nav-cat").forEach(function (c) { c.classList.remove("on"); });
-        item.classList.add("on");
-        currentCat = "🔮 神秘";
+      if (!catsEl || catsEl.querySelector('[data-cat="🔮 神秘"]')) return;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "ms-nav__item";
+      btn.dataset.cat = "🔮 神秘";
+      btn.innerHTML = '<span>🔮 神秘</span>';
+      btn.addEventListener("click", function () {
+        active = "🔮 神秘";
+        setCatState();
         renderList();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
-      catsEl.appendChild(item);
-      showToast("🔮 解锁隐藏分类！");
+      catsEl.appendChild(btn);
     }
   })();
 
