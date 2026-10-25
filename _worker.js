@@ -20,8 +20,7 @@ const MAP = {
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
   // Bing Wallpaper Now v1.6.1 (跨平台每日壁纸, Homebrew cask)
-  // 使用 GitHub API 返回的完整 browser_download_url 避免 302 问题
-  "Bing.Wallpaper.Now_1.6.1_aarch64.dmg": "https://github.com/qiyuey/bing-wallpaper-now/releases/download/1.6.1/Bing.Wallpaper.Now_1.6.1_aarch64.dmg",
+  "Bing.Wallpaper.Now_1.6.1_aarch64.dmg": "/qiyuey/bing-wallpaper-now/releases/download/1.6.1/Bing.Wallpaper.Now_1.6.1_aarch64.dmg",
   "Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi": "/qiyuey/bing-wallpaper-now/releases/download/1.6.1/Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi",
 };
 
@@ -56,8 +55,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // /dl/, /dl2/, /dl3/ → 下载反代
-    const dlMatch = url.pathname.match(/^\/(dl|dl2|dl3)(\/.*)$/);
+    // /dl/ 和 /dl4/ → 下载反代（/dl4 是全新路径绕过 Pages 对 /dl 下坏 URL 的缓存）
+    const dlMatch = url.pathname.match(/^\/(dl|dl4)(\/.*)$/);
     if (dlMatch) {
       const path = dlMatch[2]; // => /apps/...
       if (!path.startsWith("/apps/") || path.includes("..")) {
