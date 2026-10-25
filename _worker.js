@@ -53,10 +53,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // /dl/ 和 /dl2/ 都走 Worker（/dl2/ 是为了绕过 Pages 缓存用的）
-    if (url.pathname.startsWith("/dl/") || url.pathname.startsWith("/dl2/")) {
-      const stripPrefix = url.pathname.startsWith("/dl2/") ? "/dl2" : "/dl";
-      const path = url.pathname.slice(stripPrefix.length); // => /apps/...
+    // /dl/, /dl2/, /dl3/ 都走 Worker（/dl3 是全新缓存绕过路径）
+    const dlMatch = url.pathname.match(/^\/(dl|dl2|dl3)(\/.*)$/);
+    if (dlMatch) {
+      const path = dlMatch[2]; // => /apps/...
       if (!path.startsWith("/apps/") || path.includes("..")) {
         return new Response("Not Found", { status: 404 });
       }
