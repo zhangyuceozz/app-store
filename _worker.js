@@ -32,6 +32,7 @@ async function fetchUpstream(upstreamPath) {
   const resp = await fetch(url, {
     cf: { cacheEverything: true, cacheTtl: 86400 },
     headers: { "User-Agent": "ChovyStore/1.0" },
+    redirect: "follow",  // GitHub Release 资产 302 → release-assets.githubusercontent.com，必须跟随
   });
   if (!resp.ok) return resp;
   // 完整性校验：前 4KB + 后 4KB 里有 HTML 错误标记说明返回了垃圾
