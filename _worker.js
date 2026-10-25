@@ -25,53 +25,28 @@ const MAP = {
 };
 
 async function fetchUpstream(upstreamPath) {
-  // 绝对 URL（非 GitHub 来源，比如官方 CDN）→ 直接 fetch
-  if (upstreamPath.startsWith("http://") || upstreamPath.startsWith("https://")) {
-    return fetch(upstreamPath, {
-      cf: { cacheEverything: true, cacheTtl: 86400 },
-      headers: { "User-Agent": "ChovyStore/1.0" },
-    });
+  // 绝对 URL（非 GitHub 来源）或 GitHub 相对路径 → 都直接 fetch 上游
+  const url = upstreamPath.startsWith("http")
+    ? upstreamPath
+    : "https://github.com" + upstreamPath;
+  const resp = await fetch(url, {
+    cf: { cacheEverything: true, cacheTtl: 86400 },
+    headers: { "User-Agent": "ChovyStore/1.0" },
+  });
+  if (!resp.ok) return resp;
+  // 完整性校验：前 4KB + 后 4KB 里有 HTML 错误标记说明返回了垃圾
+  const buf = await resp.arrayBuffer();
+  const head = new Uint8Array(buf.slice(0, Math.min(4096, buf.byteLength)));
+  const tail = new Uint8Array(buf.slice(Math.max(0, buf.byteLength - 4096)));
+  const bad = (u8) => {
+    const s = String.fromCharCode.apply(null, u8);
+    return s.includes("<!DOC") || s.includes("<html") || s.includes("<HTML")
+        || s.includes("Not Found") || s.includes("<?xml");
+  };
+  if (bad(head) || bad(tail)) {
+    return new Response("Upstream returned corrupted data", { status: 502 });
   }
-    // GitHub 相对路径 → 先走 ghproxy 镜像再 fallback 直链
-  const mirror = MIRROR + GH + upstreamPath;
-  const direct = GH + upstreamPath;
-  try {
-    const resp = await fetch(mirror, {
-      cf: { cacheEverything: false },  // mirror 永不缓存，每次拿新鲜
-      headers: { "User-Agent": "ChovyStore/1.0" },
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!resp.ok) throw new Error("mirror HTTP " + resp.status);
-    // 内容完整性校验：前 4KB + 后 4KB 里如果有 HTML 错误标记，说明 mirror 返回了污染数据
-    // （GitHub 偶尔会返回 200 但尾部拼接错误页/HTML）
-    const buf = await resp.arrayBuffer();
-    const head = new Uint8Array(buf.slice(0, Math.min(4096, buf.byteLength)));
-    const tail = new Uint8Array(buf.slice(Math.max(0, buf.byteLength - 4096)));
-    const isHTML = (u8) => {
-      const s = String.fromCharCode.apply(null, u8);
-      return s.includes("<!DOC") || s.includes("<html") || s.includes("<HTML")
-          || s.includes("Not Found") || s.includes("<?xml");
-    };
-    if (isHTML(head) || isHTML(tail)) {
-      throw new Error("mirror returned HTML garbage (" + buf.byteLength + " bytes)");
-    }
-    return new Response(buf, { status: resp.status, headers: resp.headers });
-  } catch (e) {
-    console.warn("mirror failed:", e.message, "fallback to direct GitHub");
-    const resp = await fetch(direct, {
-      cf: { cacheEverything: true, cacheTtl: 86400 },  // 直链缓存 24h
-      headers: { "User-Agent": "ChovyStore/1.0" },
-    });
-    if (!resp.ok) return resp;
-    // GitHub 直链也做同样的完整性校验
-    const buf = await resp.arrayBuffer();
-    const tail = new Uint8Array(buf.slice(Math.max(0, buf.byteLength - 4096)));
-    const tailStr = String.fromCharCode.apply(null, tail);
-    if (tailStr.includes("<!DOC") || tailStr.includes("<html") || tailStr.includes("Not Found")) {
-      return new Response("Upstream returned corrupted data", { status: 502 });
-    }
-    return new Response(buf, { status: resp.status, headers: resp.headers });
-  }
+  return new Response(buf, { status: resp.status, headers: resp.headers });
 }
 
 export default {
