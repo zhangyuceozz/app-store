@@ -20,22 +20,24 @@ const MAP = {
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
   // Bing Wallpaper Now v1.6.1 (跨平台每日壁纸, Homebrew cask)
-  "Bing.Wallpaper.Now_1.6.1_aarch64.dmg": "/qiyuey/bing-wallpaper-now/releases/download/1.6.1/Bing.Wallpaper.Now_1.6.1_aarch64.dmg",
+  // 使用 GitHub API 返回的完整 browser_download_url 避免 302 问题
+  "Bing.Wallpaper.Now_1.6.1_aarch64.dmg": "https://github.com/qiyuey/bing-wallpaper-now/releases/download/1.6.1/Bing.Wallpaper.Now_1.6.1_aarch64.dmg",
   "Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi": "/qiyuey/bing-wallpaper-now/releases/download/1.6.1/Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi",
 };
 
 async function fetchUpstream(upstreamPath) {
-  // 绝对 URL（非 GitHub 来源）或 GitHub 相对路径 → 都直接 fetch 上游
+  // 统一构造 URL：绝对 URL 直接用，相对路径前面拼 github.com
   const url = upstreamPath.startsWith("http")
     ? upstreamPath
     : "https://github.com" + upstreamPath;
+  // 跟随重定向（GitHub Release 资产 302 → release-assets.githubusercontent.com）
   const resp = await fetch(url, {
     cf: { cacheEverything: true, cacheTtl: 86400 },
     headers: { "User-Agent": "ChovyStore/1.0" },
-    redirect: "follow",  // GitHub Release 资产 302 → release-assets.githubusercontent.com，必须跟随
+    redirect: "follow",
   });
   if (!resp.ok) return resp;
-  // 完整性校验：前 4KB + 后 4KB 里有 HTML 错误标记说明返回了垃圾
+  // 完整性校验：前 4KB + 后 4KB 有 HTML 标记说明返回了垃圾
   const buf = await resp.arrayBuffer();
   const head = new Uint8Array(buf.slice(0, Math.min(4096, buf.byteLength)));
   const tail = new Uint8Array(buf.slice(Math.max(0, buf.byteLength - 4096)));
