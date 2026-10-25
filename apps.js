@@ -181,7 +181,7 @@ const APPS = [
     icon: "apps/lively/icon.png",
     preview: "apps/lively/preview.jpg",
     downloads: [
-      { platform: "Windows (x64)", file: "/dl/apps/lively/download/lively_setup_x86_full_v2210.exe", size: "218 MB" },
+      { platform: "Windows (x64)", file: "/dl/apps/lively/download/lively_setup_x86_full_v2210.exe", size: "208.0 MB" },
     ],
     install: [
       "双击 lively_setup_x86_full_v2210.exe，按提示完成安装。",
@@ -207,10 +207,10 @@ const APPS = [
     icon: "apps/yt-dlp/icon.png",
     preview: "apps/yt-dlp/preview.jpg",
     downloads: [
-      { platform: "Windows (x64)",  file: "/dl/apps/yt-dlp/download/yt-dlp.exe",          size: "17.8 MB" },
-      { platform: "Windows (ARM64)", file: "/dl/apps/yt-dlp/download/yt-dlp_arm64.exe",   size: "21.2 MB" },
+      { platform: "Windows (x64)",  file: "/dl/apps/yt-dlp/download/yt-dlp.exe",          size: "17.0 MB" },
+      { platform: "Windows (ARM64)", file: "/dl/apps/yt-dlp/download/yt-dlp_arm64.exe",   size: "20.2 MB" },
       { platform: "Linux (x64)",    file: "/dl/apps/yt-dlp/download/yt-dlp_linux",          size: "38.6 MB" },
-      { platform: "源码包",          file: "/dl/apps/yt-dlp/download/yt-dlp.tar.gz",       size: "6.0 MB" },
+      { platform: "源码包",          file: "/dl/apps/yt-dlp/download/yt-dlp.tar.gz",       size: "5.7 MB" },
     ],
     install: [
       "Windows：下载 .exe 后直接双击或放入 PATH 目录即可命令行使用。",
