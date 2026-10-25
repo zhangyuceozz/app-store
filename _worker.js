@@ -25,30 +25,22 @@ const MAP = {
 };
 
 async function fetchUpstream(upstreamPath) {
-  // 统一构造 URL：绝对 URL 直接用，相对路径前面拼 github.com
   const url = upstreamPath.startsWith("http")
     ? upstreamPath
     : "https://github.com" + upstreamPath;
-  // 跟随重定向（GitHub Release 资产 302 → release-assets.githubusercontent.com）
-  const resp = await fetch(url, {
-    cf: { cacheEverything: true, cacheTtl: 86400 },
-    headers: { "User-Agent": "ChovyStore/1.0" },
-    redirect: "follow",
-  });
-  if (!resp.ok) return resp;
-  // 完整性校验：前 4KB + 后 4KB 有 HTML 标记说明返回了垃圾
-  const buf = await resp.arrayBuffer();
-  const head = new Uint8Array(buf.slice(0, Math.min(4096, buf.byteLength)));
-  const tail = new Uint8Array(buf.slice(Math.max(0, buf.byteLength - 4096)));
-  const bad = (u8) => {
-    const s = String.fromCharCode.apply(null, u8);
-    return s.includes("<!DOC") || s.includes("<html") || s.includes("<HTML")
-        || s.includes("Not Found") || s.includes("<?xml");
-  };
-  if (bad(head) || bad(tail)) {
-    return new Response("Upstream returned corrupted data", { status: 502 });
+  try {
+    const resp = await fetch(url, {
+      cf: { cacheEverything: true, cacheTtl: 86400 },
+      headers: { "User-Agent": "ChovyStore/1.0" },
+      redirect: "follow",  // GitHub Release 资产 302 → release-assets.githubusercontent.com
+    });
+    if (!resp.ok) {
+      return new Response("Upstream HTTP " + resp.status, { status: resp.status });
+    }
+    return new Response(resp.body, { status: resp.status, headers: resp.headers });
+  } catch (e) {
+    return new Response("Fetch error: " + e.message, { status: 502 });
   }
-  return new Response(buf, { status: resp.status, headers: resp.headers });
 }
 
 export default {
@@ -69,7 +61,7 @@ export default {
       }
       const resp = await fetchUpstream(upstreamPath);
       if (!resp.ok) {
-        return new Response("Not Found", { status: 404 });
+        return resp;  // 透传 fetchUpstream 的错误（404/502/upstream status）
       }
       const headers = new Headers(resp.headers);
       headers.set("Content-Type", "application/octet-stream");
