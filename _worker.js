@@ -32,12 +32,12 @@ async function fetchUpstream(upstreamPath) {
       headers: { "User-Agent": "ChovyStore/1.0" },
     });
   }
-  // GitHub 相对路径 → 先走 ghproxy 镜像再 fallback 直链
+    // GitHub 相对路径 → 先走 ghproxy 镜像再 fallback 直链
   const mirror = MIRROR + GH + upstreamPath;
   const direct = GH + upstreamPath;
   try {
     const resp = await fetch(mirror, {
-      cf: { cacheEverything: true, cacheTtl: 86400 },
+      cf: { cacheEverything: false },  // mirror 永不缓存，每次拿新鲜
       headers: { "User-Agent": "ChovyStore/1.0" },
       signal: AbortSignal.timeout(15000),
     });
@@ -59,7 +59,7 @@ async function fetchUpstream(upstreamPath) {
   } catch (e) {
     console.warn("mirror failed:", e.message, "fallback to direct GitHub");
     const resp = await fetch(direct, {
-      cf: { cacheEverything: true, cacheTtl: 86400 },
+      cf: { cacheEverything: true, cacheTtl: 86400 },  // 直链缓存 24h
       headers: { "User-Agent": "ChovyStore/1.0" },
     });
     if (!resp.ok) return resp;
@@ -95,6 +95,7 @@ export default {
       const headers = new Headers(resp.headers);
       headers.set("Content-Type", "application/octet-stream");
       headers.set("Content-Disposition", "attachment; filename=\"" + fname + "\"");
+      headers.set("Cache-Control", "s-maxage=0");  // 禁止 Pages 缓存 Worker 输出
       return new Response(resp.body, { status: resp.status, headers });
     }
 
