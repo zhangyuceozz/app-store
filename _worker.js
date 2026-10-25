@@ -45,8 +45,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // /dl/ → 下载反代
-    const dlMatch = url.pathname.match(/^\/dl(\/.*)$/);
+    // /dl/ 和 /dl5/ → 下载反代（/dl5 是全新绕过 Pages 对 /dl 下旧坏数据的缓存）
+    const dlMatch = url.pathname.match(/^\/(dl|dl5)(\/.*)$/);
     if (dlMatch) {
       const path = dlMatch[1]; // => /apps/...
       if (!path.startsWith("/apps/") || path.includes("..")) {
