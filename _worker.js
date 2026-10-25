@@ -19,8 +19,8 @@ const MAP = {
   "yt-dlp.tar.gz": "/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.tar.gz",
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
-  // DailyFrame v1.0.0 (macOS 每日壁纸，零账号)
-  "DailyFrame.dmg": "/amalik99/DailyFrame/releases/download/v1.0.0/DailyFrame.dmg",
+  // Plash v2.16.0 (macOS 15, 网页壁纸)
+  "Plash.2.16.0.-.macOS.15.zip": "/sindresorhus/Plash/releases/download/older-releases/Plash.2.16.0.-.macOS.15.zip",
 };
 
 async function fetchUpstream(upstreamPath) {
