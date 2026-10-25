@@ -53,7 +53,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // /dl/, /dl2/, /dl3/ 都走 Worker（/dl3 是全新缓存绕过路径）
+    // /dl/, /dl2/, /dl3/ → 下载反代
     const dlMatch = url.pathname.match(/^\/(dl|dl2|dl3)(\/.*)$/);
     if (dlMatch) {
       const path = dlMatch[2]; // => /apps/...
@@ -72,7 +72,6 @@ export default {
       const headers = new Headers(resp.headers);
       headers.set("Content-Type", "application/octet-stream");
       headers.set("Content-Disposition", "attachment; filename=\"" + fname + "\"");
-      headers.set("Cache-Control", "s-maxage=0");
       return new Response(resp.body, { status: resp.status, headers });
     }
 
