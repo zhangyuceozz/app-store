@@ -19,8 +19,9 @@ const MAP = {
   "yt-dlp.tar.gz": "/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.tar.gz",
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
-  // Pap.er v5.6.0 (macOS 静态壁纸) — 官方 CDN（非 GitHub）
-  "pap.er_v5.6.0.dmg": "https://updates.paperapp.net/app/pap.er_v5.6.0_66_579927f3a0325d.dmg",
+  // Wayper v1.8.12 (跨平台 Wallhaven 搜索壁纸管理器)
+  "Wayper.Setup.1.8.12.exe": "/yuukidach/wayper/releases/download/v1.8.12/Wayper.Setup.1.8.12.exe",
+  "Wayper-1.8.12-arm64.dmg": "/yuukidach/wayper/releases/download/v1.8.12/Wayper-1.8.12-arm64.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {
