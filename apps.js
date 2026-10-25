@@ -155,8 +155,8 @@ const APPS = [
     icon: "apps/bing-wallpaper/icon.png",
     preview: "apps/bing-wallpaper/preview.jpg",
     downloads: [
-      { platform: "macOS（Apple 芯片 M4/M3/M2/M1）", file: "/dl/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_aarch64.dmg", size: "6.8 MB" },
-      { platform: "Windows 10/11 x64",          file: "/dl/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi", size: "6.5 MB" },
+      { platform: "macOS（Apple 芯片 M4/M3/M2/M1）", file: "/dl2/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_aarch64.dmg", size: "6.8 MB" },
+      { platform: "Windows 10/11 x64",          file: "/dl2/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi", size: "6.5 MB" },
     ],
     install: [
       "macOS：双击 .dmg 把 Bing Wallpaper Now 拖进「应用程序」。",

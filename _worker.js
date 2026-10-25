@@ -78,8 +78,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname.startsWith("/dl/")) {
-      const path = url.pathname.slice("/dl".length); // => /apps/...
+    // /dl/ 和 /dl2/ 都走 Worker（/dl2/ 是为了绕过 Pages 缓存用的）
+    if (url.pathname.startsWith("/dl/") || url.pathname.startsWith("/dl2/")) {
+      const stripPrefix = url.pathname.startsWith("/dl2/") ? "/dl2" : "/dl";
+      const path = url.pathname.slice(stripPrefix.length); // => /apps/...
       if (!path.startsWith("/apps/") || path.includes("..")) {
         return new Response("Not Found", { status: 404 });
       }
@@ -95,7 +97,7 @@ export default {
       const headers = new Headers(resp.headers);
       headers.set("Content-Type", "application/octet-stream");
       headers.set("Content-Disposition", "attachment; filename=\"" + fname + "\"");
-      headers.set("Cache-Control", "s-maxage=0");  // 禁止 Pages 缓存 Worker 输出
+      headers.set("Cache-Control", "s-maxage=0");
       return new Response(resp.body, { status: resp.status, headers });
     }
 
