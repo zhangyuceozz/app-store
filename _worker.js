@@ -19,9 +19,8 @@ const MAP = {
   "yt-dlp.tar.gz": "/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.tar.gz",
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
-  // Wayper v1.8.12 (跨平台 Wallhaven 搜索壁纸管理器)
-  "Wayper.Setup.1.8.12.exe": "/yuukidach/wayper/releases/download/v1.8.12/Wayper.Setup.1.8.12.exe",
-  "Wayper-1.8.12-arm64.dmg": "/yuukidach/wayper/releases/download/v1.8.12/Wayper-1.8.12-arm64.dmg",
+  // DailyFrame v1.0.0 (macOS 每日壁纸，零账号)
+  "DailyFrame.dmg": "/amalik99/DailyFrame/releases/download/v1.0.0/DailyFrame.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {
