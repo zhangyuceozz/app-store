@@ -153,7 +153,7 @@ const APPS = [
     tagline: "把任何网页当桌面壁纸",
     description: "Plash 是 Sindre Sorhus 开发的 macOS 菜单栏+Dock 应用，能把任何网站变成你的桌面壁纸。Wallhaven 搜索页、Unsplash 图库、Bing 每日一图、YouTube 链接、Google 日历、甚至你自己写的 HTML 动画——URL 粘进去一秒变壁纸。支持多显示器、自动重载间隔、URL 占位符（自动填屏幕分辨率），Apple 官方签名 notarized，M4 双击直接开。",
     icon: "apps/plash/icon.png",
-    preview: "apps/plash/preview.png",
+    preview: "apps/plash/preview.jpg",
     downloads: [
       { platform: "macOS 15 Sequoia (M4/M3/M2/M1/Intel)", file: "/dl/apps/plash/download/Plash.2.16.0.-.macOS.15.zip", size: "1.2 MB" },
     ],
