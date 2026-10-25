@@ -153,10 +153,10 @@ const APPS = [
     tagline: "每天自动换一张微软 Bing 每日一图",
     description: "Bing Wallpaper Now 把微软 Bing 每日精选摄影做成你的桌面壁纸——每天自动换一张，跨平台（Windows / macOS），支持自动更新、多显示器、开机自启。Apple 官方签名 notarized，M4 双击直接开，零账号零配置。MIT 开源。",
     icon: "apps/bing-wallpaper/icon.png",
-    preview: "apps/bing-wallpaper/preview.png",
+    preview: "apps/bing-wallpaper/preview.jpg",
     downloads: [
-      { platform: "macOS（Apple 芯片 M4/M3/M2/M1）", file: "/dl/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_aarch64.dmg", size: "5.2 MB" },
-      { platform: "Windows 10/11 x64",          file: "/dl/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi", size: "8.7 MB" },
+      { platform: "macOS（Apple 芯片 M4/M3/M2/M1）", file: "/dl/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_aarch64.dmg", size: "6.8 MB" },
+      { platform: "Windows 10/11 x64",          file: "/dl/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi", size: "6.5 MB" },
     ],
     install: [
       "macOS：双击 .dmg 把 Bing Wallpaper Now 拖进「应用程序」。",
@@ -209,7 +209,7 @@ const APPS = [
     downloads: [
       { platform: "Windows (x64)",  file: "/dl/apps/yt-dlp/download/yt-dlp.exe",          size: "17.8 MB" },
       { platform: "Windows (ARM64)", file: "/dl/apps/yt-dlp/download/yt-dlp_arm64.exe",   size: "21.2 MB" },
-      { platform: "Linux (x64)",    file: "/dl/apps/yt-dlp/download/yt-dlp_linux",          size: "13.5 MB" },
+      { platform: "Linux (x64)",    file: "/dl/apps/yt-dlp/download/yt-dlp_linux",          size: "38.6 MB" },
       { platform: "源码包",          file: "/dl/apps/yt-dlp/download/yt-dlp.tar.gz",       size: "6.0 MB" },
     ],
     install: [
