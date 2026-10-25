@@ -1,9 +1,7 @@
 // 下载反代（Pages 高级模式）：/dl/apps/... -> 各应用官方 GitHub Release
 // 访客从本站域名下载安装包，绕开 GitHub 直链在国内的可达性问题；边缘缓存 24h
 // 上架新应用：下载文件放进 apps/<id>/download/，并在 MAP 加一行「文件名 -> 官方 Release 直链」
-const GH = "https://github.com";
-const MIRROR = "https://mirror.ghproxy.com";
-
+// 注意：GitHub Release 资产会 302 → release-assets.githubusercontent.com，fetch 必须加 redirect: "follow"
 const MAP = {
   "BongoCat_1.1.0_x86-setup.exe": "/ayangweb/BongoCat/releases/download/v1.1.0/BongoCat_1.1.0_x86-setup.exe",
   "BongoCat-2.3.0-aarch64.dmg": "/ayangweb/BongoCat/releases/download/v2.3.0/BongoCat-2.3.0-aarch64.dmg",
@@ -47,10 +45,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // /dl/ 和 /dl4/ → 下载反代（/dl4 是全新路径绕过 Pages 对 /dl 下坏 URL 的缓存）
-    const dlMatch = url.pathname.match(/^\/(dl|dl4)(\/.*)$/);
+    // /dl/ → 下载反代
+    const dlMatch = url.pathname.match(/^\/dl(\/.*)$/);
     if (dlMatch) {
-      const path = dlMatch[2]; // => /apps/...
+      const path = dlMatch[1]; // => /apps/...
       if (!path.startsWith("/apps/") || path.includes("..")) {
         return new Response("Not Found", { status: 404 });
       }
