@@ -143,33 +143,6 @@ const APPS = [
     ],
   },
 
-  // ↓↓↓ 新应用在这里往下加，复制 BongoCat 整块 { ... } 改内容即可 ↓↓↓
-  {
-    id: "bing-wallpaper",
-    name: "Bing Wallpaper Now",
-    category: "桌面美化",
-    sub: "每日壁纸",
-    date: "2026-10-25",
-    tagline: "每天自动换一张微软 Bing 每日一图",
-    description: "Bing Wallpaper Now 把微软 Bing 每日精选摄影做成你的桌面壁纸——每天自动换一张，跨平台（Windows / macOS），支持自动更新、多显示器、开机自启。Apple 官方签名 notarized，M4 双击直接开，零账号零配置。MIT 开源。",
-    icon: "apps/bing-wallpaper/icon.png",
-    preview: "apps/bing-wallpaper/preview.jpg",
-    downloads: [
-      { platform: "macOS（Apple 芯片 M4/M3/M2/M1）", file: "/dl/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_aarch64.dmg", size: "6.8 MB" },
-      { platform: "Windows 10/11 x64",          file: "/dl/apps/bing-wallpaper/download/Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi", size: "6.5 MB" },
-    ],
-    install: [
-      "macOS：双击 .dmg 把 Bing Wallpaper Now 拖进「应用程序」。",
-      "Windows：双击 .msi 一路下一步。",
-      "Apple 官方签名 notarized，首次双击直接打开，不需要右键。",
-    ],
-    usage: [
-      "启动后菜单栏（Mac）/ 系统托盘（Win）出现图标，自动下载当天壁纸并设为桌面。",
-      "点图标可以手动换一张、打开设置、退出。",
-      "设置里可开多显示器支持、开机自启。",
-      "离线时保留上次的壁纸，联网自动补更。",
-    ],
-  },
   {
     id: "lively",
     name: "Lively Wallpaper",

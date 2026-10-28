@@ -23,9 +23,6 @@ const MAP = {
   "yt-dlp.tar.gz": "/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.tar.gz",
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
-  // Bing Wallpaper Now v1.6.1 (跨平台每日壁纸, Homebrew cask)
-  "Bing.Wallpaper.Now_1.6.1_aarch64.dmg": "/qiyuey/bing-wallpaper-now/releases/download/1.6.1/Bing.Wallpaper.Now_1.6.1_aarch64.dmg",
-  "Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi": "/qiyuey/bing-wallpaper-now/releases/download/1.6.1/Bing.Wallpaper.Now_1.6.1_x64_zh-CN.msi",
 };
 
 async function fetchUpstream(upstreamPath) {
