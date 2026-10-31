@@ -804,7 +804,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=32"></script>
+<script src="apps.js?v=33"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -909,7 +909,9 @@
   function filteredDownloads(app) {
     if (!app.downloads || !app.downloads.length) return [];
     var key = platform === "mac" ? /mac/i : /windows/i;
-    return app.downloads.filter(function (d) { return key.test(String(d.platform || "")); });
+    var matched = app.downloads.filter(function (d) { return key.test(String(d.platform || "")); });
+    // 跨平台通用工具（如油猴脚本、命令行工具）：没有含 mac/windows 的下载项，直接返回全部
+    return matched.length ? matched : app.downloads.slice();
   }
 
   // ---------- Fluent NavigationView 图标+文字导航 ----------
