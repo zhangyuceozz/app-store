@@ -23,6 +23,8 @@ const MAP = {
   "yt-dlp.tar.gz": "/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.tar.gz",
   // Lively Wallpaper v2.2.1.0
   "lively_setup_x86_full_v2210.exe": "/lively-community/lively/releases/download/v2.2.1.0/lively_setup_x86_full_v2210.exe",
+  // LinkSwift（油猴脚本，网盘直链下载助手）
+  "LinkSwift.user.js": "https://raw.githubusercontent.com/hmjz100/LinkSwift/dev/%EF%BC%88%E6%94%B9%EF%BC%89%E7%BD%91%E7%9B%98%E7%9B%B4%E9%93%BE%E4%B8%8B%E8%BD%BD%E5%8A%A9%E6%89%8B.user.js",
 };
 
 async function fetchUpstream(upstreamPath) {

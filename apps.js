@@ -144,6 +144,32 @@ const APPS = [
   },
 
   {
+    id: "linkswift",
+    name: "LinkSwift",
+    category: "实用工具",
+    sub: "网盘直链",
+    date: "2026-10-31",
+    tagline: "一键解析 8 大网盘直链，油猴脚本",
+    description: "LinkSwift 是一个油猴（Tampermonkey）脚本，在网盘网页上一键提取直链下载地址。支持百度网盘、阿里云盘、中国移动云盘、天翼云盘、迅雷云盘、夸克网盘、UC网盘、123云盘共 8 大平台。解析完成后可一键推送给 Aria2、Motrix、IDM 等下载器，自动精简网盘界面、支持自定义主题色。GitHub 35k+⭐，AGPL-3.0 开源。",
+    icon: "apps/linkswift/icon.png",
+    preview: "apps/linkswift/preview.jpg",
+    downloads: [
+      { platform: "油猴脚本（全浏览器通用）", file: "/dl/apps/linkswift/download/LinkSwift.user.js", size: "783 KB" },
+    ],
+    install: [
+      "第一步：浏览器里先装 Tampermonkey 扩展（Chrome/Edge/Firefox 扩展商店搜 Tampermonkey）。",
+      "第二步：下载 LinkSwift.user.js，在 Tampermonkey 图标菜单里点「添加新脚本」，把文件内容粘贴进去保存；或直接在油猴扩展页拖入 .user.js 文件。",
+      "第三步：打开任意支持的网盘（百度网盘/阿里云盘等），脚本自动在页面上显示「直链」按钮，点击即可提取下载地址。",
+    ],
+    usage: [
+      "脚本安装后访问网盘页面自动生效，不需要手动启动。",
+      "选中网盘里的文件，点页面上出现的「直链」按钮，复制直链或一键推送给 Aria2/Motrix。",
+      "脚本设置里可选主题色、默认下载器、自动复制等。",
+      "如果网盘页面没出按钮，检查 Tampermonkey 扩展是否启用、脚本是否在匹配列表里。",
+    ],
+  },
+
+  {
     id: "lively",
     name: "Lively Wallpaper",
     category: "桌面美化",
