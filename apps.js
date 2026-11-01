@@ -42,7 +42,38 @@ const CATEGORIES = [
 // 应用列表
 const APPS = [
   {
-    id: "bongocat",                          // 唯一 ID（英文），和 apps/ 下的文件夹同名
+    id: "readany",
+    name: "ReadAny",
+    category: "效率办公",
+    sub: "AI 阅读器",
+    date: "2026-11-01",
+    tagline: "带 AI 聊天和语义搜索的本地优先电子书阅读器",
+    description: "ReadAny 是一款本地优先的跨平台 AI 电子书阅读器。支持 EPUB、PDF、MOBI、AZW、FB2、CBZ、TXT 等几乎所有电子书格式。内置 AI RAG 聊天（问任何一本里的问题）、语义搜索（按意思而非关键词找内容）、高亮笔记自动整理、TTS 朗读、WebDAV 跨设备同步。桌面端（Win/macOS/Linux）+ 移动端（iOS/Android）全平台可用，数据本地存储不上传，隐私完全自主。",
+    icon: "apps/readany/icon.png",
+    preview: "apps/readany/preview.png",
+    downloads: [
+      { platform: "Windows (x64)",              file: "/dl/apps/readany/download/ReadAny_1.3.6_x64-setup.exe", size: "—" },
+      { platform: "macOS (Apple Silicon)",      file: "/dl/apps/readany/download/ReadAny_1.3.6_aarch64.dmg", size: "—" },
+      { platform: "macOS (Intel)",               file: "/dl/apps/readany/download/ReadAny_1.3.6_x64.dmg", size: "—" },
+      { platform: "Linux (AppImage)",           file: "/dl/apps/readany/download/ReadAny_1.3.6_amd64.AppImage", size: "—" },
+      { platform: "Android (APK)",               file: "/dl/apps/readany/download/ReadAny-1.3.6.apk", size: "—" },
+    ],
+    install: [
+      "Windows：双击 setup.exe 安装。",
+      "macOS：双击 .dmg 把 ReadAny 拖进「应用程序」。",
+      "Linux：chmod +x AppImage 后直接运行。",
+      "Android：下载 APK 安装即可。",
+      "iOS：TestFlight 链接在 README 里（需要 iOS 设备扫码加入）。",
+    ],
+    usage: [
+      "首次打开后选「本地」模式，点「导入书籍」把 EPUB/PDF 拖进去。",
+      "等索引完成后，顶部搜索框可以按意思搜（比如「作者讨论自由意志的段落」），AI 会返回语义匹配结果。",
+      "右侧「AI 聊天」面板可以直接问关于这本书的任何问题（需要填自己的 LLM API Key，本地不调用任何云端）。",
+      "高亮、笔记自动聚合，支持 WebDAV 同步到多设备。",
+    ],
+  },
+  {
+    id: "bongocat",
     name: "BongoCat",                        // 应用名
     category: "桌面美化",                    // 大分类（分类条显示这个）
     sub: "互动桌宠",                         // 小分类（可选，进入大分类后按这个分组）
