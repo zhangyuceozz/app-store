@@ -36,6 +36,20 @@ const MAP = {
   // PlainApp v3.3.25（开源 AirDroid 替代，Android 本地网络管理）
   "PlainApp-3.3.25-64bit-Recommended.apk": "/plainhub/plain-app/releases/download/v3.3.25/PlainApp-3.3.25-64bit-Recommended.apk",
   "PlainApp-3.3.25-Old-32bit.apk": "/plainhub/plain-app/releases/download/v3.3.25/PlainApp-3.3.25-Old-32bit.apk",
+  // Moli Browser v1.1.20（Rust 写的 AI agent headless browser，Win/Mac 三平台）
+  "moli-x86_64-pc-windows-msvc.zip": "/lexmount/moli/releases/download/v1.1.20/moli-x86_64-pc-windows-msvc.zip",
+  "moli-aarch64-pc-windows-msvc.zip": "/lexmount/moli/releases/download/v1.1.20/moli-aarch64-pc-windows-msvc.zip",
+  "moli-x86_64-apple-darwin.tar.gz": "/lexmount/moli/releases/download/v1.1.20/moli-x86_64-apple-darwin.tar.gz",
+  "moli-aarch64-apple-darwin.tar.gz": "/lexmount/moli/releases/download/v1.1.20/moli-aarch64-apple-darwin.tar.gz",
+  // ArtCraft AI Studio v0.41.0（storytold，开源 AI 图像视频工作台）
+  "ArtCraft_0.41.0_x64-setup.exe": "/storytold/artcraft/releases/download/artcraft-v0.41.0/ArtCraft_0.41.0_x64-setup.exe",
+  "ArtCraft_0.41.0_x64_en-US.msi": "/storytold/artcraft/releases/download/artcraft-v0.41.0/ArtCraft_0.41.0_x64_en-US.msi",
+  "ArtCraft_0.41.0_universal.dmg": "/storytold/artcraft/releases/download/artcraft-v0.41.0/ArtCraft_0.41.0_universal.dmg",
+  // How To Live Better（eternity4719，中文人生指南，EPUB/PDF/HTML/Anki）
+  "HowToLiveBetter.epub": "/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.epub",
+  "HowToLiveBetter.pdf": "/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf",
+  "HowToLiveBetter.html": "/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html",
+  "HowToLiveBetter.apkg": "/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.apkg",
 };
 
 async function fetchUpstream(upstreamPath) {
