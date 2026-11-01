@@ -50,6 +50,9 @@ const MAP = {
   "HowToLiveBetter.pdf": "/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf",
   "HowToLiveBetter.html": "/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html",
   "HowToLiveBetter.apkg": "/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.apkg",
+  // PowerToys v0.102.3001（Microsoft 官方 Windows 增强包，仅 Windows）
+  "PowerToysSetup-0.102.3001.0-x64.exe": "/microsoft/PowerToys/releases/download/v0.102.3001/PowerToysSetup-0.102.3001.0-x64.exe",
+  "PowerToysSetup-0.102.3001.0-arm64.exe": "/microsoft/PowerToys/releases/download/v0.102.3001/PowerToysSetup-0.102.3001.0-arm64.exe",
 };
 
 async function fetchUpstream(upstreamPath) {
