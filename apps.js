@@ -151,8 +151,8 @@ const APPS = [
     date: "2026-10-31",
     tagline: "一键解析 8 大网盘直链，油猴脚本",
     description: "LinkSwift 是一个油猴（Tampermonkey）脚本，在网盘网页上一键提取直链下载地址。支持百度网盘、阿里云盘、中国移动云盘、天翼云盘、迅雷云盘、夸克网盘、UC网盘、123云盘共 8 大平台。解析完成后可一键推送给 Aria2、Motrix、IDM 等下载器，自动精简网盘界面、支持自定义主题色。GitHub 35k+⭐，AGPL-3.0 开源。",
-    icon: "apps/linkswift/icon.png",
-    preview: "apps/linkswift/preview.jpg",
+    icon: "apps/linkswift/icon.svg",
+    preview: "apps/linkswift/preview.png",
     downloads: [
       { platform: "油猴脚本（全浏览器通用）", file: "/dl/apps/linkswift/download/LinkSwift.user.js", size: "783 KB" },
     ],
