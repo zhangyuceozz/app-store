@@ -809,7 +809,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=41"></script>
+<script src="apps.js?v=42"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1045,19 +1045,9 @@
     if (active === "最近上架" && !query) {
       html = '<div class="group-title">最近上架 <span class="gt-count">' + list.length + "</span></div>";
       html += '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
-    } else if (query) {
-      html = '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
     } else {
-      var groups = {};
-      list.forEach(function (a) {
-        var key = a.sub || "其他";
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(a);
-      });
-      Object.keys(groups).forEach(function (sub) {
-        html += '<div class="group-title">' + esc(sub) + ' <span class="gt-count">' + groups[sub].length + "</span></div>";
-        html += '<div class="grid">' + groups[sub].map(function (a) { return cardHtml(a); }).join("") + "</div>";
-      });
+      html = '<div class="group-title"><span class="gt-count">' + list.length + "</span></div>";
+      html += '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
     }
     listEl.innerHTML = html;
     // 滚动浮现：每个卡片进入视口 30% 时加 .in-view

@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -45,11 +45,10 @@ const APPS = [
     id: "powertoys",
     name: "PowerToys",
     category: "系统工具",
-    sub: "Microsoft 官方 Windows 增强包",
     date: "2026-11-01",
     tagline: "30+ 免费开源小工具，让 Windows 更好用",
     description: "PowerToys 是 Microsoft 官方开源的 Windows 增强工具包——30+ 个小工具，从命令选择器（Command Palette，Win+Alt+Space 搜一切）到 FancyZones（窗口布局管理）、Advanced Paste（AI 辅助粘贴，转 Markdown / JSON / 翻译）、Peek（空格预览文件）、Environment Variables（环境变量分组开关）、Hosts File Editor（直接编辑 hosts）、Text Extractor（Win+Shift+T 从屏幕任何地方 OCR 抓文字）、Keyboard Manager（改键位）、Mouse Utilities（鼠标锁定 / 隐藏指针）……MIT 协议，C# 写，x64 和 ARM64 都支持。",
-    icon: "apps/powertoys/icon.svg",
+    icon: "apps/powertoys/icon.png",
     preview: "apps/powertoys/preview.png",
     downloads: [
       { platform: "Windows (x64)",    file: "/dl/apps/powertoys/download/PowerToysSetup-0.102.3001.0-x64.exe", size: "—" },
@@ -72,11 +71,10 @@ const APPS = [
     id: "paperless-ngx",
     name: "Paperless-ngx",
     category: "效率办公",
-    sub: "开源文档管理（扫描→索引→归档）",
     date: "2026-11-01",
     tagline: "OCR + AI 自动分类你的所有纸质扫描件",
     description: "Paperless-ngx 是社区驱动的文档管理系统——把发票、合同、收据、身份证扫描件统统丢进去，它用 OCR + AI 自动提取文字、识别日期/金额/联系人、按规则自动归档到分类文件夹。支持 PDF / 图片 / Office 文档 / 邮件附件，全文搜索、标签、自定义文档类型、邮件消费（发邮件到专用地址自动入库）、WebDAV 同步。GPL-3.0，Docker 一键部署，数据完全自己掌控，29k+⭐。",
-    icon: "apps/paperless-ngx/icon.svg",
+    icon: "apps/paperless-ngx/icon.png",
     preview: "apps/paperless-ngx/preview.png",
     downloads: [
       { platform: "Docker Compose（推荐）", file: "", size: "—" },
@@ -99,7 +97,6 @@ const APPS = [
     id: "excalidraw",
     name: "Excalidraw",
     category: "设计创意",
-    sub: "手绘风白板 · 端到端加密",
     date: "2026-11-01",
     tagline: "打开浏览器就能画的免费开源白板",
     description: "Excalidraw 是一个纯 Web 的手绘风白板——打开 excalidraw.com 就能画，不用注册，浏览器 localStorage 自动存。用 Rough.js 让所有线条看起来像手画的，支持矩形、圆形、菱形、箭头、钢笔、文字、便签、Mermaid 图表嵌入、代码高亮。多人实时协作用 Socket.IO + Web Cryptography API 端到端加密（只有参与者能看到内容）。导出 PNG / SVG / .excalidraw 源文件。MIT 协议，135k+⭐，TypeScript + React + Vite 写的，PWA 支持离线使用。",
@@ -124,11 +121,10 @@ const APPS = [
     id: "text-to-cad",
     name: "Text to CAD",
     category: "开发工具",
-    sub: "AI Agent 生成 3D CAD 模型",
     date: "2026-11-01",
     tagline: "给 AI Agent 装上 CAD 超能力",
     description: "Text to CAD（earthtojake/text-to-cad）是一个给 AI Agent 的 CAD 插件/skill——用自然语言告诉 Claude Code / Codex / Cursor「生成一个直径 20mm 的带键槽圆柱齿轮」，Agent 就会生成 STEP / GLB / STL / 3MF 文件。底层用 CadQuery + build123d（Python CAD 内核），支持 STEP 零件库（找标准螺丝、轴承、电机）、工程图纸生成（PDF 带尺寸标注、隐藏线、标题栏）、制造可行性检查、3D 打印/钣金/CNC 服务对接。MIT 协议，Python 3.11+，22k+⭐。",
-    icon: "apps/text-to-cad/icon.svg",
+    icon: "apps/text-to-cad/icon.png",
     preview: "apps/text-to-cad/preview.png",
     downloads: [
       { platform: "Agent Plugin + Skill（跨平台）", file: "", size: "—" },
@@ -152,11 +148,10 @@ const APPS = [
     id: "rea",
     name: "REA",
     category: "开发工具",
-    sub: "AI 逆向一切",
     date: "2026-11-01",
     tagline: "给 AI 编程代理装一套逆向工具链",
     description: "REA（Reverse Engineer Anything）是一个 MIT 开源的 MCP Server，让 Claude Code、Codex、Cursor、TRAE 等 AI 编程代理能够逆向分析任何东西：原生二进制、Electron/JS 应用、.NET 程序、Android APK、GGUF 模型文件、SQLite 数据库、EVM 字节码……你用自然语言告诉代理「帮我看看这个 exe 的 % 按钮怎么实现的」，代理通过 REA 调本地反编译器（Hopper/Ghidra/IDA，三选一），返回伪代码、汇编、符号提取、调用关系，再帮你解释和重构。不是魔法还原源码，是带证据的结构化分析报告。npm 安装：`npx rea-agents setup`。",
-    icon: "apps/rea/icon.svg",
+    icon: "apps/rea/icon.png",
     preview: "apps/rea/preview.png",
     downloads: [
       { platform: "跨平台（npm 安装）", file: "", size: "—" },
@@ -180,7 +175,6 @@ const APPS = [
     id: "moli",
     name: "Moli Browser",
     category: "开发工具",
-    sub: "AI Agent Headless Browser",
     date: "2026-11-01",
     tagline: "为 AI Agent 设计的轻量无头浏览器",
     description: "Moli 是 Lexmount 用 Rust 写的独立无头浏览器内核——不是 Chromium 包装器，是纯 Rust 实现：html5ever 解析 HTML、rusty_v8 跑 JS、Servo/Stylo 处理 CSS、Taffy+Parley 做布局。专为 AI 代理设计：按需布局（需要时才做重排）、低资源占用、支持 CDP / WebDriver Classic / WebDriver BiDi 三套协议。v1.1.20 已经很稳，AI 代理可以用它来抓取网页内容、自动填表、搜索信息、操作 DOM。Apache-2.0 / MIT 双协议，Win/Mac/Linux 三平台。",
@@ -209,11 +203,10 @@ const APPS = [
     id: "artcraft",
     name: "ArtCraft AI Studio",
     category: "设计创意",
-    sub: "开源 AI 图像视频工作台",
     date: "2026-11-01",
     tagline: "可控的 AI 创作：2D/3D 合成、视频生成",
     description: "ArtCraft 是 storytold（Brandon Thomas）的开源 AI 创作桌面应用——给艺术家「控制感」而不只是文字提示。桌面端 macOS/Windows，也有浏览器版 app.getartcraft.com。内置 Seedance 2.5、GPT Image 2、Sora 2 Pro、Kling 3.0 Pro、Flux Pro 等主流模型。特色功能：Image to Location（把虚拟演员放进真实环境）、3D Compositing（场景建图层）、Image to 3D Mesh、Character Posing（3D 摆姿势）、Background Removal。MIT 或 Apache-2.0 双协议，免费无订阅。注意：AI 模型调用需要在 ArtCraft 内登录模型提供商（或用自己的 API key）。",
-    icon: "apps/artcraft/icon.svg",
+    icon: "apps/artcraft/icon.png",
     preview: "apps/artcraft/preview.png",
     downloads: [
       { platform: "Windows (x64, 安装包)", file: "/dl/apps/artcraft/download/ArtCraft_0.41.0_x64-setup.exe", size: "—" },
@@ -237,7 +230,6 @@ const APPS = [
     id: "howtolivebetter",
     name: "How To Live Better",
     category: "实用工具",
-    sub: "高性价比人生指南",
     date: "2026-11-01",
     tagline: "长寿防病、省钱理财、法律红线、恋爱婚育、出国",
     description: "HowToLiveBetter 是 eternity4719 开源的中文人生指南项目——68k+⭐，用 Python + AI 生成，内容覆盖：长寿与防病、急救知识、省钱理财与法律红线、失业与工伤、医保社保、恋爱与婚育、怀孕与育儿、创业与合规、出国指南……不是鸡汤，是干货清单，按主题分章节，有具体数字和操作步骤。输出格式多：EPUB（手机/平板读）、PDF、离线 HTML（浏览器双击打开就行）、Anki 卡片（知识条目做成记忆卡片）。MIT 协议，完全免费。",
@@ -265,11 +257,10 @@ const APPS = [
     id: "diagram-design",
     name: "Diagram Design",
     category: "开发工具",
-    sub: "Agent Skill · 专业级图表",
     date: "2026-11-01",
     tagline: "45 种图表类型，一个 HTML + SVG 文件",
     description: "Diagram Design 是 Cathryn Lavery 的 Agent Skill（62k+⭐）——让 Claude Code、Codex、Cursor、TRAE 等编程代理生成**杂志级质量**的图表。45 种类型：架构图、流程图、时序图、象限分析、Wardley 地图、鱼骨图、金字塔、服务蓝图、瀑布桥、极地图、爆炸视图……输出是**一个自包含的 .html 文件**（双击就能打开），纯 HTML + SVG，无阴影、无 Mermaid 那种 AI 味的圆角框、4px 网格对齐、1px hairline 边框、Instrument Serif + Geist + Geist Mono 三字体。MIT 协议，安装用 `npx skills add cathrynlavery/diagram-design`。",
-    icon: "apps/diagram-design/icon.svg",
+    icon: "apps/diagram-design/icon.png",
     preview: "apps/diagram-design/preview.png",
     downloads: [
       { platform: "跨平台（npm skill）", file: "", size: "—" },
@@ -291,11 +282,10 @@ const APPS = [
     id: "plainapp",
     name: "PlainApp",
     category: "网络通信",
-    sub: "本地网络手机管理",
     date: "2026-11-01",
     tagline: "开源 AirDroid 替代：浏览器管理 Android，全程本地网络",
     description: "PlainApp 是一个开源的 AirDroid 替代方案——装上 Android App，在同一 Wi-Fi 的浏览器里直接管理手机：文件浏览/上传/下载、短信收发、联系人查看、WebRTC 屏幕镜像、通知镜像、RSS 阅读器、Markdown 笔记。全程本地网络，数据不经过任何第三方服务器，不用注册账号，无文件大小限制。端到端加密（XChaCha20-Poly1305 + Ed25519 签名 + ECDH 密钥交换），AGPL-3.0 开源，Android 9.0+。",
-    icon: "apps/plainapp/icon.ico",
+    icon: "apps/plainapp/icon.png",
     preview: "apps/plainapp/preview.png",
     downloads: [
       { platform: "Android (64-bit, 推荐)", file: "/dl/apps/plainapp/download/PlainApp-3.3.25-64bit-Recommended.apk", size: "—" },
@@ -320,11 +310,10 @@ const APPS = [
     id: "iphone-use",
     name: "iPhone-use",
     category: "开发工具",
-    sub: "AI 代理控制 iPhone",
     date: "2026-11-01",
     tagline: "让 Claude Code / Codex 等 AI 代理操作你的真实 iPhone",
     description: "iPhone-use 是一个开源 macOS CLI，让 Claude Code、Codex、Cursor、TRAE 等 AI 代码代理**看得到、摸得到**你的真实 iPhone。CLI 运行在 Mac 上，iPhone 插 USB + 信任 + 开发者模式 + 解锁。AI 代理发命令：截屏、点按钮、滑动、输入文字，iPhone-use 用 Apple 原生 HID/XCTest 执行动作，返回新截图让代理检查结果。支持标准模式（HID，无需 Xcode 签名）和 Runner 模式（XCTest，可操作 accessibility 元素）。MIT 协议，Swift 6 原生，不依赖 Node/Python/WebDriverAgent。",
-    icon: "apps/iphone-use/icon.svg",
+    icon: "apps/iphone-use/icon.png",
     preview: "apps/iphone-use/preview.png",
     downloads: [
       { platform: "macOS (Apple Silicon)", file: "/dl/apps/iphone-use/download/iphone-use-0.6.1-macos-arm64.tar.gz", size: "—" },
@@ -347,7 +336,6 @@ const APPS = [
     id: "readany",
     name: "ReadAny",
     category: "效率办公",
-    sub: "AI 阅读器",
     date: "2026-11-01",
     tagline: "带 AI 聊天和语义搜索的本地优先电子书阅读器",
     description: "ReadAny 是一款本地优先的跨平台 AI 电子书阅读器。支持 EPUB、PDF、MOBI、AZW、FB2、CBZ、TXT 等几乎所有电子书格式。内置 AI RAG 聊天（问任何一本里的问题）、语义搜索（按意思而非关键词找内容）、高亮笔记自动整理、TTS 朗读、WebDAV 跨设备同步。桌面端（Win/macOS/Linux）+ 移动端（iOS/Android）全平台可用，数据本地存储不上传，隐私完全自主。",
@@ -378,7 +366,6 @@ const APPS = [
     id: "bongocat",
     name: "BongoCat",                        // 应用名
     category: "桌面美化",                    // 大分类（分类条显示这个）
-    sub: "互动桌宠",                         // 小分类（可选，进入大分类后按这个分组）
     date: "2026-10-15",                      // 上架日期（YYYY-MM-DD），用于「最近上架」排序
     tagline: "会打鼓的小猫",                 // 一句话简介（卡片上显示）
     description: "BongoCat 是一只住在你桌面的小猫，会跟着键盘和鼠标一起敲鼓。",  // 详细介绍（点开后显示）
@@ -404,11 +391,10 @@ const APPS = [
     id: "winhance",
     name: "Winhance",
     category: "系统工具",
-    sub: "系统优化",
     date: "2026-10-18",
     tagline: "Windows 系统优化与定制",
     description: "Winhance 是一个 C# 开源应用，用于清理、优化和定制你的 Windows 体验。软件管理、系统优化、界面定制、自定义 ISO 制作——一站式搞定。",
-    icon: "apps/winhance/icon.png",
+    icon: "apps/winhance/icon.ico",
     preview: "apps/winhance/preview.jpg",
     downloads: [
       { platform: "Windows", file: "/dl/apps/winhance/download/Winhance.Installer.exe", size: "61.5 MB" },
@@ -431,7 +417,6 @@ const APPS = [
     id: "mineradio",
     name: "Mineradio",
     category: "多媒体",
-    sub: "音乐播放器",
     date: "2026-10-20",
     tagline: "沉浸式音乐播放器",
     description: "Mineradio 是一款以电影镜头、粒子视觉和歌词舞台为核心的沉浸式音乐播放器。支持多格式音频、内嵌与外置歌词、本地封面、迷你播放器和桌面歌词，把听歌变成一场视觉演出。",
@@ -455,7 +440,6 @@ const APPS = [
     id: "pdfcraft",
     name: "PdfCraft",
     category: "实用工具",
-    sub: "PDF 工具",
     date: "2026-10-21",
     tagline: "纯 Rust 打造的开源 PDF 阅读编辑器",
     description: "PdfCraft 是一个用纯 Rust 从零编写的开源 PDF 阅读器与编辑器。轻快、干净、不臃肿——打开就能读，标注、编辑、导出一步到位。",
@@ -480,7 +464,6 @@ const APPS = [
     id: "linkswift",
     name: "LinkSwift",
     category: "实用工具",
-    sub: "网盘直链",
     date: "2026-10-31",
     tagline: "一键解析 8 大网盘直链，油猴脚本",
     description: "LinkSwift 是一个油猴（Tampermonkey）脚本，在网盘网页上一键提取直链下载地址。支持百度网盘、阿里云盘、中国移动云盘、天翼云盘、迅雷云盘、夸克网盘、UC网盘、123云盘共 8 大平台。解析完成后可一键推送给 Aria2、Motrix、IDM 等下载器，自动精简网盘界面、支持自定义主题色。GitHub 35k+⭐，AGPL-3.0 开源。",
@@ -506,7 +489,6 @@ const APPS = [
     id: "lively",
     name: "Lively Wallpaper",
     category: "桌面美化",
-    sub: "动态壁纸",
     date: "2026-10-24",
     tagline: "免费开源的 Windows 动态壁纸",
     description: "Lively Wallpaper 是一款免费开源的 Windows 动态壁纸引擎。支持视频、GIF、HTML 网页、GLSL 着色器、YouTube 链接等多种壁纸格式，多显示器支持，游戏自动暂停，资源占用低。2023 微软商店应用大奖得主。",
@@ -532,11 +514,10 @@ const APPS = [
     id: "yt-dlp",
     name: "yt-dlp",
     category: "实用工具",
-    sub: "视频下载",
     date: "2026-10-23",
     tagline: "全能视频下载命令行工具",
     description: "yt-dlp 是一个功能强大的命令行视频下载工具，支持 YouTube、Bilibili、Twitter、TikTok、Vimeo 等数千个网站的视频和音频下载。基于 Python，开源免费，持续更新。",
-    icon: "apps/yt-dlp/icon.png",
+    icon: "apps/yt-dlp/icon.ico",
     preview: "apps/yt-dlp/preview.jpg",
     downloads: [
       { platform: "Windows (x64)",  file: "/dl/apps/yt-dlp/download/yt-dlp.exe",          size: "17.0 MB" },
