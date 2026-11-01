@@ -31,6 +31,8 @@ const MAP = {
   "ReadAny_1.3.6_x64.dmg": "/codedogQBY/ReadAny/releases/download/v1.3.6/ReadAny_1.3.6_x64.dmg",
   "ReadAny_1.3.6_amd64.AppImage": "/codedogQBY/ReadAny/releases/download/v1.3.6/ReadAny_1.3.6_amd64.AppImage",
   "ReadAny-1.3.6.apk": "/codedogQBY/ReadAny/releases/download/v1.3.6/ReadAny-1.3.6.apk",
+  // iPhone-use v0.6.1（让 AI 代理控制真实 iPhone 的 macOS CLI）
+  "iphone-use-0.6.1-macos-arm64.tar.gz": "/hughlee824/iphone-use/releases/download/v0.6.1/iphone-use-0.6.1-macos-arm64.tar.gz",
 };
 
 async function fetchUpstream(upstreamPath) {

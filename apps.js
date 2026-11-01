@@ -42,6 +42,33 @@ const CATEGORIES = [
 // 应用列表
 const APPS = [
   {
+    id: "iphone-use",
+    name: "iPhone-use",
+    category: "开发工具",
+    sub: "AI 代理控制 iPhone",
+    date: "2026-11-01",
+    tagline: "让 Claude Code / Codex 等 AI 代理操作你的真实 iPhone",
+    description: "iPhone-use 是一个开源 macOS CLI，让 Claude Code、Codex、Cursor、TRAE 等 AI 代码代理**看得到、摸得到**你的真实 iPhone。CLI 运行在 Mac 上，iPhone 插 USB + 信任 + 开发者模式 + 解锁。AI 代理发命令：截屏、点按钮、滑动、输入文字，iPhone-use 用 Apple 原生 HID/XCTest 执行动作，返回新截图让代理检查结果。支持标准模式（HID，无需 Xcode 签名）和 Runner 模式（XCTest，可操作 accessibility 元素）。MIT 协议，Swift 6 原生，不依赖 Node/Python/WebDriverAgent。",
+    icon: "apps/iphone-use/icon.svg",
+    preview: "apps/iphone-use/preview.png",
+    downloads: [
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/iphone-use/download/iphone-use-0.6.1-macos-arm64.tar.gz", size: "—" },
+    ],
+    install: [
+      "前置：Apple Silicon Mac、macOS 27 / Xcode 27、iPhone（iOS 27，USB 连接，已信任，开发者模式已开，保持解锁）。",
+      "Homebrew 安装：brew install hughlee824/tap/iphone-use",
+      "或手动下载 tar.gz 解压后把 iphone-use 放进 PATH。",
+      "第一次用：iphone-use devices → 复制 UDID → iphone-use connect --device $UDID --mode standard",
+      "然后在 Claude Code / Codex 里 invoke /iphone-use:iphone-use skill，给它第一个任务。",
+    ],
+    usage: [
+      "先 iphone-use connect 连接设备，会话期间 AI 代理可以反复 observe + act。",
+      "两个模式：standard（HID，无需签名，先装这个）和 runner（XCTest，有 accessibility 元素引用）。",
+      "常用命令：observe（截屏）、tap（点）、swipe（滑）、text（输文字）、press（按键）。",
+      "跑完 iphone-use disconnect 释放会话；空闲超时也会自动释放。",
+    ],
+  },
+  {
     id: "readany",
     name: "ReadAny",
     category: "效率办公",
