@@ -414,11 +414,12 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    opacity: 0; transform: translateY(12px);
-    transition: opacity .5s ease, transform .5s cubic-bezier(.22,1,.36,1);
+    opacity: 0; transform: translateY(20px) scale(.97); filter: blur(6px);
+    transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1);
+    will-change: opacity, transform, filter;
   }
-  .card.in-view { opacity: 1; transform: none; }
-  .card.is-hover { transform: scale(1.04) !important; z-index: 10; }
+  .card.in-view { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  .card.is-hover { transform: scale(1.04) !important; z-index: 10; filter: none; }
 
   /* 预览图：卡片上半部分 */
   .card .c-preview { position: relative; width: 100%; aspect-ratio: 16/10; border-radius: 6px; overflow: hidden; background: var(--soft); margin-bottom: 4px; cursor: zoom-in; }
@@ -809,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=42"></script>
+<script src="apps.js?v=43"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1050,17 +1051,22 @@
       html += '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
     }
     listEl.innerHTML = html;
-    // 滚动浮现：每个卡片进入视口 30% 时加 .in-view
+    // 丝滑错开浮现：刚露头(threshold 0.1)就开始，每张卡片按 DOM 顺序错开 60ms
     if (window.__cardObs) window.__cardObs.disconnect();
+    var allCards = listEl.querySelectorAll(".card");
     window.__cardObs = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) {
-          e.target.classList.add("in-view");
+          var idx = Array.prototype.indexOf.call(allCards, e.target);
+          var delay = Math.max(0, idx % 8) * 60; // 每行最多 8 张错峰，避免长延迟
+          setTimeout(function () {
+            e.target.classList.add("in-view");
+          }, delay);
           window.__cardObs.unobserve(e.target);
         }
       });
-    }, { threshold: 0.3 });
-    listEl.querySelectorAll(".card").forEach(function (c) { window.__cardObs.observe(c); });
+    }, { threshold: 0.1, rootMargin: "0px 0px -10% 0px" });
+    allCards.forEach(function (c) { window.__cardObs.observe(c); });
   }
 
   var qTimer = null;
