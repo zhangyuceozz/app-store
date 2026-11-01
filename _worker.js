@@ -33,6 +33,9 @@ const MAP = {
   "ReadAny-1.3.6.apk": "/codedogQBY/ReadAny/releases/download/v1.3.6/ReadAny-1.3.6.apk",
   // iPhone-use v0.6.1（让 AI 代理控制真实 iPhone 的 macOS CLI）
   "iphone-use-0.6.1-macos-arm64.tar.gz": "/hughlee824/iphone-use/releases/download/v0.6.1/iphone-use-0.6.1-macos-arm64.tar.gz",
+  // PlainApp v3.3.25（开源 AirDroid 替代，Android 本地网络管理）
+  "PlainApp-3.3.25-64bit-Recommended.apk": "/plainhub/plain-app/releases/download/v3.3.25/PlainApp-3.3.25-64bit-Recommended.apk",
+  "PlainApp-3.3.25-Old-32bit.apk": "/plainhub/plain-app/releases/download/v3.3.25/PlainApp-3.3.25-Old-32bit.apk",
 };
 
 async function fetchUpstream(upstreamPath) {

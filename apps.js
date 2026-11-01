@@ -42,6 +42,35 @@ const CATEGORIES = [
 // 应用列表
 const APPS = [
   {
+    id: "plainapp",
+    name: "PlainApp",
+    category: "网络通信",
+    sub: "本地网络手机管理",
+    date: "2026-11-01",
+    tagline: "开源 AirDroid 替代：浏览器管理 Android，全程本地网络",
+    description: "PlainApp 是一个开源的 AirDroid 替代方案——装上 Android App，在同一 Wi-Fi 的浏览器里直接管理手机：文件浏览/上传/下载、短信收发、联系人查看、WebRTC 屏幕镜像、通知镜像、RSS 阅读器、Markdown 笔记。全程本地网络，数据不经过任何第三方服务器，不用注册账号，无文件大小限制。端到端加密（XChaCha20-Poly1305 + Ed25519 签名 + ECDH 密钥交换），AGPL-3.0 开源，Android 9.0+。",
+    icon: "apps/plainapp/icon.ico",
+    preview: "apps/plainapp/preview.png",
+    downloads: [
+      { platform: "Android (64-bit, 推荐)", file: "/dl/apps/plainapp/download/PlainApp-3.3.25-64bit-Recommended.apk", size: "—" },
+      { platform: "Android (旧 32-bit)",      file: "/dl/apps/plainapp/download/PlainApp-3.3.25-Old-32bit.apk", size: "—" },
+    ],
+    install: [
+      "下载 APK 装到 Android 9.0+ 手机。",
+      "手机和电脑连同一个 Wi-Fi（或电脑连手机热点）。",
+      "打开 PlainApp，点「Start」，记下显示的地址（比如 http://192.168.1.234:8080）。",
+      "电脑浏览器打开这个地址就能管理手机了。",
+    ],
+    usage: [
+      "Files：浏览/上传/下载/删除手机文件，无大小限制。",
+      "SMS：收发短信、查看通话记录（需要授予 SMS 权限）。",
+      "Screen Mirror：WebRTC 实时投屏到浏览器。",
+      "Notifications：手机通知镜像到浏览器。",
+      "RSS / Notes：内置 RSS 阅读器和 Markdown 笔记。",
+      "全部流量在本地网络，离开 Wi-Fi 自动停。",
+    ],
+  },
+  {
     id: "iphone-use",
     name: "iPhone-use",
     category: "开发工具",
