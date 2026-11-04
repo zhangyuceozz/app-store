@@ -414,12 +414,12 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    opacity: 0; transform: translateY(20px) scale(.97); filter: blur(6px);
-    transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1);
-    will-change: opacity, transform, filter;
+    opacity: 0; transform: translateY(14px);
+    transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1);
+    will-change: transform, opacity;
   }
-  .card.in-view { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-  .card.is-hover { transform: scale(1.04) !important; z-index: 10; filter: none; }
+  .card.in-view { opacity: 1; transform: translateY(0); }
+  .card.is-hover { transform: translateY(-2px) scale(1.03) !important; z-index: 10; }
 
   /* 预览图：卡片上半部分 */
   .card .c-preview { position: relative; width: 100%; aspect-ratio: 16/10; border-radius: 6px; overflow: hidden; background: var(--soft); margin-bottom: 4px; cursor: zoom-in; }
@@ -430,8 +430,8 @@
   .card.is-hover .c-preview-hint { opacity: 1; }
 
   /* 默认内容：hover 时模糊淡出 */
-  .card .c-row { display: flex; align-items: center; gap: 10px; transition: filter .25s ease, opacity .25s ease; }
-  .card.is-hover .c-row { filter: blur(3px); opacity: .35; }
+  .card .c-row { display: flex; align-items: center; gap: 10px; transition: opacity .25s ease; }
+  .card.is-hover .c-row { opacity: .28; }
   .card .c-icon { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
   .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=46"></script>
+<script src="apps.js?v=47"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1025,19 +1025,19 @@
     return hay.indexOf(query) !== -1;
   }
 
-  var PAGE_SIZE = 12;
+  var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
 
   function renderList() {
     if (window.__cardObs) window.__cardObs.disconnect();
+    if (window.__sentinelObs) window.__sentinelObs.disconnect();
     var list = APPS.filter(matches);
-    // 默认按上架日期升序（先来后到）
     list = list.slice().sort(function (a, b) {
       return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
     });
     if (active === "最近上架" && !query) {
-      list = list.slice().reverse(); // 最新在前
+      list = list.slice().reverse();
     }
     fullList = list;
     pageIndex = 0;
@@ -1070,24 +1070,15 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 只 observe 新加载的卡片（避免重复）
-    if (window.__cardObs) window.__cardObs.disconnect();
-    var allCards = listEl.querySelectorAll(".card:not(.in-view)");
-    window.__cardObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          var idx = Array.prototype.indexOf.call(allCards, e.target);
-          var delay = Math.max(0, idx % 8) * 60;
-          setTimeout(function () {
-            e.target.classList.add("in-view");
-          }, delay);
-          window.__cardObs.unobserve(e.target);
-        }
+    // 丝滑浮现：rAF 交错，每张间隔 38ms（≈ 2 帧 @60fps）
+    var newCards = grid.querySelectorAll(".card:not(.in-view)");
+    newCards.forEach(function (c, i) {
+      requestAnimationFrame(function () {
+        setTimeout(function () { c.classList.add("in-view"); }, i * 38);
       });
-    }, { threshold: 0.01, rootMargin: "0px 0px 200px 0px" });
-    allCards.forEach(function (c) { window.__cardObs.observe(c); });
+    });
 
-    // 到底 sentinel：滚到这里自动 loadMore
+    // 到底 sentinel：提前 500px 预加载
     var sentinel = document.getElementById("scroll-sentinel");
     var endHint = document.getElementById("end-hint");
     if (end >= fullList.length) {
@@ -1106,7 +1097,7 @@
           loadMore(false);
         }
       });
-    }, { threshold: 0, rootMargin: "0px 0px 300px 0px" });
+    }, { threshold: 0, rootMargin: "0px 0px 500px 0px" });
     if (sentinel) window.__sentinelObs.observe(sentinel);
   }
 
