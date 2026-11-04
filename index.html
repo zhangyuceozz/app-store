@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=48"></script>
+<script src="apps.js?v=49"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1028,10 +1028,27 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
+  var __stagger = 0;
+  var __rafTick = false;
+
+  function tickFadeIn() {
+    __rafTick = false;
+    var cards = document.querySelectorAll(".card:not(.in-view)");
+    if (!cards.length) { __stagger = 0; return; }
+    cards.forEach(function (c) {
+      var r = c.getBoundingClientRect();
+      if (r.top < window.innerHeight + 50) {
+        var idx = __stagger++;
+        setTimeout(function () { c.classList.add("in-view"); }, Math.min(idx * 40, 400));
+      }
+    });
+  }
+  window.addEventListener("scroll", function () {
+    if (!__rafTick) { __rafTick = true; requestAnimationFrame(tickFadeIn); }
+  }, { passive: true });
 
   function renderList() {
-    if (window.__cardObs) window.__cardObs.disconnect();
-    if (window.__sentinelObs) window.__sentinelObs.disconnect();
+    __stagger = 0;
     var list = APPS.filter(matches);
     list = list.slice().sort(function (a, b) {
       return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
@@ -1070,23 +1087,8 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // IntersectionObserver：新卡片滚到视口才浮现（rAF 对齐刷新率）
-    if (window.__cardObs) window.__cardObs.disconnect();
-    var obsIdx = 0;
-    var pendingCards = grid.querySelectorAll(".card:not(.in-view)");
-    window.__cardObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          var idx = obsIdx++;
-          var delay = Math.min(idx * 40, 400); // 最多等 400ms
-          requestAnimationFrame(function () {
-            setTimeout(function () { e.target.classList.add("in-view"); }, delay);
-          });
-          window.__cardObs.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0, rootMargin: "0px 0px 200px 0px" });
-    pendingCards.forEach(function (c) { window.__cardObs.observe(c); });
+    // 新加载的卡片保持 opacity:0，由 scroll+tickFadeIn 负责滚到浮现
+    requestAnimationFrame(tickFadeIn);
 
     // 到底 sentinel：提前 500px 预加载
     var sentinel = document.getElementById("scroll-sentinel");
