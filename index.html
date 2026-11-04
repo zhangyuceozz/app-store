@@ -414,11 +414,11 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    opacity: 0; transform: translateY(30px) scale(.96);
-    transition: opacity .85s cubic-bezier(.22,1,.36,1), transform .85s cubic-bezier(.22,1,.36,1);
+    opacity: 0; transform: translateY(14px);
+    transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
     will-change: transform, opacity;
   }
-  .card.in-view { opacity: 1; transform: translateY(0) scale(1); }
+  .card.in-view { opacity: 1; transform: translateY(0); }
   .card.is-hover { transform: translateY(-2px) scale(1.03) !important; z-index: 10; }
 
   /* 预览图：卡片上半部分 */
@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=57"></script>
+<script src="apps.js?v=58"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1068,14 +1068,14 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 错峰浮现：双 rAF 确保两帧渲染（先 opacity:0 → 再 transition 到 opacity:1）
+    // 错峰浮现：双 rAF + 80ms 波浪（更丝滑更快）
     var freshCards = grid.querySelectorAll(".card:not(.in-view)");
     freshCards.forEach(function (c, i) {
       setTimeout(function () {
         requestAnimationFrame(function () {
           requestAnimationFrame(function () { c.classList.add("in-view"); });
         });
-      }, i * 180);
+      }, i * 80);
     });
 
     // 到底 sentinel：提前 500px 预加载
