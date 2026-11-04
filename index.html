@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=62"></script>
+<script src="apps.js?v=63"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1028,29 +1028,21 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
-  // observer 只负责无限滚动：等滚进视口才加 .in-view
   var __viewObs = null;
-  var __seq = 0;
   function ensureViewObs() {
     if (__viewObs) return __viewObs;
     __viewObs = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting && !e.target.classList.contains("in-view")) {
           __viewObs.unobserve(e.target);
-          var delay = (parseInt(e.target.getAttribute("data-seq") || "0", 10)) * 80;
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              setTimeout(function () { e.target.classList.add("in-view"); }, Math.min(delay, 640));
-            });
-          });
+          e.target.classList.add("in-view");
         }
       });
-    }, { threshold: 0, rootMargin: "0px 0px 50px 0px" });
+    }, { threshold: 0, rootMargin: "0px 0px 200px 0px" });
     return __viewObs;
   }
 
   function renderList() {
-    __seq = 0;
     var list = APPS.filter(matches);
     list = list.slice().sort(function (a, b) {
       return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
@@ -1090,7 +1082,7 @@
     pageIndex++;
 
     if (reset) {
-      // 首次/切分类：卡片已在视口，直接双 rAF 错峰（v=57 已验证）
+      // 首次/切分类：卡片已在视口，直接双 rAF 错峰（已验证有效）
       var fresh = grid.querySelectorAll(".card:not(.in-view)");
       fresh.forEach(function (c, i) {
         requestAnimationFrame(function () {
@@ -1100,11 +1092,8 @@
         });
       });
     } else {
-      // 无限滚动：卡片在视口下方，observe 等滚到视口（v=59 已验证）
-      var fresh2 = grid.querySelectorAll(".card:not([data-seq])");
-      fresh2.forEach(function (c) {
-        c.setAttribute("data-seq", __seq++);
-      });
+      // 无限滚动：observer 直接加 class（简化版）
+      var fresh2 = grid.querySelectorAll(".card:not(.in-view)");
       requestAnimationFrame(function () {
         fresh2.forEach(function (c) { ensureViewObs().observe(c); });
       });
