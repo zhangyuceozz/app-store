@@ -815,7 +815,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=55"></script>
+<script src="apps.js?v=56"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1075,8 +1075,10 @@
 
     // 错峰浮现：keyframes 动画 + 180ms 错峰 + rAF 强制两帧渲染
     var freshCards = grid.querySelectorAll(".card:not(.in-view)");
+    console.log("[DEBUG] freshCards:", freshCards.length, "batch:", batch.length);
     freshCards.forEach(function (c, i) {
       setTimeout(function () {
+        console.log("[DEBUG] adding in-view:", i);
         requestAnimationFrame(function () { c.classList.add("in-view"); });
       }, i * 180);
     });
