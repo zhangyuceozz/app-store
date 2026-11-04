@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=64"></script>
+<script src="apps.js?v=65"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1029,18 +1029,6 @@
   var pageIndex = 0;
   var fullList = [];
 
-  // 全局 scroll：检查所有未浮现卡片是否进入视口（最朴素最可靠）
-  window.addEventListener("scroll", function () {
-    var cards = document.querySelectorAll(".card:not(.in-view)");
-    if (!cards.length) return;
-    cards.forEach(function (c) {
-      var r = c.getBoundingClientRect();
-      if (r.top < window.innerHeight + 80) {
-        c.classList.add("in-view");
-      }
-    });
-  }, { passive: true });
-
   function renderList() {
     var list = APPS.filter(matches);
     list = list.slice().sort(function (a, b) {
@@ -1080,27 +1068,15 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    if (reset) {
-      // 首次/切分类：卡片已在视口，直接双 rAF 错峰（已验证有效）
-      var fresh = grid.querySelectorAll(".card:not(.in-view)");
-      fresh.forEach(function (c, i) {
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            setTimeout(function () { c.classList.add("in-view"); }, i * 80);
-          });
-        });
-      });
-    } else {
-      // 无限滚动：新卡片保持 opacity:0，等全局 scroll 事件触发浮现
-      // 但立刻触发一次检查（可能新卡片刚好在视口里）
+    // 最简方案：每次 loadMore 新卡片都 double-rAF + 错峰（v=57 已证明有效）
+    var freshCards = grid.querySelectorAll(".card:not(.in-view)");
+    freshCards.forEach(function (c, i) {
       requestAnimationFrame(function () {
-        var all = document.querySelectorAll(".card:not(.in-view)");
-        all.forEach(function (c) {
-          var r = c.getBoundingClientRect();
-          if (r.top < window.innerHeight + 80) c.classList.add("in-view");
+        requestAnimationFrame(function () {
+          setTimeout(function () { c.classList.add("in-view"); }, i * 80);
         });
       });
-    }
+    });
 
     // 到底 sentinel：提前 500px 预加载
     var sentinel = document.getElementById("scroll-sentinel");
