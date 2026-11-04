@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=61"></script>
+<script src="apps.js?v=62"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1028,20 +1028,16 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
-  // 全局 observer：只负责"卡片滚进视口才加 .in-view"
+  // observer 只负责无限滚动：等滚进视口才加 .in-view
   var __viewObs = null;
   var __seq = 0;
   function ensureViewObs() {
     if (__viewObs) return __viewObs;
-    console.log("[DEBUG] creating __viewObs");
     __viewObs = new IntersectionObserver(function (entries) {
-      console.log("[DEBUG] observer callback fired, entries:", entries.length);
       entries.forEach(function (e) {
-        console.log("[DEBUG] entry:", e.isIntersecting, "target:", e.target?.className);
         if (e.isIntersecting && !e.target.classList.contains("in-view")) {
           __viewObs.unobserve(e.target);
           var delay = (parseInt(e.target.getAttribute("data-seq") || "0", 10)) * 80;
-          console.log("[DEBUG] scheduling .in-view for seq", e.target.getAttribute("data-seq"), "delay", delay);
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
               setTimeout(function () { e.target.classList.add("in-view"); }, Math.min(delay, 640));
@@ -1093,14 +1089,26 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 关键：observe 前等一帧让浏览器 layout，确保 observer 能检测到"卡片已在视口"
-    var freshCards = grid.querySelectorAll(".card:not([data-seq])");
-    freshCards.forEach(function (c) {
-      c.setAttribute("data-seq", __seq++);
-    });
-    requestAnimationFrame(function () {
-      freshCards.forEach(function (c) { ensureViewObs().observe(c); });
-    });
+    if (reset) {
+      // 首次/切分类：卡片已在视口，直接双 rAF 错峰（v=57 已验证）
+      var fresh = grid.querySelectorAll(".card:not(.in-view)");
+      fresh.forEach(function (c, i) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            setTimeout(function () { c.classList.add("in-view"); }, i * 80);
+          });
+        });
+      });
+    } else {
+      // 无限滚动：卡片在视口下方，observe 等滚到视口（v=59 已验证）
+      var fresh2 = grid.querySelectorAll(".card:not([data-seq])");
+      fresh2.forEach(function (c) {
+        c.setAttribute("data-seq", __seq++);
+      });
+      requestAnimationFrame(function () {
+        fresh2.forEach(function (c) { ensureViewObs().observe(c); });
+      });
+    }
 
     // 到底 sentinel：提前 500px 预加载
     var sentinel = document.getElementById("scroll-sentinel");
