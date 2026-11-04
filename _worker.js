@@ -53,6 +53,19 @@ const MAP = {
   // PowerToys v0.102.3001（Microsoft 官方 Windows 增强包，仅 Windows）
   "PowerToysSetup-0.102.3001.0-x64.exe": "/microsoft/PowerToys/releases/download/v0.102.3001/PowerToysSetup-0.102.3001.0-x64.exe",
   "PowerToysSetup-0.102.3001.0-arm64.exe": "/microsoft/PowerToys/releases/download/v0.102.3001/PowerToysSetup-0.102.3001.0-arm64.exe",
+  // Agent Desktop v1.1.0（Vercel Labs，AI Agent 桌面控制，全平台）
+  "agent-desktop-v1.1.0-x86_64-pc-windows-msvc.tar.gz": "/vercel-labs/agent-desktop/releases/download/v1.1.0/agent-desktop-v1.1.0-x86_64-pc-windows-msvc.tar.gz",
+  "agent-desktop-v1.1.0-aarch64-pc-windows-msvc.tar.gz": "/vercel-labs/agent-desktop/releases/download/v1.1.0/agent-desktop-v1.1.0-aarch64-pc-windows-msvc.tar.gz",
+  "agent-desktop-v1.1.0-x86_64-apple-darwin.tar.gz": "/vercel-labs/agent-desktop/releases/download/v1.1.0/agent-desktop-v1.1.0-x86_64-apple-darwin.tar.gz",
+  "agent-desktop-v1.1.0-aarch64-apple-darwin.tar.gz": "/vercel-labs/agent-desktop/releases/download/v1.1.0/agent-desktop-v1.1.0-aarch64-apple-darwin.tar.gz",
+  "agent-desktop-v1.1.0-x86_64-unknown-linux-gnu.tar.gz": "/vercel-labs/agent-desktop/releases/download/v1.1.0/agent-desktop-v1.1.0-x86_64-unknown-linux-gnu.tar.gz",
+  "agent-desktop-v1.1.0-aarch64-unknown-linux-gnu.tar.gz": "/vercel-labs/agent-desktop/releases/download/v1.1.0/agent-desktop-v1.1.0-aarch64-unknown-linux-gnu.tar.gz",
+  // VoiceStudio v0.5.7（debpalash，本地语音克隆+视频配音，全平台）
+  "VoiceStudio-0.5.7-win-x64.exe": "/debpalash/VoiceStudio/releases/download/v0.5.7/VoiceStudio-0.5.7-win-x64.exe",
+  "VoiceStudio-0.5.7-win-arm64.exe": "/debpalash/VoiceStudio/releases/download/v0.5.7/VoiceStudio-0.5.7-win-arm64.exe",
+  "VoiceStudio-0.5.7-mac-arm64.dmg": "/debpalash/VoiceStudio/releases/download/v0.5.7/VoiceStudio-0.5.7-mac-arm64.dmg",
+  "VoiceStudio-0.5.7-mac-x64.dmg": "/debpalash/VoiceStudio/releases/download/v0.5.7/VoiceStudio-0.5.7-mac-x64.dmg",
+  "VoiceStudio-0.5.7-linux-x64.AppImage": "/debpalash/VoiceStudio/releases/download/v0.5.7/VoiceStudio-0.5.7-linux-x64.AppImage",
 };
 
 async function fetchUpstream(upstreamPath) {

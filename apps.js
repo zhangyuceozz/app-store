@@ -1,4 +1,4 @@
-﻿// ============================================================
+﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -536,6 +536,64 @@ const APPS = [
       "下载整个播放列表：yt-dlp <播放列表 URL>",
       "仅提取音频：yt-dlp -x --audio-format mp3 <URL>",
       "yt-dlp 是命令行工具，在终端/PowerShell 里运行。",
+    ],
+  },
+  {
+    id: "agent-desktop",
+    name: "Agent Desktop",
+    category: "开发工具",
+    date: "2026-11-04",
+    tagline: "让 AI Agent 直接操作你的桌面（Rust 原生）",
+    description: "Agent Desktop 是 Vercel Labs 开源的 Rust 项目——给 Claude Code / Codex / Cursor / TRAE 等 Agent 一套真正的桌面控制力。不是基于像素识别（容易出错），而是通过操作系统原生的 Accessibility Tree（Windows UI Automation / macOS AXUIElement / Linux AT-SPI）拿到任何应用的真实 UI 结构，精准点击按钮、读取菜单、输入文字、截屏。底层是 Rust 写的桌面代理，Agent 通过 MCP 协议调用，动作可重试、有 ref 稳定引用。+4.2k⭐ 本周爆火，MIT 协议。",
+    icon: "apps/agent-desktop/icon.ico",
+    preview: "apps/agent-desktop/preview.png",
+    downloads: [
+      { platform: "Windows (x64)",      file: "/dl/apps/agent-desktop/download/agent-desktop-v1.1.0-x86_64-pc-windows-msvc.tar.gz", size: "—" },
+      { platform: "Windows (ARM64)",    file: "/dl/apps/agent-desktop/download/agent-desktop-v1.1.0-aarch64-pc-windows-msvc.tar.gz", size: "—" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/agent-desktop/download/agent-desktop-v1.1.0-aarch64-apple-darwin.tar.gz", size: "—" },
+      { platform: "macOS (Intel)",      file: "/dl/apps/agent-desktop/download/agent-desktop-v1.1.0-x86_64-apple-darwin.tar.gz", size: "—" },
+      { platform: "Linux (x64)",        file: "/dl/apps/agent-desktop/download/agent-desktop-v1.1.0-x86_64-unknown-linux-gnu.tar.gz", size: "—" },
+      { platform: "Linux (ARM64)",      file: "/dl/apps/agent-desktop/download/agent-desktop-v1.1.0-aarch64-unknown-linux-gnu.tar.gz", size: "—" },
+    ],
+    install: [
+      "解压 tar.gz，里面有 agent-desktop 可执行文件。",
+      "Windows：PowerShell 里 tar -xzf xxx.tar.gz → 双击 agent-desktop.exe 或放入 PATH。",
+      "macOS/Linux：tar -xzf → chmod +x agent-desktop → ./agent-desktop。",
+      "需要 Rust ≥ 1.77 编译（源码方式），或直接用 release 预编译。",
+    ],
+    usage: [
+      "Agent Desktop 跑在本机，Agent 通过 MCP 协议连接。",
+      "让你的代理装上 MCP server 后说：「打开 VS Code，在 settings.json 里加一行配置」→ Agent Desktop 自动完成。",
+      "所有动作基于 OS Accessibility API，精准度比纯像素截图高得多。",
+    ],
+  },
+  {
+    id: "voicestudio",
+    name: "VoiceStudio",
+    category: "音频视频",
+    date: "2026-11-04",
+    tagline: "开源 ElevenLabs 替代——本地语音克隆 + 视频配音",
+    description: "VoiceStudio 是开源的全本地语音 AI 工作台——语音克隆（30 秒录音就能克隆任何人的声音）、AI 语音设计（选性别/年龄/语速/情绪从零生成新声音）、视频配音（自动识别画面里谁在说话、替换音轨）、听写转录（646 种语言）、TTS 朗读。完全本地跑，数据不外传，646 种语言支持，+10k⭐ 本周 GitHub 爆火。Electron + Python，跨平台：Windows / macOS / Linux / Android / iOS。AGPL-3.0。",
+    icon: "apps/voicestudio/icon.png",
+    preview: "apps/voicestudio/preview.png",
+    downloads: [
+      { platform: "Windows (x64)",        file: "/dl/apps/voicestudio/download/VoiceStudio-0.5.7-win-x64.exe", size: "—" },
+      { platform: "Windows (ARM64)",      file: "/dl/apps/voicestudio/download/VoiceStudio-0.5.7-win-arm64.exe", size: "—" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/voicestudio/download/VoiceStudio-0.5.7-mac-arm64.dmg", size: "—" },
+      { platform: "macOS (Intel)",        file: "/dl/apps/voicestudio/download/VoiceStudio-0.5.7-mac-x64.dmg", size: "—" },
+      { platform: "Linux (AppImage)",     file: "/dl/apps/voicestudio/download/VoiceStudio-0.5.7-linux-x64.AppImage", size: "—" },
+    ],
+    install: [
+      "Windows：下载 .exe 双击安装器，一步步点「下一步」。",
+      "macOS：下载 .dmg → 拖进 Applications。首次打开如被 Gatekeeper 拦截，右键 → 打开。",
+      "Linux：chmod +x VoiceStudio-xxx.AppImage → 双击运行（AppImage 免安装）。",
+      "首次启动需要下载 AI 模型（几百 MB），建议在「设置」里选「最小模型」先跑起来。",
+    ],
+    usage: [
+      "语音克隆：录 30 秒你自己的声音 → AI 学完就能用「你的声音」说任何文本。",
+      "视频配音：导入 mp4 → 自动识别画面里说话的人 → 替换成克隆声音的新音轨。",
+      "TTS 朗读：输入中文/英文文本 → 选声音 → 导出 mp3。",
+      "全部本地处理，录音不上传服务器，隐私 100% 自己掌控。",
     ],
   },
 ];
