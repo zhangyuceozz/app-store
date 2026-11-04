@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=59"></script>
+<script src="apps.js?v=60"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1089,11 +1089,13 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 关键：只 observe，不加 .in-view——等卡片滚进视口才触发动效！
+    // 关键：observe 前等一帧让浏览器 layout，确保 observer 能检测到"卡片已在视口"
     var freshCards = grid.querySelectorAll(".card:not([data-seq])");
     freshCards.forEach(function (c) {
       c.setAttribute("data-seq", __seq++);
-      ensureViewObs().observe(c);
+    });
+    requestAnimationFrame(function () {
+      freshCards.forEach(function (c) { ensureViewObs().observe(c); });
     });
 
     // 到底 sentinel：提前 500px 预加载
