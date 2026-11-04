@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=58"></script>
+<script src="apps.js?v=59"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1028,8 +1028,29 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
+  // 全局 observer：只负责"卡片滚进视口才加 .in-view"
+  var __viewObs = null;
+  var __seq = 0;
+  function ensureViewObs() {
+    if (__viewObs) return __viewObs;
+    __viewObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting && !e.target.classList.contains("in-view")) {
+          __viewObs.unobserve(e.target); // 只触发一次
+          var delay = (parseInt(e.target.getAttribute("data-seq") || "0", 10)) * 80;
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              setTimeout(function () { e.target.classList.add("in-view"); }, Math.min(delay, 640));
+            });
+          });
+        }
+      });
+    }, { threshold: 0, rootMargin: "0px 0px 50px 0px" });
+    return __viewObs;
+  }
 
   function renderList() {
+    __seq = 0;
     var list = APPS.filter(matches);
     list = list.slice().sort(function (a, b) {
       return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
@@ -1068,14 +1089,11 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 错峰浮现：双 rAF + 80ms 波浪（更丝滑更快）
-    var freshCards = grid.querySelectorAll(".card:not(.in-view)");
-    freshCards.forEach(function (c, i) {
-      setTimeout(function () {
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () { c.classList.add("in-view"); });
-        });
-      }, i * 80);
+    // 关键：只 observe，不加 .in-view——等卡片滚进视口才触发动效！
+    var freshCards = grid.querySelectorAll(".card:not([data-seq])");
+    freshCards.forEach(function (c) {
+      c.setAttribute("data-seq", __seq++);
+      ensureViewObs().observe(c);
     });
 
     // 到底 sentinel：提前 500px 预加载
