@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=45"></script>
+<script src="apps.js?v=46"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1025,6 +1025,10 @@
     return hay.indexOf(query) !== -1;
   }
 
+  var PAGE_SIZE = 12;
+  var pageIndex = 0;
+  var fullList = [];
+
   function renderList() {
     if (window.__cardObs) window.__cardObs.disconnect();
     var list = APPS.filter(matches);
@@ -1033,32 +1037,47 @@
       return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
     });
     if (active === "最近上架" && !query) {
-      // 最近上架 = 最新在前（降序）
-      list = list.slice().reverse().slice(0, 10);
+      list = list.slice().reverse(); // 最新在前
     }
-    if (!list.length) {
+    fullList = list;
+    pageIndex = 0;
+    loadMore(true);
+  }
+
+  function loadMore(reset) {
+    if (reset) {
+      var html = "";
+      if (active === "最近上架" && !query) {
+        html = '<div class="group-title">最近上架 <span class="gt-count">' + fullList.length + "</span></div>";
+      } else {
+        html = '<div class="group-title"><span class="gt-count">' + fullList.length + "</span></div>";
+      }
+      html += '<div class="grid" id="card-grid"></div>';
+      html += '<div class="sentinel" id="scroll-sentinel" style="height:1px;"></div>';
+      html += '<div class="end-hint" id="end-hint" style="display:none;text-align:center;padding:24px;color:var(--muted);font-size:12px;"></div>';
+      listEl.innerHTML = html;
+    }
+    var grid = document.getElementById("card-grid");
+    var start = pageIndex * PAGE_SIZE;
+    var end = Math.min(start + PAGE_SIZE, fullList.length);
+    var batch = fullList.slice(start, end);
+    if (reset && !batch.length) {
       listEl.innerHTML = '<div class="empty">' +
         (query ? "没找到相关的应用" : "这个分类下还没有应用") +
         '<div class="hint">' + (query ? "换个关键词试试" : "看看其他分类") + "</div></div>";
       return;
     }
-    var html = "";
-    if (active === "最近上架" && !query) {
-      html = '<div class="group-title">最近上架 <span class="gt-count">' + list.length + "</span></div>";
-      html += '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
-    } else {
-      html = '<div class="group-title"><span class="gt-count">' + list.length + "</span></div>";
-      html += '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
-    }
-    listEl.innerHTML = html;
-    // 丝滑错开浮现：整张卡片刚露头就触发（threshold 0.01），底部扩展 200px 预加载
+    batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
+    pageIndex++;
+
+    // 只 observe 新加载的卡片（避免重复）
     if (window.__cardObs) window.__cardObs.disconnect();
-    var allCards = listEl.querySelectorAll(".card");
+    var allCards = listEl.querySelectorAll(".card:not(.in-view)");
     window.__cardObs = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) {
           var idx = Array.prototype.indexOf.call(allCards, e.target);
-          var delay = Math.max(0, idx % 8) * 60; // 每行最多 8 张错峰
+          var delay = Math.max(0, idx % 8) * 60;
           setTimeout(function () {
             e.target.classList.add("in-view");
           }, delay);
@@ -1067,6 +1086,28 @@
       });
     }, { threshold: 0.01, rootMargin: "0px 0px 200px 0px" });
     allCards.forEach(function (c) { window.__cardObs.observe(c); });
+
+    // 到底 sentinel：滚到这里自动 loadMore
+    var sentinel = document.getElementById("scroll-sentinel");
+    var endHint = document.getElementById("end-hint");
+    if (end >= fullList.length) {
+      if (sentinel) sentinel.style.display = "none";
+      if (endHint) {
+        endHint.style.display = "block";
+        endHint.textContent = "—— 全部 " + fullList.length + " 个应用已加载 ——";
+      }
+      return;
+    }
+    if (window.__sentinelObs) window.__sentinelObs.disconnect();
+    window.__sentinelObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          window.__sentinelObs.disconnect();
+          loadMore(false);
+        }
+      });
+    }, { threshold: 0, rootMargin: "0px 0px 300px 0px" });
+    if (sentinel) window.__sentinelObs.observe(sentinel);
   }
 
   var qTimer = null;
