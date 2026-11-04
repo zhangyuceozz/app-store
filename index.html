@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=47"></script>
+<script src="apps.js?v=48"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1070,13 +1070,23 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 丝滑浮现：rAF 交错，每张间隔 38ms（≈ 2 帧 @60fps）
-    var newCards = grid.querySelectorAll(".card:not(.in-view)");
-    newCards.forEach(function (c, i) {
-      requestAnimationFrame(function () {
-        setTimeout(function () { c.classList.add("in-view"); }, i * 38);
+    // IntersectionObserver：新卡片滚到视口才浮现（rAF 对齐刷新率）
+    if (window.__cardObs) window.__cardObs.disconnect();
+    var obsIdx = 0;
+    var pendingCards = grid.querySelectorAll(".card:not(.in-view)");
+    window.__cardObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          var idx = obsIdx++;
+          var delay = Math.min(idx * 40, 400); // 最多等 400ms
+          requestAnimationFrame(function () {
+            setTimeout(function () { e.target.classList.add("in-view"); }, delay);
+          });
+          window.__cardObs.unobserve(e.target);
+        }
       });
-    });
+    }, { threshold: 0, rootMargin: "0px 0px 200px 0px" });
+    pendingCards.forEach(function (c) { window.__cardObs.observe(c); });
 
     // 到底 sentinel：提前 500px 预加载
     var sentinel = document.getElementById("scroll-sentinel");
