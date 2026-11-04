@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=53"></script>
+<script src="apps.js?v=54"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1068,10 +1068,12 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 错峰浮现：150ms/张，动画 1.1s 足够明显
+    // 错峰浮现：关键——rAF 推到下一帧，确保浏览器先渲染 opacity:0 再过渡到 opacity:1
     var freshCards = grid.querySelectorAll(".card:not(.in-view)");
     freshCards.forEach(function (c, i) {
-      setTimeout(function () { c.classList.add("in-view"); }, i * 150);
+      setTimeout(function () {
+        requestAnimationFrame(function () { c.classList.add("in-view"); });
+      }, i * 150);
     });
 
     // 到底 sentinel：提前 500px 预加载
