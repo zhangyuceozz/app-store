@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=63"></script>
+<script src="apps.js?v=64"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1028,19 +1028,18 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
-  var __viewObs = null;
-  function ensureViewObs() {
-    if (__viewObs) return __viewObs;
-    __viewObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting && !e.target.classList.contains("in-view")) {
-          __viewObs.unobserve(e.target);
-          e.target.classList.add("in-view");
-        }
-      });
-    }, { threshold: 0, rootMargin: "0px 0px 200px 0px" });
-    return __viewObs;
-  }
+
+  // 全局 scroll：检查所有未浮现卡片是否进入视口（最朴素最可靠）
+  window.addEventListener("scroll", function () {
+    var cards = document.querySelectorAll(".card:not(.in-view)");
+    if (!cards.length) return;
+    cards.forEach(function (c) {
+      var r = c.getBoundingClientRect();
+      if (r.top < window.innerHeight + 80) {
+        c.classList.add("in-view");
+      }
+    });
+  }, { passive: true });
 
   function renderList() {
     var list = APPS.filter(matches);
@@ -1092,10 +1091,14 @@
         });
       });
     } else {
-      // 无限滚动：observer 直接加 class（简化版）
-      var fresh2 = grid.querySelectorAll(".card:not(.in-view)");
+      // 无限滚动：新卡片保持 opacity:0，等全局 scroll 事件触发浮现
+      // 但立刻触发一次检查（可能新卡片刚好在视口里）
       requestAnimationFrame(function () {
-        fresh2.forEach(function (c) { ensureViewObs().observe(c); });
+        var all = document.querySelectorAll(".card:not(.in-view)");
+        all.forEach(function (c) {
+          var r = c.getBoundingClientRect();
+          if (r.top < window.innerHeight + 80) c.classList.add("in-view");
+        });
       });
     }
 
