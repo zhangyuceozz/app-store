@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=49"></script>
+<script src="apps.js?v=50"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1028,27 +1028,8 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
-  var __stagger = 0;
-  var __rafTick = false;
-
-  function tickFadeIn() {
-    __rafTick = false;
-    var cards = document.querySelectorAll(".card:not(.in-view)");
-    if (!cards.length) { __stagger = 0; return; }
-    cards.forEach(function (c) {
-      var r = c.getBoundingClientRect();
-      if (r.top < window.innerHeight + 50) {
-        var idx = __stagger++;
-        setTimeout(function () { c.classList.add("in-view"); }, Math.min(idx * 40, 400));
-      }
-    });
-  }
-  window.addEventListener("scroll", function () {
-    if (!__rafTick) { __rafTick = true; requestAnimationFrame(tickFadeIn); }
-  }, { passive: true });
 
   function renderList() {
-    __stagger = 0;
     var list = APPS.filter(matches);
     list = list.slice().sort(function (a, b) {
       return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
@@ -1087,8 +1068,11 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 新加载的卡片保持 opacity:0，由 scroll+tickFadeIn 负责滚到浮现
-    requestAnimationFrame(tickFadeIn);
+    // 新卡片立刻错峰浮现（不等滚动）：每次 loadMore 都是新卡片入场时刻
+    var freshCards = grid.querySelectorAll(".card:not(.in-view)");
+    freshCards.forEach(function (c, i) {
+      setTimeout(function () { c.classList.add("in-view"); }, i * 55);
+    });
 
     // 到底 sentinel：提前 500px 预加载
     var sentinel = document.getElementById("scroll-sentinel");
