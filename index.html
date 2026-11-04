@@ -414,8 +414,8 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    opacity: 0; transform: translateY(14px);
-    transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1);
+    opacity: 0; transform: translateY(20px);
+    transition: opacity .75s cubic-bezier(.22,1,.36,1), transform .75s cubic-bezier(.22,1,.36,1);
     will-change: transform, opacity;
   }
   .card.in-view { opacity: 1; transform: translateY(0); }
@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=50"></script>
+<script src="apps.js?v=51"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1028,8 +1028,20 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
+  // 全局 observer：永不 disconnect，只 observe 新卡片；卡片 DOM 被销毁时自动停止
+  var __obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting && !e.target.classList.contains("in-view")) {
+        __obs.unobserve(e.target); // 只触发一次
+        var delay = (e.target.getAttribute("data-fresh-seq") || 0) * 70;
+        setTimeout(function () { e.target.classList.add("in-view"); }, Math.min(delay, 500));
+      }
+    });
+  }, { threshold: 0, rootMargin: "0px 0px 80px 0px" });
+  var __seq = 0;
 
   function renderList() {
+    __seq = 0;
     var list = APPS.filter(matches);
     list = list.slice().sort(function (a, b) {
       return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
@@ -1068,10 +1080,11 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 新卡片立刻错峰浮现（不等滚动）：每次 loadMore 都是新卡片入场时刻
-    var freshCards = grid.querySelectorAll(".card:not(.in-view)");
+    // 只 observe 新加载的卡片：给每个加序号 → observer 触发时按序号错峰
+    var freshCards = grid.querySelectorAll(".card:not(.in-view):not([data-fresh-seq])");
     freshCards.forEach(function (c, i) {
-      setTimeout(function () { c.classList.add("in-view"); }, i * 55);
+      c.setAttribute("data-fresh-seq", __seq++);
+      __obs.observe(c);
     });
 
     // 到底 sentinel：提前 500px 预加载
