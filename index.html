@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=44"></script>
+<script src="apps.js?v=45"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1051,21 +1051,21 @@
       html += '<div class="grid">' + list.map(function (a) { return cardHtml(a); }).join("") + "</div>";
     }
     listEl.innerHTML = html;
-    // 丝滑错开浮现：刚露头(threshold 0.1)就开始，每张卡片按 DOM 顺序错开 60ms
+    // 丝滑错开浮现：整张卡片刚露头就触发（threshold 0.01），底部扩展 200px 预加载
     if (window.__cardObs) window.__cardObs.disconnect();
     var allCards = listEl.querySelectorAll(".card");
     window.__cardObs = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) {
           var idx = Array.prototype.indexOf.call(allCards, e.target);
-          var delay = Math.max(0, idx % 8) * 60; // 每行最多 8 张错峰，避免长延迟
+          var delay = Math.max(0, idx % 8) * 60; // 每行最多 8 张错峰
           setTimeout(function () {
             e.target.classList.add("in-view");
           }, delay);
           window.__cardObs.unobserve(e.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: "0px 0px -10% 0px" });
+    }, { threshold: 0.01, rootMargin: "0px 0px 200px 0px" });
     allCards.forEach(function (c) { window.__cardObs.observe(c); });
   }
 
