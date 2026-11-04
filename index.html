@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=60"></script>
+<script src="apps.js?v=61"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1033,11 +1033,15 @@
   var __seq = 0;
   function ensureViewObs() {
     if (__viewObs) return __viewObs;
+    console.log("[DEBUG] creating __viewObs");
     __viewObs = new IntersectionObserver(function (entries) {
+      console.log("[DEBUG] observer callback fired, entries:", entries.length);
       entries.forEach(function (e) {
+        console.log("[DEBUG] entry:", e.isIntersecting, "target:", e.target?.className);
         if (e.isIntersecting && !e.target.classList.contains("in-view")) {
-          __viewObs.unobserve(e.target); // 只触发一次
+          __viewObs.unobserve(e.target);
           var delay = (parseInt(e.target.getAttribute("data-seq") || "0", 10)) * 80;
+          console.log("[DEBUG] scheduling .in-view for seq", e.target.getAttribute("data-seq"), "delay", delay);
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
               setTimeout(function () { e.target.classList.add("in-view"); }, Math.min(delay, 640));
