@@ -833,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=69"></script>
+<script src="apps.js?v=70"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1131,7 +1131,9 @@
     // 到底 sentinel：提前 500px 预加载
     var sentinel = document.getElementById("scroll-sentinel");
     var endHint = document.getElementById("end-hint");
+    console.log("[INFINITE] reset=" + reset + ", pageIndex=" + pageIndex + ", end=" + end + ", fullList.length=" + fullList.length + ", sentinel=" + !!sentinel);
     if (end >= fullList.length) {
+      console.log("[INFINITE] 已到底部，隐藏 sentinel");
       if (sentinel) sentinel.style.display = "none";
       if (endHint) {
         endHint.style.display = "block";
@@ -1139,8 +1141,12 @@
       }
       return;
     }
-    if (window.__sentinelObs) window.__sentinelObs.disconnect();
+    if (window.__sentinelObs) {
+      console.log("[INFINITE] disconnect 旧 sentinelObs");
+      window.__sentinelObs.disconnect();
+    }
     window.__sentinelObs = new IntersectionObserver(function (entries) {
+      console.log("[INFINITE] sentinel observer 触发！entries=", entries.map(function (e) { return {target: e.target.id, isIntersecting: e.isIntersecting, ratio: e.intersectionRatio}; }));
       entries.forEach(function (e) {
         if (e.isIntersecting) {
           window.__sentinelObs.disconnect();
@@ -1148,7 +1154,12 @@
         }
       });
     }, { threshold: 0, rootMargin: "0px 0px 500px 0px" });
-    if (sentinel) window.__sentinelObs.observe(sentinel);
+    if (sentinel) {
+      window.__sentinelObs.observe(sentinel);
+      console.log("[INFINITE] sentinelObs.observe(sentinel) 完成");
+    } else {
+      console.log("[INFINITE] sentinel 不存在，跳过 observe！");
+    }
   }
 
   var qTimer = null;
