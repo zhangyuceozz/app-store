@@ -428,8 +428,8 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    opacity: 0; transform: translateY(14px);
-    transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
+    opacity: 0; transform: translateY(20px);
+    transition: opacity .68s cubic-bezier(.22,1,.36,1), transform .68s cubic-bezier(.22,1,.36,1);
     will-change: transform, opacity;
     box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 12px -4px rgba(0,0,0,.06);
   }
@@ -833,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=68"></script>
+<script src="apps.js?v=69"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1108,21 +1108,24 @@
     pageIndex++;
 
     if (reset) {
-      // 首次/切分类：卡片已在视口 → double-rAF 强制两帧 + 80ms 错峰（v=57 已证明有效）
+      // 首次/切分类：纯 setTimeout 错峰（双 rAF 嵌套在某些环境下会全部同帧触发）
       var fresh = grid.querySelectorAll(".card:not(.in-view)");
+      var delay = 0;
       fresh.forEach(function (c, i) {
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            setTimeout(function () { c.classList.add("in-view"); }, i * 80);
-          });
-        });
+        (function (el, idx, t) {
+          setTimeout(function () {
+            el.classList.add("in-view");
+            console.log("[FADE] #" + idx + " @+" + t + "ms → in-view");
+          }, t);
+        })(c, i, delay);
+        delay += 120;
       });
+      console.log("[FADE] reset=true, " + fresh.length + " cards queued, total=" + delay + "ms");
     } else {
-      // 无限滚动：卡片在视口下方 → observer 等滚到视口再加 class
+      // 无限滚动：IntersectionObserver 等滚到视口再加 class
       var fresh2 = grid.querySelectorAll(".card:not(.in-view)");
-      requestAnimationFrame(function () {
-        fresh2.forEach(function (c) { obs().observe(c); });
-      });
+      fresh2.forEach(function (c) { obs().observe(c); });
+      console.log("[FADE] reset=false, observing " + fresh2.length + " cards");
     }
 
     // 到底 sentinel：提前 500px 预加载
