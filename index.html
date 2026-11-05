@@ -63,7 +63,10 @@
     text-rendering: optimizeLegibility;
     transition: background .25s ease, color .25s ease;
     overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
+  html { scroll-behavior: smooth; }
   ::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
   :focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 65%, transparent); outline-offset: 2px; }
   * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink) 22%, transparent) transparent; }
@@ -75,8 +78,8 @@
   .wrap { max-width: 1600px; margin: 0 auto; padding: 0 48px; }
 
   /* ---------- 顶栏 ---------- */
-  header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid transparent; transition: background .2s ease, border-color .2s ease; }
-  header.scrolled { background: color-mix(in srgb, var(--card) 86%, transparent); border-bottom-color: var(--line); -webkit-backdrop-filter: saturate(180%) blur(14px); backdrop-filter: saturate(180%) blur(14px); }
+  header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid transparent; transition: background .3s ease, border-color .3s ease, box-shadow .4s ease; }
+  header.scrolled { background: color-mix(in srgb, var(--card) 86%, transparent); border-bottom-color: var(--line); -webkit-backdrop-filter: saturate(180%) blur(14px); backdrop-filter: saturate(180%) blur(14px); box-shadow: 0 1px 0 rgba(0,0,0,.02), 0 8px 24px -8px rgba(0,0,0,.08); }
 
   .top { display: flex; align-items: center; height: 76px; gap: 24px; }
 
@@ -408,6 +411,17 @@
   /* 卡片网格 */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; overflow: visible; align-items: stretch; }
 
+  /* Sentinel + loading dots */
+  .sentinel { display: flex; justify-content: center; align-items: center; padding: 28px 0 16px; min-height: 40px; }
+  .load-dots { display: flex; gap: 6px; }
+  .load-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); opacity: .35; animation: dotPulse 1.2s ease-in-out infinite; }
+  .load-dots span:nth-child(2) { animation-delay: .15s; }
+  .load-dots span:nth-child(3) { animation-delay: .3s; }
+  @keyframes dotPulse { 0%, 80%, 100% { opacity: .25; transform: scale(.8); } 40% { opacity: 1; transform: scale(1); } }
+
+  /* 滚动分类过渡 */
+  .group-title .gt-count { transition: transform .2s ease; display: inline-block; }
+
   .card {
     position: relative; z-index: 1;
     display: flex; flex-direction: column; gap: 8px;
@@ -415,15 +429,23 @@
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
     opacity: 0; transform: translateY(14px);
-    transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
+    transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1), box-shadow .35s cubic-bezier(.22,1,.36,1), border-color .35s ease;
     will-change: transform, opacity;
   }
   .card.in-view { opacity: 1; transform: translateY(0); }
-  .card.is-hover { transform: translateY(-2px) scale(1.03) !important; z-index: 10; }
+  .card.is-hover { transform: translateY(-3px) !important; z-index: 10; border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); box-shadow: 0 2px 4px rgba(0,0,0,.04), 0 12px 32px -6px rgba(0,0,0,.1), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 24px -4px color-mix(in srgb, var(--accent) 22%, transparent); }
+  .card { box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 12px -4px rgba(0,0,0,.06); }
+  /* 点击涟漪 */
+  .card .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: rippleAnim .6s ease-out; pointer-events: none; background: color-mix(in srgb, var(--accent) 22%, transparent); z-index: 5; }
+  @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
 
-  /* 预览图：卡片上半部分 */
+  /* 预览图 shimmer 骨架 */
   .card .c-preview { position: relative; width: 100%; aspect-ratio: 16/10; border-radius: 6px; overflow: hidden; background: var(--soft); margin-bottom: 4px; cursor: zoom-in; }
-  .card .c-preview img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease, filter .3s ease; }
+  .card .c-preview img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease, filter .3s ease; opacity: 0; }
+  .card .c-preview img.loaded { opacity: 1; }
+  .card .c-preview::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--soft) 25%, color-mix(in srgb, var(--ink) 4%, var(--soft)) 50%, var(--soft) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; z-index: 0; }
+  .card .c-preview.loaded::before { display: none; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
   .card.is-hover .c-preview img { transform: scale(1.06); }
   .card .c-preview-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.5)); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .06em; opacity: 0; transition: opacity .22s ease; pointer-events: none; }
   .card .c-preview-hint svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; }
@@ -810,7 +832,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=66"></script>
+<script src="apps.js?v=67"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1003,8 +1025,10 @@
     var meta = a.category || "";
     var preview = a.preview || "";
     return (
-      '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '">' +
-        (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="lazy"><div class="c-preview-hint"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M21 21l-4.3-4.3"/></svg>点击预览</div></div>' : "") +
+      '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '"' +
+      (preview ? " onmouseenter=\"this.querySelector('.c-preview')?.classList.add('loaded')\"" : "") +
+      '>' +
+        (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="lazy" onload="this.classList.add(\'loaded\');this.closest(\'.c-preview\')?.classList.add(\'loaded\')"><div class="c-preview-hint"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M21 21l-4.3-4.3"/></svg>点击预览</div></div>' : "") +
         '<div class="c-row">' +
           iconHtml(a, "c-icon") +
           '<div class="c-body">' +
@@ -1065,7 +1089,7 @@
         html = '<div class="group-title"><span class="gt-count">' + fullList.length + "</span></div>";
       }
       html += '<div class="grid" id="card-grid"></div>';
-      html += '<div class="sentinel" id="scroll-sentinel" style="height:1px;"></div>';
+      html += '<div class="sentinel" id="scroll-sentinel"><div class="load-dots"><span></span><span></span><span></span></div></div>';
       html += '<div class="end-hint" id="end-hint" style="display:none;text-align:center;padding:24px;color:var(--muted);font-size:12px;"></div>';
       listEl.innerHTML = html;
     }
@@ -1267,6 +1291,16 @@
     }
     var card = e.target.closest(".card");
     if (!card) return;
+    // 点击涟漪
+    var rect = card.getBoundingClientRect();
+    var r = document.createElement("span");
+    r.className = "ripple";
+    var size = Math.max(rect.width, rect.height);
+    r.style.width = r.style.height = size + "px";
+    r.style.left = (e.clientX - rect.left - size / 2) + "px";
+    r.style.top = (e.clientY - rect.top - size / 2) + "px";
+    card.appendChild(r);
+    setTimeout(function () { r.remove(); }, 600);
     var id = card.getAttribute("data-id");
     openApp(id);
   });
