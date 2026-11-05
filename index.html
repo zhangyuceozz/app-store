@@ -810,7 +810,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=65"></script>
+<script src="apps.js?v=66"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1028,6 +1028,20 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
+  // observer 只给无限滚动用：等滚进视口才加 .in-view
+  var __obs = null;
+  function obs() {
+    if (__obs) return __obs;
+    __obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting && !e.target.classList.contains("in-view")) {
+          __obs.unobserve(e.target);
+          e.target.classList.add("in-view");
+        }
+      });
+    }, { threshold: 0, rootMargin: "0px 0px 200px 0px" });
+    return __obs;
+  }
 
   function renderList() {
     var list = APPS.filter(matches);
@@ -1068,15 +1082,23 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    // 最简方案：每次 loadMore 新卡片都 double-rAF + 错峰（v=57 已证明有效）
-    var freshCards = grid.querySelectorAll(".card:not(.in-view)");
-    freshCards.forEach(function (c, i) {
-      requestAnimationFrame(function () {
+    if (reset) {
+      // 首次/切分类：卡片已在视口 → double-rAF 强制两帧 + 80ms 错峰（v=57 已证明有效）
+      var fresh = grid.querySelectorAll(".card:not(.in-view)");
+      fresh.forEach(function (c, i) {
         requestAnimationFrame(function () {
-          setTimeout(function () { c.classList.add("in-view"); }, i * 80);
+          requestAnimationFrame(function () {
+            setTimeout(function () { c.classList.add("in-view"); }, i * 80);
+          });
         });
       });
-    });
+    } else {
+      // 无限滚动：卡片在视口下方 → observer 等滚到视口再加 class
+      var fresh2 = grid.querySelectorAll(".card:not(.in-view)");
+      requestAnimationFrame(function () {
+        fresh2.forEach(function (c) { obs().observe(c); });
+      });
+    }
 
     // 到底 sentinel：提前 500px 预加载
     var sentinel = document.getElementById("scroll-sentinel");
