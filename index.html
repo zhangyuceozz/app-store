@@ -833,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=70"></script>
+<script src="apps.js?v=71"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1053,20 +1053,41 @@
   var PAGE_SIZE = 8;
   var pageIndex = 0;
   var fullList = [];
-  // observer 只给无限滚动用：等滚进视口才加 .in-view
-  var __obs = null;
-  function obs() {
-    if (__obs) return __obs;
-    __obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting && !e.target.classList.contains("in-view")) {
-          __obs.unobserve(e.target);
-          e.target.classList.add("in-view");
+  // 统一用 scroll 事件 + getBoundingClientRect 检查（IntersectionObserver 在某些环境下完全失效）
+  var __scrollLock = false;
+  var __scrollTimer = null;
+  var __loadingMore = false;
+  function checkScroll() {
+    if (__scrollLock) return;
+    __scrollLock = true;
+    clearTimeout(__scrollTimer);
+    __scrollTimer = setTimeout(function () {
+      __scrollLock = false;
+      var vh = window.innerHeight;
+      var triggerY = vh + 500; // 提前 500px 触底加载
+      var fadeY = vh + 100;     // 提前 100px 卡片淡入
+
+      // 1. 到底 sentinel → 加载更多
+      var sentinel = document.getElementById("scroll-sentinel");
+      if (sentinel && !__loadingMore) {
+        var r = sentinel.getBoundingClientRect();
+        if (r.top < triggerY && r.bottom > 0) {
+          __loadingMore = true;
+          loadMore(false);
+          setTimeout(function () { __loadingMore = false; }, 600);
+        }
+      }
+
+      // 2. 卡片滚进视口 → 淡入
+      document.querySelectorAll(".card:not(.in-view)").forEach(function (c) {
+        var cr = c.getBoundingClientRect();
+        if (cr.top < fadeY && cr.bottom > 0) {
+          c.classList.add("in-view");
         }
       });
-    }, { threshold: 0, rootMargin: "0px 0px 200px 0px" });
-    return __obs;
+    }, 50);
   }
+  window.addEventListener("scroll", checkScroll, { passive: true });
 
   function renderList() {
     var list = APPS.filter(matches);
@@ -1108,32 +1129,27 @@
     pageIndex++;
 
     if (reset) {
-      // 首次/切分类：纯 setTimeout 错峰（双 rAF 嵌套在某些环境下会全部同帧触发）
+      // 首次/切分类：纯 setTimeout 错峰
       var fresh = grid.querySelectorAll(".card:not(.in-view)");
       var delay = 0;
       fresh.forEach(function (c, i) {
         (function (el, idx, t) {
           setTimeout(function () {
             el.classList.add("in-view");
-            console.log("[FADE] #" + idx + " @+" + t + "ms → in-view");
           }, t);
         })(c, i, delay);
         delay += 120;
       });
-      console.log("[FADE] reset=true, " + fresh.length + " cards queued, total=" + delay + "ms");
     } else {
-      // 无限滚动：IntersectionObserver 等滚到视口再加 class
-      var fresh2 = grid.querySelectorAll(".card:not(.in-view)");
-      fresh2.forEach(function (c) { obs().observe(c); });
-      console.log("[FADE] reset=false, observing " + fresh2.length + " cards");
+      // 无限滚动：卡片在视口下方 → 由 scroll 事件 checkScroll() 负责加 .in-view
+      // 这里手动触发一次 checkScroll，以防新加载的卡片有部分已经在视口内
+      checkScroll();
     }
 
-    // 到底 sentinel：提前 500px 预加载
+    // 到底 sentinel：纯标记，实际触发由 checkScroll() 负责
     var sentinel = document.getElementById("scroll-sentinel");
     var endHint = document.getElementById("end-hint");
-    console.log("[INFINITE] reset=" + reset + ", pageIndex=" + pageIndex + ", end=" + end + ", fullList.length=" + fullList.length + ", sentinel=" + !!sentinel);
     if (end >= fullList.length) {
-      console.log("[INFINITE] 已到底部，隐藏 sentinel");
       if (sentinel) sentinel.style.display = "none";
       if (endHint) {
         endHint.style.display = "block";
@@ -1141,25 +1157,8 @@
       }
       return;
     }
-    if (window.__sentinelObs) {
-      console.log("[INFINITE] disconnect 旧 sentinelObs");
-      window.__sentinelObs.disconnect();
-    }
-    window.__sentinelObs = new IntersectionObserver(function (entries) {
-      console.log("[INFINITE] sentinel observer 触发！entries=", entries.map(function (e) { return {target: e.target.id, isIntersecting: e.isIntersecting, ratio: e.intersectionRatio}; }));
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          window.__sentinelObs.disconnect();
-          loadMore(false);
-        }
-      });
-    }, { threshold: 0, rootMargin: "0px 0px 500px 0px" });
-    if (sentinel) {
-      window.__sentinelObs.observe(sentinel);
-      console.log("[INFINITE] sentinelObs.observe(sentinel) 完成");
-    } else {
-      console.log("[INFINITE] sentinel 不存在，跳过 observe！");
-    }
+    // 主动触发一次 checkScroll，以防 sentinel 恰好已在触底范围内
+    checkScroll();
   }
 
   var qTimer = null;
