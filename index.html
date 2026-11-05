@@ -429,12 +429,13 @@
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
     opacity: 0; transform: translateY(14px);
-    transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1), box-shadow .35s cubic-bezier(.22,1,.36,1), border-color .35s ease;
+    transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
     will-change: transform, opacity;
+    box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 12px -4px rgba(0,0,0,.06);
   }
   .card.in-view { opacity: 1; transform: translateY(0); }
-  .card.is-hover { transform: translateY(-3px) !important; z-index: 10; border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); box-shadow: 0 2px 4px rgba(0,0,0,.04), 0 12px 32px -6px rgba(0,0,0,.1), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 24px -4px color-mix(in srgb, var(--accent) 22%, transparent); }
-  .card { box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 12px -4px rgba(0,0,0,.06); }
+  .card.is-hover { transform: translateY(-3px) !important; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,.04), 0 12px 32px -6px rgba(0,0,0,.1), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 24px -4px color-mix(in srgb, var(--accent) 22%, transparent); border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); }
+
   /* 点击涟漪 */
   .card .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: rippleAnim .6s ease-out; pointer-events: none; background: color-mix(in srgb, var(--accent) 22%, transparent); z-index: 5; }
   @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
@@ -832,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=67"></script>
+<script src="apps.js?v=68"></script>
 <script>
 (function () {
   var esc = function (s) {
