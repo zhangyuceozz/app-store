@@ -369,171 +369,110 @@
   .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__comets { opacity: 1; }
   @keyframes auroraWave { 0% { transform: translateY(-100%) translateX(-50%); } 100% { transform: translateY(-100%) translateX(50%); } }
 
-  /* ---------- 左侧导航（Microsoft Fluent NavigationView） ---------- */
-  .ms-nav {
-    width: 160px;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-  /* ---------- 主体（全宽） ---------- */
-  main { padding: 48px 0 240px; }
+  .ms-nav { width: 160px; display: flex; flex-direction: column; gap: 0; }
+  main.wrap { padding: 48px 0 140px; }
 
-  /* ---------- 底部 Dock 分类栏（React Bits 规格：baseItemSize=50 / magnification=70 / panelHeight=68） ---------- */
-  /* ========== Dock — 1:1 from React Bits (Dock.jsx + Dock.css) ========== */
+  /* ===== BranchedMenu 侧栏导航 — React Bits 规格 ===== */
   :root {
-    --dock-panel: rgba(240, 240, 243, 0.8);
-    --dock-panel-edge: rgba(24, 24, 27, 0.07);
-    --dock-panel-highlight: rgba(255, 255, 255, 0.95);
-    --dock-panel-shadow: 0 22px 44px -22px rgba(24, 24, 27, 0.3), 0 6px 16px -10px rgba(24, 24, 27, 0.16);
-    --dock-tile: linear-gradient(180deg, #ffffff 0%, #f6f6f8 100%);
-    --dock-tile-edge: rgba(24, 24, 27, 0.08);
-    --dock-tile-highlight: rgba(255, 255, 255, 1);
-    --dock-tile-shadow: 0 4px 10px -5px rgba(24, 24, 27, 0.25);
-    --dock-ink: #27272a;
-    --dock-label-bg: #ffffff;
-    --dock-label-ink: #18181b;
-    --dock-dot: rgba(24, 24, 27, 0.55);
-    --dock-separator: rgba(24, 24, 27, 0.12);
-    --dock-press: brightness(0.9);
-    --dock-badge: #ff453a;
+    --bm-ink: var(--ink);
+    --bm-accent: #2563eb;
+    --bm-line: #d4d4d8;
+    --bm-line-w: 1.5px;
+    --bm-row-h: 36px;
+    --bm-indent: 24px;
+    --bm-font: 14px;
+    --bm-radius: 10px;
+    --bm-draw: 400ms;
+    --bm-fold: 300ms;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --dock-panel: rgba(38, 35, 46, 0.66);
-      --dock-panel-edge: rgba(255, 255, 255, 0.08);
-      --dock-panel-highlight: rgba(255, 255, 255, 0.07);
-      --dock-panel-shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.8), 0 6px 16px -8px rgba(0, 0, 0, 0.5);
-      --dock-tile: linear-gradient(180deg, #3a3644 0%, #27242f 100%);
-      --dock-tile-edge: rgba(255, 255, 255, 0.07);
-      --dock-tile-highlight: rgba(255, 255, 255, 0.12);
-      --dock-tile-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.7);
-      --dock-ink: #f4f4f5;
-      --dock-label-bg: #2a2731;
-      --dock-label-ink: #f4f4f5;
-      --dock-dot: rgba(255, 255, 255, 0.72);
-      --dock-separator: rgba(255, 255, 255, 0.12);
-      --dock-press: brightness(0.75);
-    }
+    :root { --bm-line: #3f3f46; --bm-accent: #60a5fa; }
   }
 
-  .dock {
-    position: fixed; z-index: 80;
-    bottom: 12px; left: 50%; transform: translateX(-50%);
-    display: grid; grid-template-columns: repeat(4, 50px);
-    gap: 10px;
-    padding: 9px;
-    border-radius: 22px;
-    background: var(--dock-panel);
-    box-shadow: inset 0 0 0 1px var(--dock-panel-edge), inset 0 1px 0 var(--dock-panel-highlight), var(--dock-panel-shadow);
-    -webkit-backdrop-filter: blur(20px) saturate(1.6);
-    backdrop-filter: blur(20px) saturate(1.6);
-    touch-action: none;
-    --dock-base: 50px; --dock-thickness: 68px; --dock-round: 0.5; --dock-gap: 10px;
-    overflow: visible;
-  }
-
-  .dock__item {
-    position: relative;
-    width: var(--dock-base); height: var(--dock-base);
-    margin: 0; padding: 0; border: 0; background: none;
-    color: var(--dock-ink);
-    cursor: pointer; outline: none;
-    -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none;
-  }
-  .dock__item:hover, .dock__item:focus-visible { z-index: 1; }
-
-  .dock__tile {
-    position: absolute; top: 0; left: 0;
-    width: var(--dock-base); height: var(--dock-base);
-    transform-origin: 0 0;
-    pointer-events: none;
-  }
-  .dock__face {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
+  .wrap { display: flex; gap: 48px; align-items: flex-start; }
+  .wrap section { flex: 1; min-width: 0; }
+  .side {
+    width: 200px; flex-shrink: 0;
+    position: sticky; top: 96px; align-self: flex-start;
+    padding: 0;
     overflow: hidden;
-    border-radius: calc(var(--dock-base) * var(--dock-round) * 0.5);
-    background: var(--dock-tile);
-    box-shadow: inset 0 0 0 1px var(--dock-tile-edge), inset 0 1px 0 var(--dock-tile-highlight), var(--dock-tile-shadow);
-    font-size: 10.5px;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0;
-    transition: filter 0.2s ease;
-    color: var(--dock-ink);
-    white-space: nowrap;
-    text-align: center;
-    word-break: keep-all;
   }
-  .dock__item:active .dock__face { filter: var(--dock-press); transition-duration: 0s; }
-  .dock__item:focus-visible .dock__face { outline: 2px solid var(--accent); outline-offset: 3px; }
-  .dock__item[data-active] .dock__face { box-shadow: inset 0 0 0 1px var(--dock-tile-edge), inset 0 1px 0 var(--dock-tile-highlight), var(--dock-tile-shadow), 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
-
-  .dock__badge {
-    position: absolute;
-    top: calc(var(--dock-base) * (0.1465 * var(--dock-round) - 0.19));
-    right: calc(var(--dock-base) * (0.1465 * var(--dock-round) - 0.19));
-    box-sizing: border-box;
-    min-width: calc(var(--dock-base) * 0.38);
-    height: calc(var(--dock-base) * 0.38);
-    padding: 0 calc(var(--dock-base) * 0.1);
-    border-radius: calc(var(--dock-base) * 0.19);
-    background: var(--dock-badge); color: #ffffff;
-    font-size: calc(var(--dock-base) * 0.22);
+  .bm-section { margin-bottom: 4px; }
+  .bm-head {
+    display: flex; align-items: center; gap: 6px;
+    height: var(--bm-row-h);
+    padding: 0 10px;
+    font-size: var(--bm-font);
     font-weight: 600;
+    color: var(--bm-ink);
+    border-radius: var(--bm-radius);
+    cursor: pointer;
+    user-select: none;
+    background: none; border: 0; width: 100%; text-align: left;
+    position: relative;
+  }
+  .bm-head:hover { background: var(--soft); }
+  .bm-head .bm-chev {
+    width: 12px; height: 12px; flex-shrink: 0;
+    color: var(--muted);
+    transition: transform var(--bm-fold) cubic-bezier(.22,1,.36,1);
+  }
+  .bm-head[data-folded="true"] .bm-chev { transform: rotate(-90deg); }
+  .bm-body {
+    display: grid; grid-template-rows: 1fr;
+    transition: grid-template-rows var(--bm-fold) cubic-bezier(.22,1,.36,1);
+    overflow: hidden;
+    padding-left: calc(var(--bm-indent) - 14px);
+  }
+  .bm-head[data-folded="true"] + .bm-body { grid-template-rows: 0fr; }
+  .bm-body > div { min-height: 0; }
+
+  .bm-item {
+    position: relative;
+    display: flex; align-items: center; gap: 8px;
+    height: var(--bm-row-h);
+    padding: 0 10px 0 14px;
+    font-size: var(--bm-font);
+    color: var(--ink);
+    border-radius: var(--bm-radius);
+    cursor: pointer;
+    background: none; border: 0; width: 100%; text-align: left;
+  }
+  .bm-item:hover { background: var(--soft); }
+  .bm-item[data-active] {
+    background: color-mix(in srgb, var(--bm-accent) 12%, transparent);
+    color: var(--bm-accent);
+  }
+  .bm-item .bm-line {
+    position: absolute;
+    left: -10px; top: 0; bottom: 0;
+    width: 0;
+    border-left: var(--bm-line-w) solid var(--bm-line);
+    transition: height var(--bm-draw) cubic-bezier(.22,1,.36,1), border-color var(--bm-draw);
+    pointer-events: none;
+  }
+  .bm-item[data-active] .bm-line { border-color: var(--bm-accent); }
+  .bm-item[data-active] .bm-reach {
+    position: absolute; left: calc(-10px - var(--bm-line-w) + 1px); top: 0;
+    width: calc(var(--bm-line-w) + 12px); height: 100%;
+    pointer-events: none;
+  }
+  .bm-badge {
+    margin-left: auto;
+    font-size: 11px; font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--soft); color: var(--muted);
     font-variant-numeric: tabular-nums;
-    line-height: calc(var(--dock-base) * 0.38);
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    pointer-events: none;
   }
-
-  .dock__dot {
-    position: absolute;
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--dock-dot);
-    pointer-events: none;
-    left: 50%; margin-left: -2px;
-    top: calc(100% + max(9px, var(--dock-base) * 0.12) - 2px);
-  }
-  .dock__item:not([data-active]) .dock__dot { display: none; }
-
-  .dock__label {
-    position: absolute;
-    padding: 6px 10px;
-    border-radius: 8px;
-    background: var(--dock-label-bg);
-    color: var(--dock-label-ink);
-    box-shadow: inset 0 0 0 1px var(--dock-panel-edge), 0 8px 20px -8px rgba(0, 0, 0, 0.35);
-    font-size: 12px; font-weight: 500; line-height: 1;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    bottom: calc(100% + 12px);
-    left: 50%;
-    transform: translate(-50%, 4px);
-    transition: opacity 0.16s ease, transform 0.16s ease;
-  }
-  @media (hover: hover) {
-    .dock__item:hover .dock__label { opacity: 1; transform: translate(-50%, 0); }
-  }
-
-  .dock__sep {
-    box-sizing: border-box;
-    border-radius: 1px;
-    background: var(--dock-separator);
+  .bm-item[data-active] .bm-badge {
+    background: color-mix(in srgb, var(--bm-accent) 20%, transparent);
+    color: var(--bm-accent);
   }
 
   @media (max-width: 720px) {
-    .dock { bottom: 8px; padding: 7px; gap: 8px; border-radius: 18px;
-      grid-template-columns: repeat(4, minmax(42px, 1fr)); }
-    .dock__item, .dock__tile { width: 100%; height: var(--dock-base, 42px); }
-    .dock__face { font-size: 9px; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .dock__item, .dock__tile, .dock__face { transition: none !important; }
+    .wrap { flex-direction: column; gap: 24px; }
+    .side { width: 100%; position: static; }
   }
 
   .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 52px 0 20px; display: flex; align-items: center; gap: 8px; }
@@ -1206,11 +1145,10 @@
     </div>
 
 <main class="wrap">
+  <!-- 左侧 BranchedMenu 分类导航 -->
+  <aside class="side" id="side"></aside>
   <section id="list"></section>
 </main>
-
-<!-- 底部 Dock 分类栏 -->
-<nav class="dock" id="dock"></nav>
 
 <div class="modal" id="modal">
   <div class="backdrop" data-close></div>
@@ -1243,7 +1181,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=109"></script>
+<script src="apps.js?v=110"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1294,7 +1232,7 @@
   console.log("%c想看点有意思的？长按左上角 logo 试试。", "font-size:13px;color:#888;");
   console.log("%c或者你就是个喜欢看控制台的人，那我们是同类。", "font-size:12px;color:#aaa;font-style:italic;");
 
-  var dockEl = document.getElementById("dock");
+  var sideEl = document.getElementById("side");
   var listEl = document.getElementById("list");
   var qEl = document.getElementById("q");
 
@@ -1341,7 +1279,7 @@
     localStorage.setItem("store-platform", platform);
     if (platCb) platCb.checked = platform === "mac";
     updatePlatNote();
-    buildDock();
+    buildSide();
     renderList();
   }
   if (platCb) {
@@ -1364,12 +1302,7 @@
     return hasAnyMacWin ? matched : app.downloads.slice();
   }
 
-  // ---------- Dock 文字导航 ----------
-  // Dock 项目：最近上架 → 分隔线 → 10 个分类
-  var DOCK_ITEMS = [{ value: "最近上架", label: "最近上架" }];
-  DOCK_ITEMS = DOCK_ITEMS.concat(categories.map(function (c) { return { value: c, label: c }; }));
-
-  // 按当前 platform + 分类动态算数量
+  // ---------- BranchedMenu 侧栏导航 ----------
   var catCounts = {};
   function recalcCounts() {
     var byPlatform = APPS.filter(function (a) { return filteredDownloads(a).length > 0; });
@@ -1379,152 +1312,72 @@
   }
   recalcCounts();
 
-  function buildDock() {
-    console.log("[buildDock] start dockEl=", !!dockEl, "_dockMgr.raf=", _dockMgr && _dockMgr.raf);
-    if (!dockEl) return;
+  var bmSections = [
+    { title: "浏览", items: [{ value: "最近上架", label: "最近上架" }] },
+    { title: "分类", items: categories.map(function (c) { return { value: c, label: c }; }) }
+  ];
+  var bmFolded = {}; // key: section index, value: true/false
+  function buildSide() {
+    if (!sideEl) return;
     recalcCounts();
     var html = "";
-    DOCK_ITEMS.forEach(function (it) {
-      var count = catCounts[it.value] || 0;
-      var badge = count > 0 ? '<span class="dock__badge">' + count + '</span>' : "";
-      html += '<button type="button" class="dock__item" data-cat="' + esc(it.value) + '">' +
-        '<span class="dock__tile"><span class="dock__face">' + esc(it.label) + '</span></span>' +
-        '<span class="dock__dot"></span>' +
-        '<span class="dock__label">' + esc(it.label) + '</span>' +
-        badge +
-      '</button>';
+    bmSections.forEach(function (sec, si) {
+      var folded = bmFolded[si] === true;
+      html += '<div class="bm-section" data-si="' + si + '">';
+      html += '<button class="bm-head" data-folded="' + (folded ? "true" : "false") + '" data-si="' + si + '">';
+      html += '<svg class="bm-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4.5l3 3 3-3"/></svg>';
+      html += esc(sec.title);
+      html += '</button>';
+      html += '<div class="bm-body"><div>';
+      sec.items.forEach(function (it) {
+        var count = catCounts[it.value] || 0;
+        var badge = count > 0 ? '<span class="bm-badge">' + count + '</span>' : "";
+        html += '<button type="button" class="bm-item" data-cat="' + esc(it.value) + '">';
+        html += '<span class="bm-line"></span><span class="bm-reach"></span>';
+        html += esc(it.label);
+        html += badge;
+        html += '</button>';
+      });
+      html += '</div></div></div>';
     });
-    dockEl.innerHTML = html;
+    sideEl.innerHTML = html;
 
-    dockEl.querySelectorAll(".dock__item").forEach(function (btn) {
+    sideEl.querySelectorAll(".bm-head").forEach(function (h) {
+      h.addEventListener("click", function () {
+        var si = parseInt(h.getAttribute("data-si"), 10);
+        bmFolded[si] = !bmFolded[si];
+        h.setAttribute("data-folded", bmFolded[si] ? "true" : "false");
+      });
+    });
+
+    sideEl.querySelectorAll(".bm-item").forEach(function (btn) {
       btn.addEventListener("click", function () {
         active = btn.getAttribute("data-cat");
-        setDockState();
+        setSideState();
         renderList();
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
-    setDockState();
-    console.log("[buildDock] innerHTML set, items=", dockEl.querySelectorAll(".dock__item").length);
-    if (!_dockMgr.raf) { console.log("[buildDock] calling _dockMgr.init()"); _dockMgr.init(); }
-    else { console.log("[buildDock] calling _dockMgr.rebind()"); _dockMgr.rebind(); }
+    setSideState();
   }
 
-  function setDockState() {
-    if (!dockEl) return;
-    dockEl.querySelectorAll(".dock__item").forEach(function (btn) {
+  function setSideState() {
+    if (!sideEl) return;
+    sideEl.querySelectorAll(".bm-item").forEach(function (btn) {
       var isActive = btn.getAttribute("data-cat") === active;
       if (isActive) btn.setAttribute("data-active", "");
       else btn.removeAttribute("data-active");
     });
+    // 激活线 reach 宽度动画：让 .bm-line 的 height 从 0 → 100%
+    requestAnimationFrame(function () {
+      sideEl.querySelectorAll(".bm-item").forEach(function (btn) {
+        var line = btn.querySelector(".bm-line");
+        if (line) {
+          line.style.height = btn.hasAttribute("data-active") ? "100%" : "0%";
+        }
+      });
+    });
   }
-
-  // ========== Dock 物理系统 — 单例管理器 ==========
-  var _dockMgr = {
-    raf: 0, lastT: 0, state: [], rest: [], centerX: [], centerY: [], items: null,
-    pointer: { x: -9999, y: -9999, inside: false },
-    BASE: 50, PEAK: 70, DISTANCE: 150,
-    MASS: 0.1, STIFFNESS: 150, DAMPING: 12,
-    _w: 0, _ro: null, _sep: null,
-    init: function () {
-      console.log("[dockMgr.init] ENTER raf=", this.raf, "dockEl=", !!dockEl);
-      if (this.raf || !dockEl) { console.log("[dockMgr.init] EARLY RETURN 1"); return; }
-      console.log("[dockMgr.init] OK proceeding");
-      this.items = dockEl.querySelectorAll(".dock__item");
-      console.log("[dockMgr.init] items found=", this.items.length);
-      this.rebuild();
-      var self = this;
-
-      // ResizeObserver — 容器尺寸变化 → 重算 rest
-      this._ro = new ResizeObserver(function () { self.rebuild(); });
-      this._ro.observe(dockEl);
-
-      dockEl.addEventListener("pointermove", function (e) {
-        var rect = dockEl.getBoundingClientRect();
-        self.pointer.x = e.clientX - rect.left;
-        self.pointer.y = e.clientY - rect.top;
-        self.pointer.inside = true;
-        self.lastT = 0;
-        // 仅第一次 hover 时打 log，避免刷屏
-        if (!self._logged) { self._logged = true; console.log("[dock] pointermove", self.pointer.x.toFixed(0), self.pointer.y.toFixed(0), "items=", self.items.length); }
-      });
-      dockEl.addEventListener("pointerleave", function () {
-        self.pointer.inside = false;
-        self.pointer.x = -9999; self.pointer.y = -9999;
-        self.lastT = 0;
-      });
-      dockEl.addEventListener("pointerenter", function () { self.lastT = 0; });
-      window.addEventListener("resize", function () { self.rebuild(); });
-
-      // 物理 tick — 永不停止
-      function tick(now) {
-        self.raf = requestAnimationFrame(tick);
-        if (!self.items || !self.items.length) return;
-        if (!self.lastT) self.lastT = now;
-        var dt = Math.min(0.032, (now - self.lastT) / 1000);
-        self.lastT = now;
-        var substeps = Math.max(1, Math.ceil(dt / 0.002));
-        var step = dt / substeps;
-
-        var n = self.state.length;
-        for (var i = 0; i < n; i++) {
-          var s = self.state[i];
-          var target = self.BASE;
-          if (self.pointer.inside) {
-            var dx = self.centerX[i] - self.pointer.x;
-            var dy = self.centerY[i] - self.pointer.y;
-            var reach = Math.sqrt(dx * dx + dy * dy) / self.DISTANCE;
-            if (reach < 1) target = self.BASE + (self.PEAK - self.BASE) * Math.pow(Math.cos(reach * Math.PI / 2), 2);
-          }
-          var F = self.STIFFNESS * (target - s.pos) - self.DAMPING * s.vel;
-          s.vel += (F / self.MASS) * step;
-          s.pos += s.vel * step;
-        }
-
-        for (var i = 0; i < n; i++) {
-          var el = self.items[i];
-          if (!el) continue;
-          var tile = el.querySelector(".dock__tile");
-          if (!tile) continue;
-          var s = self.state[i];
-          var itemSize = self.BASE;
-          var lift = Math.max(0, s.pos - itemSize);
-          var tiltL = i > 0 ? self.state[i - 1].pos - s.pos : 0;
-          var tiltR = i < n - 1 ? self.state[i + 1].pos - s.pos : 0;
-          var tilt = (tiltL - tiltR) * 0.15;
-          var scale = s.pos / itemSize;
-          tile.style.transform = "translate(" + tilt.toFixed(2) + "px,-" + lift.toFixed(2) + "px) scale(" + scale.toFixed(3) + ")";
-          // 每 120 帧打一次诊断
-          self._dbgFrame = (self._dbgFrame || 0) + 1;
-          if (self._dbgFrame % 120 === 0) {
-            var maxScale = 0;
-            for (var j = 0; j < n; j++) if (self.state[j].pos / self.BASE > maxScale) maxScale = self.state[j].pos / self.BASE;
-            console.log("[dock tick] maxScale=", maxScale.toFixed(3), "inside=", self.pointer.inside, "dist=", self.DISTANCE);
-          }
-        }
-      }
-      this.raf = requestAnimationFrame(tick);
-    },
-    rebuild: function () {
-      if (!dockEl) return;
-      this.items = dockEl.querySelectorAll(".dock__item");
-      var n = this.items.length;
-      this.state = new Array(n);
-      this.centerX = new Array(n);
-      this.centerY = new Array(n);
-      var rect = dockEl.getBoundingClientRect();
-      for (var i = 0; i < n; i++) {
-        this.state[i] = { pos: this.BASE, vel: 0 };
-        var r = this.items[i].getBoundingClientRect();
-        this.centerX[i] = r.left - rect.left + r.width / 2;
-        this.centerY[i] = r.top - rect.top + r.height / 2;
-      }
-    },
-    rebind: function () {
-      // buildDock 重建 innerHTML 后，items DOM 引用变了，重算 rest 和 state
-      this.rebuild();
-    }
-  };
 
   function iconHtml(a, cls) {
     if (a.icon) return '<img class="' + cls + '" src="' + esc(a.icon) + '" alt="" loading="lazy" decoding="async">';
@@ -1628,15 +1481,19 @@
     (root || document).querySelectorAll(".c-date[data-date]").forEach(function (el) {
       var d = el.getAttribute("data-date");
       if (!d) return;
-      // 已经填过了就跳过（有 c-date__sub 或 textContent 不再是 "—"）
-      if (el.querySelector(".c-date__sub") || el.childNodes.length > 1) return;
+      // 如果已经填过（textContent 不再是初始的 "—"），跳过
+      if (el.getAttribute("data-fresh")) return;
       var fresh = classifyFresh(d);
       el.setAttribute("data-fresh", fresh);
+      // 把所有子节点清掉，只留纯文本 + 可选的 sub span
+      var sub = el.querySelector(".c-date__sub");
       el.textContent = timeAgo(d);
-      var sub = document.createElement("span");
-      sub.className = "c-date__sub";
-      if (fresh === "brand-new") sub.textContent = "🔥 热乎的！";
-      el.appendChild(sub);
+      if (sub && fresh === "brand-new") {
+        sub.textContent = "🔥 热乎的！";
+        el.appendChild(sub);
+      } else if (sub) {
+        sub.remove();
+      }
     });
   }
 
@@ -1872,7 +1729,7 @@
     if (e.target.hasAttribute && e.target.hasAttribute("data-close-lb")) closeLightbox();
   });
 
-  buildDock();
+  buildSide();
   renderList(true); // 首次加载跳过淡入淡出
 
   // ======== 后台预加载全部 preview.jpg ========
@@ -2200,9 +2057,6 @@
       if (e.target.id === "egg") document.getElementById("egg").classList.remove("open");
     });
   }
-
-  // 暴露到 window 便于外部诊断
-  window._dockMgr = _dockMgr;
 
 })();
 </script>
