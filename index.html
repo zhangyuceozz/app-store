@@ -763,7 +763,6 @@
     display: flex; align-items: center; justify-content: center;
     background: var(--bg);
     transition: transform .55s cubic-bezier(.65,0,.35,1), opacity .4s ease, visibility .55s;
-    touch-action: none; overflow: hidden;
   }
   .preloader.hide {
     transform: translateY(-100%);
@@ -771,27 +770,13 @@
   }
   .splash-inner {
     display: flex; flex-direction: column; align-items: center;
-    gap: 28px; padding: 40px; text-align: center;
+    gap: 36px; padding: 40px; text-align: center;
     max-width: 440px; width: 100%;
     animation: splashIn .5s cubic-bezier(.22,1,.36,1);
   }
   @keyframes splashIn {
     from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: none; }
-  }
-  .splash-logo img {
-    width: 80px; height: 80px; border-radius: 20px;
-    object-fit: cover; display: block;
-    border: 1px solid var(--line);
-    animation: splashPulse 2.8s ease-in-out infinite;
-  }
-  @keyframes splashPulse {
-    0%,100% { transform: scale(1); }
-    50%     { transform: scale(1.04); }
-  }
-  .splash-tag {
-    font-family: var(--display); font-size: 14px; font-weight: 500;
-    color: var(--muted); letter-spacing: .28em; text-transform: uppercase;
   }
   /* BounceCards: splash 弹簧卡片 */
   .bounce-cards {
@@ -817,16 +802,16 @@
     display: block; width: 100%; height: 100%; object-fit: cover;
     pointer-events: none; user-select: none;
   }
-  .splash-tip { display: flex; flex-direction: column; gap: 14px; align-items: center; width: 100%; }
-  .splash-bar { width: 100%; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
-  .splash-bar-fill { height: 100%; width: 0%; border-radius: 2px; background: var(--accent); transition: width .08s linear; }
-  .splash-hint { font-size: 12px; color: var(--muted); font-weight: 500; animation: hintBounce 1.6s ease-in-out infinite; }
-  @keyframes hintBounce { 0%,100% { transform: translateY(0); opacity: .6; } 50% { transform: translateY(-4px); opacity: 1; } }
+  .splash-bar { width: 220px; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+  .splash-bar-fill {
+    height: 100%; width: 0%; border-radius: 2px;
+    background: var(--accent);
+    transition: width 2.5s cubic-bezier(.22,1,.36,1);
+  }
 
   @media (max-width: 720px) {
-    .splash-inner { padding: 28px 24px; gap: 22px; }
-    .splash-logo img { width: 64px; height: 64px; border-radius: 16px; }
-    .splash-title { font-size: 22px; }
+    .splash-inner { padding: 28px 24px; gap: 28px; }
+    .splash-bar { width: 180px; }
     .wrap { padding: 0 20px; }
     .top { height: auto; flex-wrap: wrap; padding: 14px 0; gap: 12px 16px; }
     .search { order: 4; flex-basis: 100%; max-width: none; }
@@ -856,10 +841,6 @@
 
 <div class="preloader" id="preloader">
   <div class="splash-inner">
-    <div class="splash-logo">
-      <img src="favicon.ico" alt="">
-    </div>
-    <div class="splash-tag">Chovy Store</div>
     <div class="bounce-cards" id="splash-bc">
       <div class="bounce-cards__card" style="--bc-x:-55px;--bc-y:0px;--bc-r:-8deg;z-index:1;"><img src="apps/zed/preview.jpg" alt="Zed"></div>
       <div class="bounce-cards__card" style="--bc-x:-28px;--bc-y:-4px;--bc-r:5deg;z-index:2;"><img src="apps/pdfcraft/preview.jpg" alt="PdfCraft"></div>
@@ -867,11 +848,8 @@
       <div class="bounce-cards__card" style="--bc-x:28px;--bc-y:-4px;--bc-r:7deg;z-index:4;"><img src="apps/linkswift/preview.jpg" alt="LinkSwift"></div>
       <div class="bounce-cards__card" style="--bc-x:55px;--bc-y:0px;--bc-r:-6deg;z-index:5;"><img src="apps/mineradio/preview.jpg" alt="Mineradio"></div>
     </div>
-    <div class="splash-tip">
-      <div class="splash-bar">
-        <div class="splash-bar-fill" id="splash-bar-fill"></div>
-      </div>
-      <div class="splash-hint">↑ 向上滑动进入</div>
+    <div class="splash-bar">
+      <div class="splash-bar-fill" id="splash-bar-fill"></div>
     </div>
   </div>
 </div>
@@ -990,7 +968,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=89"></script>
+<script src="apps.js?v=90"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1516,90 +1494,30 @@
     })();
   }, { once: true });
 
-  // ======== 滑动进入（每次强制） ========
+  // ======== 滑动进入（每次强制，自动滑动条） ========
   (function () {
     var splash = document.getElementById("preloader");
     if (!splash) return;
     var barFill = document.getElementById("splash-bar-fill");
-    var progress = 0;        // 0-100
-    var dragging = false;
-    var startY = 0;
-    var lastWheel = 0;
-    var wheelAccum = 0;
-    var SWIPE_THRESHOLD = 120; // 上滑超过 120px 触发进入
-    var BAR_MAX = SWIPE_THRESHOLD;
-
-    function setBar(p) {
-      progress = Math.min(100, Math.max(0, p));
-      if (barFill) barFill.style.width = progress + "%";
-    }
 
     function dismiss() {
       if (splash.classList.contains("hide")) return;
       splash.classList.add("hide");
-      // 进场欢迎 console
       console.log("%c✦ Chovy Store","font-weight:bold;font-size:14px;color:#ea580c");
       console.log("%c免费的小工具 · 每天精选上架","color:#6f6f78");
     }
 
-    // 触摸/鼠标上滑
-    function onStart(e) {
-      dragging = true;
-      startY = (e.touches ? e.touches[0].clientY : e.clientY);
-      wheelAccum = 0;
-    }
-    function onMove(e) {
-      if (!dragging) return;
-      var y = (e.touches ? e.touches[0].clientY : e.clientY);
-      var delta = startY - y; // 上滑为正
-      var p = (delta / BAR_MAX) * 100;
-      setBar(p);
-      if (delta >= SWIPE_THRESHOLD) {
-        dragging = false;
-        dismiss();
-      }
-    }
-    function onEnd() {
-      dragging = false;
-      // 松手未到阈值 → 回弹
-      if (progress < 100) setBar(0);
+    // 强制触发 CSS transition：先 width:0 再 width:100%
+    if (barFill) {
+      barFill.style.width = "0%";
+      // 下一帧设 100%，触发 2.5s transition
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { barFill.style.width = "100%"; });
+      });
     }
 
-    splash.addEventListener("touchstart", onStart, { passive: true });
-    splash.addEventListener("touchmove", onMove, { passive: true });
-    splash.addEventListener("touchend", onEnd);
-    splash.addEventListener("mousedown", onStart);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onEnd);
-
-    // 滚轮向上滚
-    window.addEventListener("wheel", function (e) {
-      if (splash.classList.contains("hide")) return;
-      if (Date.now() - lastWheel < 40) return;
-      lastWheel = Date.now();
-      if (e.deltaY < 0) {
-        wheelAccum += -e.deltaY;
-        var p = (wheelAccum / BAR_MAX) * 100;
-        setBar(p);
-        if (wheelAccum >= SWIPE_THRESHOLD) { wheelAccum = 0; dismiss(); }
-      } else {
-        wheelAccum = Math.max(0, wheelAccum - e.deltaY * 0.5);
-        setBar((wheelAccum / BAR_MAX) * 100);
-      }
-    }, { passive: true });
-
-    // 键盘 ↑ / PageUp / Space
-    window.addEventListener("keydown", function (e) {
-      if (splash.classList.contains("hide")) return;
-      if (e.key === "ArrowUp" || e.key === "PageUp" || e.key === " " || e.key === "Enter") {
-        e.preventDefault();
-        setBar(100);
-        setTimeout(dismiss, 120);
-      }
-    });
-
-    // 兜底：3 秒后自动进入（避免无输入设备卡壳）
-    setTimeout(function () { if (!splash.classList.contains("hide")) dismiss(); }, 4500);
+    // bar 填满后自动进入（2.5s + 100ms 容错）
+    setTimeout(dismiss, 2600);
   })();
 
   // ======== BounceCards 弹簧物理（splash 公告页） ========
