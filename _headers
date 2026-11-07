@@ -1,9 +1,9 @@
-# 缓存策略：HTML 短缓存（回头客秒开，新内容 10 分钟内生效），图片长缓存 immutable
-/*
-  Cache-Control: public, max-age=600
-
+# HTML 走 CF Pages 默认（短缓存），静态资源长缓存 immutable
 /apps.js
   Cache-Control: public, max-age=300
+
+/favicon.ico
+  Cache-Control: public, max-age=31536000, immutable
 
 /*.png
   Cache-Control: public, max-age=31536000, immutable
@@ -11,9 +11,5 @@
 /*.jpg
   Cache-Control: public, max-age=31536000, immutable
 
-/*.ico
-  Cache-Control: public, max-age=31536000, immutable
-
 /*.svg
   Cache-Control: public, max-age=31536000, immutable
-
