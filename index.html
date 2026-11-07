@@ -428,13 +428,10 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    opacity: 0; transform: translateY(20px);
-    transition: opacity .68s cubic-bezier(.22,1,.36,1), transform .68s cubic-bezier(.22,1,.36,1);
-    will-change: transform, opacity;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 12px -4px rgba(0,0,0,.06);
   }
-  .card.in-view { opacity: 1; transform: translateY(0); }
-  .card.is-hover { transform: translateY(-3px) !important; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,.04), 0 12px 32px -6px rgba(0,0,0,.1), 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 24px -4px color-mix(in srgb, var(--accent) 22%, transparent); border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); }
+  .card:hover { transform: translateY(-2px); z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,.08), 0 16px 36px -12px rgba(0,0,0,.14); border-color: var(--line); }
 
   /* 点击涟漪 */
   .card .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: rippleAnim .6s ease-out; pointer-events: none; background: color-mix(in srgb, var(--accent) 22%, transparent); z-index: 5; }
@@ -447,14 +444,14 @@
   .card .c-preview::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--soft) 25%, color-mix(in srgb, var(--ink) 4%, var(--soft)) 50%, var(--soft) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; z-index: 0; }
   .card .c-preview.loaded::before { display: none; }
   @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-  .card.is-hover .c-preview img { transform: scale(1.06); }
+  .card:hover .c-preview img { transform: scale(1.06); }
   .card .c-preview-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.5)); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .06em; opacity: 0; transition: opacity .22s ease; pointer-events: none; }
   .card .c-preview-hint svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; }
-  .card.is-hover .c-preview-hint { opacity: 1; }
+  .card:hover .c-preview-hint { opacity: 1; }
 
   /* 默认内容：hover 时模糊淡出 */
-  .card .c-row { display: flex; align-items: center; gap: 10px; transition: opacity .25s ease; }
-  .card.is-hover .c-row { opacity: .28; }
+  .card .c-row { display: flex; align-items: center; gap: 10px; transition: opacity .2s ease; }
+  .card:hover .c-row { opacity: .28; }
   .card .c-icon { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
   .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -462,8 +459,8 @@
   .card .c-meta { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* 获取按钮：卡片底部，hover 时显示 */
-  .card .c-dl-btn { display: block; width: 100%; padding: 6px 10px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600; cursor: pointer; opacity: 0; pointer-events: none; margin-top: auto; transition: opacity .25s ease-out, transform .25s ease-out; }
-  .card.is-hover .c-dl-btn { opacity: 1; pointer-events: auto; }
+  .card .c-dl-btn { display: block; width: 100%; padding: 6px 10px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600; cursor: pointer; margin-top: auto; opacity: 0; pointer-events: none; transition: opacity .2s ease-out, transform .2s ease-out; }
+  .card:hover .c-dl-btn { opacity: 1; pointer-events: auto; }
 
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
@@ -833,7 +830,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=77"></script>
+<script src="apps.js?v=78"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1026,10 +1023,8 @@
     var meta = a.category || "";
     var preview = a.preview || "";
     return (
-      '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '"' +
-      (preview ? " onmouseenter=\"this.querySelector('.c-preview')?.classList.add('loaded')\"" : "") +
-      '>' +
-        (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="lazy" onload="this.classList.add(\'loaded\');this.closest(\'.c-preview\')?.classList.add(\'loaded\')"><div class="c-preview-hint"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M21 21l-4.3-4.3"/></svg>点击预览</div></div>' : "") +
+      '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '">' +
+        (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="eager" decoding="async" fetchpriority="auto" onload="this.classList.add(\'loaded\');this.closest(\'.c-preview\')?.classList.add(\'loaded\')"><div class="c-preview-hint"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M21 21l-4.3-4.3"/></svg>点击预览</div></div>' : "") +
         '<div class="c-row">' +
           iconHtml(a, "c-icon") +
           '<div class="c-body">' +
@@ -1065,7 +1060,6 @@
       __scrollLock = false;
       var vh = window.innerHeight;
       var triggerY = vh + 500;
-      var fadeY = vh + 100;
 
       var sentinel = document.getElementById("scroll-sentinel");
       if (sentinel && !__loadingMore) {
@@ -1076,13 +1070,6 @@
           setTimeout(function () { __loadingMore = false; }, 600);
         }
       }
-
-      document.querySelectorAll(".card:not(.in-view)").forEach(function (c) {
-        var cr = c.getBoundingClientRect();
-        if (cr.top < fadeY && cr.bottom > 0) {
-          c.classList.add("in-view");
-        }
-      });
     }, 50);
   }
   // 双重保险：scroll 事件 + setInterval 兜底（某些环境 scroll 事件不冒泡）
@@ -1131,25 +1118,8 @@
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
 
-    if (reset) {
-      // 首次/切分类：纯 setTimeout 错峰
-      var fresh = grid.querySelectorAll(".card:not(.in-view)");
-      var delay = 0;
-      fresh.forEach(function (c, i) {
-        (function (el, idx, t) {
-          setTimeout(function () {
-            el.classList.add("in-view");
-          }, t);
-        })(c, i, delay);
-        delay += 120;
-      });
-    } else {
-      // 无限滚动：卡片在视口下方 → 由 scroll 事件 checkScroll() 负责加 .in-view
-      // 这里手动触发一次 checkScroll，以防新加载的卡片有部分已经在视口内
-      checkScroll();
-    }
+    if (!reset) checkScroll();
 
-    // 到底 sentinel：纯标记，实际触发由 checkScroll() 负责
     var sentinel = document.getElementById("scroll-sentinel");
     var endHint = document.getElementById("end-hint");
     if (end >= fullList.length) {
@@ -1280,14 +1250,6 @@
   renderList();
 
   // 事件委托：卡片 → 打开详情弹窗
-  listEl.addEventListener("mouseover", function (e) {
-    var card = e.target.closest(".card");
-    if (card && !card.contains(e.relatedTarget)) card.classList.add("is-hover");
-  });
-  listEl.addEventListener("mouseout", function (e) {
-    var card = e.target.closest(".card");
-    if (card && !card.contains(e.relatedTarget)) card.classList.remove("is-hover");
-  });
   listEl.addEventListener("click", function (e) {
     // 点击预览图 → 打开图片预览 lightbox
     var preview = e.target.closest(".c-preview");
