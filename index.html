@@ -1243,7 +1243,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=107"></script>
+<script src="apps.js?v=108"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2201,6 +2201,9 @@
       if (e.target.id === "egg") document.getElementById("egg").classList.remove("open");
     });
   }
+
+  // 暴露到 window 便于外部诊断
+  window._dockMgr = _dockMgr;
 
 })();
 </script>
