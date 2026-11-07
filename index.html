@@ -783,10 +783,13 @@
     opacity: 0; visibility: hidden; pointer-events: none;
   }
   .splash-inner {
-    display: flex; flex-direction: column; align-items: stretch;
-    gap: 20px; padding: 32px 36px; text-align: left;
-    max-width: 540px; width: 100%;
+    display: flex; flex-direction: column;
+    gap: 20px; padding: 40px 44px 36px;
+    width: 100%; max-width: 640px;
     animation: splashIn .5s cubic-bezier(.22,1,.36,1);
+    /* 撑满 preloader 高度，让卡片区尽量大 */
+    height: min(72vh, 680px);
+    justify-content: space-between;
   }
   @keyframes splashIn {
     from { opacity: 0; transform: translateY(16px); }
@@ -795,11 +798,62 @@
   .splash-title {
     font-family: var(--display); font-size: 11px; font-weight: 600;
     letter-spacing: .22em; text-transform: uppercase;
-    color: var(--muted);
+    color: var(--muted); flex-shrink: 0;
   }
 
-  /* 更新日志卡片 */
-  .splash-log { display: flex; flex-direction: column; gap: 10px; }
+  /* 更新日志卡片（可滚动） */
+  .splash-log {
+    display: flex; flex-direction: column; gap: 10px;
+    flex: 1; min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+  }
+  .splash-log::-webkit-scrollbar { width: 5px; }
+  .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+
+  /* HoldButton — 长按进入按钮 */
+  .splash-hold {
+    --sh-radius: 14px;
+    --sh-fill: var(--accent);
+    --sh-text: var(--ink);
+    --sh-fill-text: #fff;
+    --sh-press: 0.985;
+    --sh-wave: 6px;
+    --sh-p: 0;
+
+    position: relative; isolation: isolate;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 52px; border-radius: var(--sh-radius);
+    background: var(--card); border: 1px solid var(--line);
+    color: var(--sh-text); font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: .01em;
+    cursor: pointer; user-select: none;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    overflow: hidden; flex-shrink: 0;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .splash-hold[data-phase='holding'][data-input='pointer'] { transform: scale(var(--sh-press)); box-shadow: 0 0 22px color-mix(in srgb, var(--sh-fill) 45%, transparent); }
+
+  .sh-idle { position: relative; z-index: 2; transition: opacity 180ms, filter 180ms; }
+  .splash-hold[data-phase='done'] .sh-idle { opacity: 0; filter: blur(2px); }
+
+  .sh-clip { position: absolute; inset: 0; z-index: 3; clip-path: inset(0 round var(--sh-radius)); pointer-events: none; }
+  .sh-fill {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--sh-fill); color: var(--sh-fill-text);
+    clip-path: inset(0 calc((1 - var(--sh-p)) * (100% + 0.75 * var(--sh-wave)) - var(--sh-p) * 0.25 * var(--sh-wave)) 0 0);
+  }
+  .sh-crest {
+    position: absolute; inset: 0;
+    background: var(--sh-fill);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
+    -webkit-mask-size: var(--sh-wave) 40px; mask-size: var(--sh-wave) 40px;
+    -webkit-mask-position-x: calc(-1 * var(--sh-wave) + var(--sh-p) * 160px);
+    mask-position-x: calc(-1 * var(--sh-wave) + var(--sh-p) * 160px);
+    opacity: 0.9;
+  }
   .log-group {
     display: flex; align-items: stretch; gap: 14px;
     padding: 14px 16px;
@@ -837,15 +891,21 @@
     white-space: nowrap; flex-shrink: 0;
   }
 
-  .splash-bar { width: 100%; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
-  .splash-bar-fill {
-    height: 100%; width: 0%; border-radius: 2px;
-    background: var(--accent);
-    transition: width 2.5s cubic-bezier(.22,1,.36,1);
+  /* HoldButton done 脉冲（复用 brand 的逻辑） */
+  .splash-hold[data-phase='done']::after {
+    content: ""; position: absolute; inset: 0; border-radius: var(--sh-radius);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sh-fill) 55%, transparent);
+    animation: sh-pulse 550ms ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes sh-pulse {
+    from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--sh-fill) 55%, transparent); }
+    to   { box-shadow: 0 0 0 16px color-mix(in srgb, var(--sh-fill) 0%, transparent); }
   }
 
   @media (max-width: 720px) {
-    .splash-inner { padding: 24px 22px; gap: 16px; max-width: 100%; }
+    .splash-inner { padding: 24px 22px 20px; gap: 16px; max-width: 100%; height: min(82vh, 620px); }
+    .splash-hold { height: 46px; font-size: 13px; }
     .log-group { padding: 12px 14px; gap: 12px; border-radius: 12px; }
     .log-text { font-size: 12px; }
     .wrap { padding: 0 20px; }
@@ -878,8 +938,14 @@
   <div class="splash-inner">
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <div class="splash-bar">
-      <div class="splash-bar-fill" id="splash-bar-fill"></div>
+    <div class="splash-hold" id="splash-hold">
+      <span class="sh-idle">长按进入主站</span>
+      <span class="sh-clip" aria-hidden="true">
+        <span class="sh-fill">
+          <span class="sh-idle">释放进入</span>
+        </span>
+        <span class="sh-crest" aria-hidden="true"></span>
+      </span>
     </div>
   </div>
 </div>
@@ -1000,7 +1066,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=93"></script>
+<script src="apps.js?v=94"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1580,11 +1646,11 @@
     })();
   }, { once: true });
 
-  // ======== 滑动进入（每次强制，自动滑动条） ========
+  // ======== 公告页 HoldButton：长按 2 秒进入 ========
   (function () {
     var splash = document.getElementById("preloader");
-    if (!splash) return;
-    var barFill = document.getElementById("splash-bar-fill");
+    var btn = document.getElementById("splash-hold");
+    if (!splash || !btn) return;
 
     function dismiss() {
       if (splash.classList.contains("hide")) return;
@@ -1593,17 +1659,73 @@
       console.log("%c免费的小工具 · 每天精选上架","color:#6f6f78");
     }
 
-    // 强制触发 CSS transition：先 width:0 再 width:100%
-    if (barFill) {
-      barFill.style.width = "0%";
-      // 下一帧设 100%，触发 2.5s transition
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () { barFill.style.width = "100%"; });
-      });
+    // HoldButton 状态机（复用 brand 的，改 --sh-p）
+    var HB = {
+      phase: "idle", raf: 0, p: 0, from: 0, to: 0, start: 0,
+      completeTimer: 0, resetTimer: 0, input: null,
+      clear: function () { clearTimeout(this.completeTimer); clearTimeout(this.resetTimer); },
+      go: function (ph, input) {
+        this.phase = ph; this.input = input || null;
+        btn.setAttribute("data-phase", ph);
+        if (input) btn.setAttribute("data-input", input);
+        else btn.removeAttribute("data-input");
+      },
+      drive: function (to, duration, ease) {
+        var self = this;
+        cancelAnimationFrame(this.raf);
+        this.from = this.p; this.to = to; this.start = performance.now();
+        function step(now) {
+          var t = duration > 0 ? Math.min(1, (now - self.start) / duration) : 1;
+          self.p = self.from + (self.to - self.from) * ease(t);
+          btn.style.setProperty("--sh-p", self.p.toFixed(4));
+          if (t < 1) { self.raf = requestAnimationFrame(step); return; }
+          self.raf = 0;
+          if (to === 1) complete();
+        }
+        this.raf = requestAnimationFrame(step);
+      }
+    };
+    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
+
+    function complete() {
+      if (HB.phase !== "holding") return;
+      HB.clear();
+      HB.go("done");
+      dismiss(); // 填满立即进入，不等 reset
+      HB.resetTimer = setTimeout(function () {
+        HB.go("idle");
+        HB.drive(0, 200, EASE_OUT);
+      }, 1100);
+    }
+    function begin(kind) {
+      if (HB.phase !== "idle") return false;
+      HB.clear();
+      HB.go("holding", kind);
+      HB.drive(1, 2000, function (t) { return t; }); // LINEAR 2s
+      HB.completeTimer = setTimeout(complete, 2100);
+      return true;
+    }
+    function release() {
+      if (HB.phase !== "holding") return;
+      HB.clear();
+      HB.go("idle");
+      HB.drive(0, 200, EASE_OUT);
     }
 
-    // bar 填满后自动进入（2.5s + 100ms 容错）
-    setTimeout(dismiss, 2600);
+    function startHold(e) { e.preventDefault(); begin(e.type.startsWith("touch") ? "touch" : "pointer"); }
+    function cancelHold() { if (HB.phase === "holding") release(); }
+
+    btn.addEventListener("mousedown", startHold);
+    btn.addEventListener("mouseup", cancelHold);
+    btn.addEventListener("mouseleave", cancelHold);
+    btn.addEventListener("touchstart", startHold, { passive: false });
+    btn.addEventListener("touchend", cancelHold);
+    btn.addEventListener("touchcancel", cancelHold);
+    window.addEventListener("blur", cancelHold);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) cancelHold(); });
+
+    // 兜底：无输入设备时 5s 后自动进入（防卡壳）
+    setTimeout(function () { if (!splash.classList.contains("hide")) dismiss(); }, 5000);
   })();
 
   // ======== 公告页：更新日志渲染 ========
