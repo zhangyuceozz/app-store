@@ -833,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=74"></script>
+<script src="apps.js?v=75"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1091,8 +1091,10 @@
       });
     }, 50);
   }
+  // 双重保险：scroll 事件 + setInterval 兜底（某些环境 scroll 事件不冒泡）
   window.addEventListener("scroll", checkScroll, { passive: true });
-  console.log('[SCROLL] checkScroll 已绑定到 window.scroll');
+  setInterval(checkScroll, 800);
+  console.log('[SCROLL] checkScroll 已绑定到 window.scroll + 800ms 定时器');
 
   function renderList() {
     var list = APPS.filter(matches);
