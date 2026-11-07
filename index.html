@@ -833,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=72"></script>
+<script src="apps.js?v=73"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1064,21 +1064,25 @@
     __scrollTimer = setTimeout(function () {
       __scrollLock = false;
       var vh = window.innerHeight;
-      var triggerY = vh + 500; // 提前 500px 触底加载
-      var fadeY = vh + 100;     // 提前 100px 卡片淡入
+      var triggerY = vh + 500;
+      var fadeY = vh + 100;
 
-      // 1. 到底 sentinel → 加载更多
       var sentinel = document.getElementById("scroll-sentinel");
       if (sentinel && !__loadingMore) {
         var r = sentinel.getBoundingClientRect();
+        console.log('[SCROLL] check: sentinel.top=' + r.top.toFixed(0) + ' triggerY=' + triggerY + ' loading=' + __loadingMore + ' scrollTop=' + document.documentElement.scrollTop);
         if (r.top < triggerY && r.bottom > 0) {
+          console.log('[SCROLL] → 触底！loadMore(false)');
           __loadingMore = true;
           loadMore(false);
           setTimeout(function () { __loadingMore = false; }, 600);
         }
+      } else if (!sentinel) {
+        console.log('[SCROLL] sentinel 不存在');
+      } else {
+        console.log('[SCROLL] __loadingMore 锁中，跳过');
       }
 
-      // 2. 卡片滚进视口 → 淡入
       document.querySelectorAll(".card:not(.in-view)").forEach(function (c) {
         var cr = c.getBoundingClientRect();
         if (cr.top < fadeY && cr.bottom > 0) {
@@ -1088,6 +1092,7 @@
     }, 50);
   }
   window.addEventListener("scroll", checkScroll, { passive: true });
+  console.log('[SCROLL] checkScroll 已绑定到 window.scroll');
 
   function renderList() {
     var list = APPS.filter(matches);
