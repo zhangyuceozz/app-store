@@ -1243,7 +1243,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=106"></script>
+<script src="apps.js?v=107"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1380,6 +1380,7 @@
   recalcCounts();
 
   function buildDock() {
+    console.log("[buildDock] start dockEl=", !!dockEl, "_dockMgr.raf=", _dockMgr && _dockMgr.raf);
     if (!dockEl) return;
     recalcCounts();
     var html = "";
@@ -1404,9 +1405,9 @@
       });
     });
     setDockState();
-    // 注意：dockMagnify 只初始化一次（全局 flag），buildDock 只更新 items
-    if (!_dockMgr.raf) _dockMgr.init();
-    else _dockMgr.rebind();
+    console.log("[buildDock] innerHTML set, items=", dockEl.querySelectorAll(".dock__item").length);
+    if (!_dockMgr.raf) { console.log("[buildDock] calling _dockMgr.init()"); _dockMgr.init(); }
+    else { console.log("[buildDock] calling _dockMgr.rebind()"); _dockMgr.rebind(); }
   }
 
   function setDockState() {
@@ -1426,9 +1427,12 @@
     MASS: 0.1, STIFFNESS: 150, DAMPING: 12,
     _w: 0, _ro: null, _sep: null,
     init: function () {
-      if (this.raf || !dockEl) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      console.log("[dockMgr.init] ENTER raf=", this.raf, "dockEl=", !!dockEl);
+      if (this.raf || !dockEl) { console.log("[dockMgr.init] EARLY RETURN 1"); return; }
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { console.log("[dockMgr.init] EARLY RETURN 2 reduced-motion"); return; }
+      console.log("[dockMgr.init] OK proceeding");
       this.items = dockEl.querySelectorAll(".dock__item");
+      console.log("[dockMgr.init] items found=", this.items.length);
       this.rebuild();
       var self = this;
 
