@@ -1243,7 +1243,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=105"></script>
+<script src="apps.js?v=106"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1442,6 +1442,8 @@
         self.pointer.y = e.clientY - rect.top;
         self.pointer.inside = true;
         self.lastT = 0;
+        // 仅第一次 hover 时打 log，避免刷屏
+        if (!self._logged) { self._logged = true; console.log("[dock] pointermove", self.pointer.x.toFixed(0), self.pointer.y.toFixed(0), "items=", self.items.length); }
       });
       dockEl.addEventListener("pointerleave", function () {
         self.pointer.inside = false;
@@ -1487,7 +1489,15 @@
           var tiltL = i > 0 ? self.state[i - 1].pos - s.pos : 0;
           var tiltR = i < n - 1 ? self.state[i + 1].pos - s.pos : 0;
           var tilt = (tiltL - tiltR) * 0.15;
-          tile.style.transform = "translate(" + tilt.toFixed(2) + "px,-" + lift.toFixed(2) + "px) scale(" + (s.pos / itemSize).toFixed(3) + ")";
+          var scale = s.pos / itemSize;
+          tile.style.transform = "translate(" + tilt.toFixed(2) + "px,-" + lift.toFixed(2) + "px) scale(" + scale.toFixed(3) + ")";
+          // 每 120 帧打一次诊断
+          self._dbgFrame = (self._dbgFrame || 0) + 1;
+          if (self._dbgFrame % 120 === 0) {
+            var maxScale = 0;
+            for (var j = 0; j < n; j++) if (self.state[j].pos / self.BASE > maxScale) maxScale = self.state[j].pos / self.BASE;
+            console.log("[dock tick] maxScale=", maxScale.toFixed(3), "inside=", self.pointer.inside, "dist=", self.DISTANCE);
+          }
         }
       }
       this.raf = requestAnimationFrame(tick);
