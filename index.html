@@ -1243,7 +1243,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=103"></script>
+<script src="apps.js?v=104"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1875,150 +1875,83 @@
     })();
   }, { once: true });
 
-  // ======== 公告页 HoldButton — 1:1 from React Bits ========
+  // ======== 公告页 HoldButton — 长按 2 秒进入 ========
   (function () {
-    var TAP_MS = 250;
-    var HIT_PAD = 10;
-    var LINEAR = function (t) { return t; };
-    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
     var HOLD_TIME = 2000;
-    var RELEASE_TIME = 200;
-    var PRESS_SCALE = 0.97;
-    var RESET_AFTER = 1200;
-
-    var splash = document.getElementById("preloader");
     var btn = document.getElementById("splash-hold");
-    if (!splash || !btn) return;
-
-    var state = { phase: "idle", input: null };
-    var gesture = { pointerId: null, start: 0, rect: null };
-    var motion = { raf: 0, p: 0, from: 0, to: 0, start: 0 };
-    var timers = { complete: 0, reset: 0 };
-
-    function go(next, kind) {
-      state.phase = next; state.input = kind || null;
-      btn.setAttribute("data-phase", next);
-      if (kind) btn.setAttribute("data-input", kind);
-      else btn.removeAttribute("data-input");
-    }
-    function clearTimers() { clearTimeout(timers.complete); clearTimeout(timers.reset); }
-
-    // rAF 驱动 --hb-p（完整复刻 React Bits drive）
-    function drive(to, duration, ease) {
-      cancelAnimationFrame(motion.raf);
-      motion.from = motion.p; motion.to = to; motion.start = performance.now();
-      function step(now) {
-        var t = duration > 0 ? Math.min(1, (now - motion.start) / duration) : 1;
-        motion.p = motion.from + (motion.to - motion.from) * ease(t);
-        btn.style.setProperty("--hb-p", motion.p.toFixed(4));
-        if (t < 1) { motion.raf = requestAnimationFrame(step); return; }
-        motion.raf = 0;
-        if (to === 1) complete();
-      }
-      motion.raf = requestAnimationFrame(step);
-    }
+    if (!btn) return;
+    var timer = 0, phase = "idle", pointerId = null;
 
     function dismiss() {
-      if (splash.classList.contains("hide")) return;
+      var splash = document.getElementById("preloader");
+      if (!splash || splash.classList.contains("hide")) return;
       splash.classList.add("hide");
-      console.log("%c✦ Chovy Store","font-weight:bold;font-size:14px;color:#ea580c");
-      console.log("%c免费的小工具 · 每天精选上架","color:#6f6f78");
+      setTimeout(function () { splash.remove(); }, 600);
     }
 
-    function complete() {
-      if (state.phase !== "holding") return;
-      // React Bits 防提前触发：elapsed 必须 >= holdTime - 50ms
-      if (performance.now() - gesture.start < HOLD_TIME - 50) return;
-      clearTimers();
-      go("done", state.input);
-      dismiss();
-      if (RESET_AFTER > 0) {
-        timers.reset = setTimeout(function () {
-          go("idle");
-          drive(0, RELEASE_TIME, EASE_OUT);
-        }, RESET_AFTER);
-      }
+    function start() {
+      if (phase !== "idle") return;
+      phase = "holding";
+      btn.setAttribute("data-phase", "holding");
+      btn.style.setProperty("--hb-p", "0");
+      // 液态填充动画（简单 setTimeout 驱动，每 30ms 推进一次）
+      var fill = 0;
+      var fillTimer = setInterval(function () {
+        fill += 0.03 / (HOLD_TIME / 1000 / 30); // ~linear
+        if (fill > 1) fill = 1;
+        btn.style.setProperty("--hb-p", fill.toFixed(3));
+      }, 30);
+      timer = setTimeout(function () {
+        if (phase !== "holding") { clearInterval(fillTimer); return; }
+        clearInterval(fillTimer);
+        fill = 1;
+        btn.style.setProperty("--hb-p", "1");
+        phase = "done";
+        btn.setAttribute("data-phase", "done");
+        dismiss();
+        // resetAfter=1200ms：按钮恢复原状（虽然已经看不到了）
+        setTimeout(function () {
+          phase = "idle";
+          btn.setAttribute("data-phase", "idle");
+          btn.style.setProperty("--hb-p", "0");
+        }, 1200);
+      }, HOLD_TIME);
+      btn._fillTimer = fillTimer;
+    }
+    function cancel() {
+      if (phase !== "holding") return;
+      phase = "idle";
+      btn.setAttribute("data-phase", "idle");
+      clearTimeout(timer); timer = 0;
+      if (btn._fillTimer) { clearInterval(btn._fillTimer); btn._fillTimer = 0; }
+      btn.style.setProperty("--hb-p", "0");
     }
 
-    function begin(kind) {
-      if (state.phase !== "idle") return false;
-      clearTimers();
-      gesture.start = performance.now();
-      gesture.rect = btn.getBoundingClientRect();
-      go("holding", kind);
-      drive(1, HOLD_TIME, LINEAR);
-      timers.complete = setTimeout(complete, HOLD_TIME + 100);
-      return true;
-    }
-
-    function release() {
-      if (state.phase !== "holding") return;
-      clearTimers();
-      go("idle", null);
-      drive(0, RELEASE_TIME, EASE_OUT);
-    }
-
-    function endPointer(e) {
-      if (e.pointerId !== gesture.pointerId) return;
-      gesture.pointerId = null;
-      try { if (btn.hasPointerCapture(e.pointerId)) btn.releasePointerCapture(e.pointerId); } catch (_) {}
-      release();
-    }
-
-    function onPointerDown(e) {
-      if (e.button !== 0 || !e.isPrimary || gesture.pointerId !== null) return;
-      if (!begin("pointer")) return;
-      gesture.pointerId = e.pointerId;
+    btn.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0 || !e.isPrimary) return;
+      pointerId = e.pointerId;
       try { btn.setPointerCapture(e.pointerId); } catch (_) {}
-    }
-    function onPointerMove(e) {
-      if (e.pointerId !== gesture.pointerId) return;
-      var r = gesture.rect;
-      if (!r) return;
-      var out = e.clientX < r.left - HIT_PAD || e.clientX > r.right + HIT_PAD ||
-                e.clientY < r.top - HIT_PAD || e.clientY > r.bottom + HIT_PAD;
-      if (out) endPointer(e);
-    }
-    function onPointerUp(e) { endPointer(e); }
-    function onPointerLeave(e) { if (e.pointerType !== "touch") release(); }
-
-    function onKeyDown(e) {
-      if (e.key === "Escape") { if (state.input === "key") release(); return; }
-      if (e.key !== " " && e.key !== "Enter") return;
+      start();
       e.preventDefault();
-      if (!e.repeat) begin("key");
-    }
-    function onKeyUp(e) {
+    });
+    btn.addEventListener("pointerup", function (e) {
+      if (e.pointerId === pointerId) { cancel(); pointerId = null; }
+    });
+    btn.addEventListener("pointercancel", function () { cancel(); pointerId = null; });
+    btn.addEventListener("pointerleave", function () { if (pointerId === null) cancel(); });
+
+    document.addEventListener("keydown", function (e) {
       if (e.key !== " " && e.key !== "Enter") return;
+      if (e.repeat) return;
       e.preventDefault();
-      if (state.input === "key") release();
-    }
-
-    // ResizeObserver — 动态设置 --hb-w / --hb-h（crest mask-position 公式需要）
-    (function () {
-      var ro = new ResizeObserver(function () {
-        btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
-        btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
-      });
-      ro.observe(btn);
-      btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
-      btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
-    })();
-
-    btn.addEventListener("pointerdown", onPointerDown);
-    btn.addEventListener("pointermove", onPointerMove);
-    btn.addEventListener("pointerup", onPointerUp);
-    btn.addEventListener("pointercancel", onPointerUp);
-    btn.addEventListener("pointerleave", onPointerLeave);
-    btn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("keyup", onKeyUp);
-
-    // 安全网 — blur / visibilitychange
-    window.addEventListener("blur", release);
-    document.addEventListener("visibilitychange", function () { if (document.hidden) release(); });
-
-    // cleanup（preloader dismiss 后不需要了，保持事件绑着也无害）
+      start();
+    });
+    document.addEventListener("keyup", function (e) {
+      if (e.key !== " " && e.key !== "Enter") return;
+      cancel();
+    });
+    window.addEventListener("blur", cancel);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) cancel(); });
   })();
 
   // ======== 公告页：更新日志渲染 ========
