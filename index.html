@@ -6,6 +6,8 @@
 <title>应用商店</title>
 <meta name="description" content="免费的小工具，支持 Windows 与 macOS。">
 <link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://chovy.cc.cd" crossorigin>
+<link rel="dns-prefetch" href="https://chovy.cc.cd">
 <script>
   (function () {
     try {
@@ -977,7 +979,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=85"></script>
+<script src="apps.js?v=86"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1450,6 +1452,19 @@
 
   buildCats();
   renderList(true); // 首次加载跳过淡入淡出
+
+  // ======== 后台预加载全部 preview.jpg ========
+  // 页面加载完成后逐个预加载（每 150ms 一张，避免阻塞首屏）
+  window.addEventListener("load", function () {
+    var previews = APPS.map(function (a) { return a.preview; }).filter(Boolean);
+    var idx = 0;
+    (function tick() {
+      if (idx >= previews.length) return;
+      var img = new Image();
+      img.src = previews[idx++];
+      setTimeout(tick, 150);
+    })();
+  }, { once: true });
 
   // ======== 顶栏公告胶囊 ========
   (function () {
