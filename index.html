@@ -1243,7 +1243,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=108"></script>
+<script src="apps.js?v=109"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1429,7 +1429,6 @@
     init: function () {
       console.log("[dockMgr.init] ENTER raf=", this.raf, "dockEl=", !!dockEl);
       if (this.raf || !dockEl) { console.log("[dockMgr.init] EARLY RETURN 1"); return; }
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { console.log("[dockMgr.init] EARLY RETURN 2 reduced-motion"); return; }
       console.log("[dockMgr.init] OK proceeding");
       this.items = dockEl.querySelectorAll(".dock__item");
       console.log("[dockMgr.init] items found=", this.items.length);
