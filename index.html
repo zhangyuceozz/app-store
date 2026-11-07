@@ -379,81 +379,77 @@
   /* ---------- 主体（全宽） ---------- */
   main { padding: 48px 0 240px; }
 
-  /* ---------- 底部 Dock 分类栏 ---------- */
+  /* ---------- 底部 Dock 分类栏（React Bits 规格：baseItemSize=50 / magnification=70 / panelHeight=68） ---------- */
   .dock {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
     z-index: 80;
-    display: flex; align-items: flex-end; justify-content: center; gap: 6px;
-    padding: 10px 14px 8px;
-    border-radius: 18px;
+    display: flex; align-items: flex-end; justify-content: center; gap: 4px;
+    padding: 8px 12px 10px;
+    border-radius: 20px;
     background: color-mix(in srgb, var(--card) 82%, transparent);
     backdrop-filter: blur(14px) saturate(1.2);
     -webkit-backdrop-filter: blur(14px) saturate(1.2);
     border: 1px solid var(--line);
     box-shadow: 0 8px 32px -12px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
     max-width: calc(100vw - 32px);
-    overflow-x: auto;
-    overflow-y: visible;
+    overflow-x: auto; overflow-y: visible;
     scrollbar-width: none;
   }
   .dock::-webkit-scrollbar { display: none; }
 
+  /* panelHeight=68：dock 容器 padding-top(8) + item(50) + padding-bottom(10) */
   .dock__item {
-    --dock-size: 44px;
-    --dock-mag: 1.6;
-    --dock-neighbor: 1.25;
-    position: relative;
-    flex-shrink: 0;
-    width: var(--dock-size); height: var(--dock-size);
+    position: relative; flex-shrink: 0;
+    width: 64px; height: 58px; /* baseItemSize=50 图标 + label 8px */
     border: 0; background: transparent; padding: 0;
     cursor: pointer;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
     transition: width .28s cubic-bezier(.22,1,.36,1),
-                height .28s cubic-bezier(.22,1,.36,1),
-                margin .28s cubic-bezier(.22,1,.36,1);
+                height .28s cubic-bezier(.22,1,.36,1);
   }
+  /* 图标盒子：基础 34px，hover 放大到 50px，magnification=70 的视觉效果 */
   .dock__item svg {
-    width: 22px; height: 22px;
+    width: 30px; height: 30px; flex-shrink: 0;
     fill: var(--ink);
-    transition: fill .18s ease;
+    transition: fill .18s ease, width .28s cubic-bezier(.22,1,.36,1), height .28s cubic-bezier(.22,1,.36,1);
     filter: drop-shadow(0 2px 4px rgba(0,0,0,.08));
   }
   .dock__item[data-active] svg { fill: var(--accent); }
 
+  /* label 默认显示在图标下方（不是 tooltip） */
   .dock__label {
-    position: absolute;
-    bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-    padding: 4px 10px;
-    border-radius: 8px;
-    background: var(--ink); color: var(--bg);
-    font-size: 11px; font-weight: 500; white-space: nowrap;
-    opacity: 0; pointer-events: none;
-    transition: opacity .15s ease, transform .15s ease;
-    z-index: 2;
+    margin-top: 3px;
+    font-size: 10.5px; font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+    letter-spacing: .01em;
+    transition: color .18s ease, font-size .28s ease;
+    line-height: 1;
   }
-  .dock__item:hover .dock__label,
-  .dock__item[data-mag] .dock__label { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+  .dock__item[data-active] .dock__label { color: var(--accent); font-weight: 600; }
+  .dock__item[data-mag] .dock__label { font-size: 11px; }
 
   .dock__badge {
-    position: absolute; top: -2px; right: -2px;
-    min-width: 16px; height: 16px; padding: 0 4px;
+    position: absolute; top: -2px; right: 6px;
+    min-width: 15px; height: 15px; padding: 0 4px;
     border-radius: 8px;
     background: var(--accent); color: #fff;
-    font-size: 10px; font-weight: 700; line-height: 16px; text-align: center;
+    font-size: 9px; font-weight: 700; line-height: 15px; text-align: center;
     box-shadow: 0 0 0 2px var(--card);
   }
 
   .dock__sep {
     width: 1px; height: 28px; align-self: center;
-    background: var(--line); margin: 0 4px;
+    background: var(--line); margin: 0 6px;
     flex-shrink: 0;
   }
 
   @media (max-width: 720px) {
-    .dock { bottom: 12px; padding: 8px 10px 6px; gap: 4px; border-radius: 14px; }
-    .dock__item { --dock-size: 38px; }
-    .dock__item svg { width: 19px; height: 19px; }
-    .dock__label { display: none; }
+    .dock { bottom: 10px; padding: 6px 8px 8px; gap: 2px; border-radius: 16px; }
+    .dock__item { width: 52px; height: 50px; }
+    .dock__item svg { width: 24px; height: 24px; }
+    .dock__label { font-size: 9px; }
+    .dock__sep { margin: 0 3px; }
   }
 
   .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 52px 0 20px; display: flex; align-items: center; gap: 8px; }
@@ -1066,7 +1062,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=94"></script>
+<script src="apps.js?v=95"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1252,42 +1248,39 @@
     if (!dockEl || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     var items = dockEl.querySelectorAll(".dock__item");
     if (!items.length) return;
-    var BASE = 44, MAG = 74, NEIGHBOR = 55; // 基础/放大/邻居
-    var HALF = 90; // 影响半径（px）
-    var itemSizes = new Array(items.length).fill(BASE);
+    // 按 React Bits Dock 规格：baseItemSize=50 / magnification=70 / panelHeight=68
+    // 图标基础 30px → hover 放大到 50px（magnification=70 是 item 总宽）
+    var BASE_ICON = 30, MAG_ICON = 50, NEIGHBOR_ICON = 38;
+    var BASE_ITEM_W = 64, MAG_ITEM_W = 84;
+    var HALF = 110; // 影响半径
 
-    function apply() {
+    function apply(iconSizes, itemWidths) {
       items.forEach(function (el, i) {
-        el.style.width = itemSizes[i] + "px";
-        el.style.height = itemSizes[i] + "px";
-        el.setAttribute("data-mag", itemSizes[i] > BASE + 1 ? "" : null);
+        var svg = el.querySelector("svg");
+        if (svg) { svg.style.width = iconSizes[i] + "px"; svg.style.height = iconSizes[i] + "px"; }
+        el.style.width = itemWidths[i] + "px";
+        el.setAttribute("data-mag", iconSizes[i] > BASE_ICON + 1 ? "" : null);
       });
     }
+    var iconSizes = new Array(items.length).fill(BASE_ICON);
+    var itemWidths = new Array(items.length).fill(BASE_ITEM_W);
 
     dockEl.addEventListener("pointermove", function (e) {
       var rect = dockEl.getBoundingClientRect();
       var cx = e.clientX - rect.left;
-      var closestI = -1, closestDist = Infinity;
-      items.forEach(function (el, i) {
-        var r = el.getBoundingClientRect();
-        var ix = r.left - rect.left + r.width / 2;
-        var d = Math.abs(ix - cx);
-        if (d < closestDist) { closestDist = d; closestI = i; }
-      });
       items.forEach(function (el, i) {
         var r = el.getBoundingClientRect();
         var ix = r.left - rect.left + r.width / 2;
         var d = Math.abs(ix - cx);
         var t = Math.max(0, 1 - d / HALF);
-        var size = BASE + (MAG - BASE) * t * t;
-        if (Math.abs(i - closestI) === 1 && d < HALF) size = Math.max(size, NEIGHBOR * Math.max(0.5, t));
-        itemSizes[i] = size;
+        iconSizes[i] = BASE_ICON + (MAG_ICON - BASE_ICON) * t * t;
+        itemWidths[i] = BASE_ITEM_W + (MAG_ITEM_W - BASE_ITEM_W) * t * t;
       });
-      apply();
+      apply(iconSizes, itemWidths);
     });
     dockEl.addEventListener("pointerleave", function () {
-      for (var i = 0; i < items.length; i++) itemSizes[i] = BASE;
-      apply();
+      for (var i = 0; i < items.length; i++) { iconSizes[i] = BASE_ICON; itemWidths[i] = BASE_ITEM_W; }
+      apply(iconSizes, itemWidths);
     });
   }
 
