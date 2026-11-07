@@ -380,66 +380,153 @@
   main { padding: 48px 0 240px; }
 
   /* ---------- 底部 Dock 分类栏（React Bits 规格：baseItemSize=50 / magnification=70 / panelHeight=68） ---------- */
+  /* ========== Dock — 1:1 from React Bits (Dock.jsx + Dock.css) ========== */
+  :root {
+    --dock-panel: rgba(240, 240, 243, 0.8);
+    --dock-panel-edge: rgba(24, 24, 27, 0.07);
+    --dock-panel-highlight: rgba(255, 255, 255, 0.95);
+    --dock-panel-shadow: 0 22px 44px -22px rgba(24, 24, 27, 0.3), 0 6px 16px -10px rgba(24, 24, 27, 0.16);
+    --dock-tile: linear-gradient(180deg, #ffffff 0%, #f6f6f8 100%);
+    --dock-tile-edge: rgba(24, 24, 27, 0.08);
+    --dock-tile-highlight: rgba(255, 255, 255, 1);
+    --dock-tile-shadow: 0 4px 10px -5px rgba(24, 24, 27, 0.25);
+    --dock-ink: #27272a;
+    --dock-label-bg: #ffffff;
+    --dock-label-ink: #18181b;
+    --dock-dot: rgba(24, 24, 27, 0.55);
+    --dock-separator: rgba(24, 24, 27, 0.12);
+    --dock-press: brightness(0.9);
+    --dock-badge: #ff453a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --dock-panel: rgba(38, 35, 46, 0.66);
+      --dock-panel-edge: rgba(255, 255, 255, 0.08);
+      --dock-panel-highlight: rgba(255, 255, 255, 0.07);
+      --dock-panel-shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.8), 0 6px 16px -8px rgba(0, 0, 0, 0.5);
+      --dock-tile: linear-gradient(180deg, #3a3644 0%, #27242f 100%);
+      --dock-tile-edge: rgba(255, 255, 255, 0.07);
+      --dock-tile-highlight: rgba(255, 255, 255, 0.12);
+      --dock-tile-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.7);
+      --dock-ink: #f4f4f5;
+      --dock-label-bg: #2a2731;
+      --dock-label-ink: #f4f4f5;
+      --dock-dot: rgba(255, 255, 255, 0.72);
+      --dock-separator: rgba(255, 255, 255, 0.12);
+      --dock-press: brightness(0.75);
+    }
+  }
+
   .dock {
-    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-    z-index: 80;
-    display: flex; align-items: flex-end; justify-content: center; gap: 4px;
-    padding: 8px 12px 10px;
-    border-radius: 20px;
-    background: color-mix(in srgb, var(--card) 82%, transparent);
-    backdrop-filter: blur(14px) saturate(1.2);
-    -webkit-backdrop-filter: blur(14px) saturate(1.2);
-    border: 1px solid var(--line);
-    box-shadow: 0 8px 32px -12px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
-    max-width: calc(100vw - 32px);
-    overflow-x: auto; overflow-y: visible;
-    scrollbar-width: none;
+    position: fixed; z-index: 80;
+    bottom: 12px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px;
+    padding: 9px;
+    border-radius: 22px;
+    background: var(--dock-panel);
+    box-shadow: inset 0 0 0 1px var(--dock-panel-edge), inset 0 1px 0 var(--dock-panel-highlight), var(--dock-panel-shadow);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    backdrop-filter: blur(20px) saturate(1.6);
+    touch-action: none;
+    overflow-x: auto; overflow-y: visible; scrollbar-width: none;
+    --dock-base: 50px; --dock-thickness: 68px; --dock-round: 0.5; --dock-gap: 10px;
   }
   .dock::-webkit-scrollbar { display: none; }
 
-  /* panelHeight=44：dock 容器 padding-top(8) + item(28) + padding-bottom(8) */
   .dock__item {
-    position: relative; flex-shrink: 0;
-    height: 28px;
-    border: 0; background: transparent; padding: 0 12px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 8px;
-    transition: background .18s ease;
+    position: relative; flex: none;
+    width: var(--dock-base); height: var(--dock-base);
+    margin: 0; padding: 0; border: 0; background: none;
+    color: var(--dock-ink);
+    cursor: pointer; outline: none;
+    -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none;
   }
-  .dock__item:hover { background: var(--soft); }
-  .dock__item[data-active] { background: var(--soft); }
+  .dock__item:hover, .dock__item:focus-visible { z-index: 1; }
 
-  .dock__label {
-    font-size: 10.5px; font-weight: 500;
-    color: var(--muted);
-    white-space: nowrap;
-    letter-spacing: .01em;
-    transition: color .18s ease, font-size .28s cubic-bezier(.22,1,.36,1);
-    line-height: 1;
+  .dock__tile {
+    position: absolute; top: 0; left: 0;
+    width: var(--dock-base); height: var(--dock-base);
+    transform-origin: 0 0;
+    pointer-events: none;
   }
-  .dock__item[data-active] .dock__label { color: var(--ink); font-weight: 600; }
+  .dock__face {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    border-radius: calc(var(--dock-base) * var(--dock-round) * 0.5);
+    background: var(--dock-tile);
+    box-shadow: inset 0 0 0 1px var(--dock-tile-edge), inset 0 1px 0 var(--dock-tile-highlight), var(--dock-tile-shadow);
+    font-size: calc(var(--dock-base) * 0.30);
+    line-height: 1;
+    transition: filter 0.2s ease;
+    color: var(--dock-ink);
+  }
+  .dock__item:active .dock__face { filter: var(--dock-press); transition-duration: 0s; }
+  .dock__item:focus-visible .dock__face { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .dock__item[data-active] .dock__face { box-shadow: inset 0 0 0 1px var(--dock-tile-edge), inset 0 1px 0 var(--dock-tile-highlight), var(--dock-tile-shadow), 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
 
   .dock__badge {
-    position: absolute; top: -3px; right: -1px;
-    min-width: 14px; height: 14px; padding: 0 3px;
-    border-radius: 7px;
-    background: var(--accent); color: #fff;
-    font-size: 8px; font-weight: 700; line-height: 14px; text-align: center;
-    box-shadow: 0 0 0 2px var(--card);
+    position: absolute;
+    top: calc(var(--dock-base) * (0.1465 * var(--dock-round) - 0.19));
+    right: calc(var(--dock-base) * (0.1465 * var(--dock-round) - 0.19));
+    box-sizing: border-box;
+    min-width: calc(var(--dock-base) * 0.38);
+    height: calc(var(--dock-base) * 0.38);
+    padding: 0 calc(var(--dock-base) * 0.1);
+    border-radius: calc(var(--dock-base) * 0.19);
+    background: var(--dock-badge); color: #ffffff;
+    font-size: calc(var(--dock-base) * 0.22);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: calc(var(--dock-base) * 0.38);
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+  }
+
+  .dock__dot {
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--dock-dot);
+    pointer-events: none;
+    left: 50%; margin-left: -2px;
+    top: calc(100% + max(9px, var(--dock-base) * 0.12) - 2px);
+  }
+  .dock__item:not([data-active]) .dock__dot { display: none; }
+
+  .dock__label {
+    position: absolute;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--dock-label-bg);
+    color: var(--dock-label-ink);
+    box-shadow: inset 0 0 0 1px var(--dock-panel-edge), 0 8px 20px -8px rgba(0, 0, 0, 0.35);
+    font-size: 12px; font-weight: 500; line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translate(-50%, 4px);
+    transition: opacity 0.16s ease, transform 0.16s ease;
+  }
+  @media (hover: hover) {
+    .dock__item:hover .dock__label { opacity: 1; transform: translate(-50%, 0); }
   }
 
   .dock__sep {
-    width: 1px; height: 18px; align-self: center;
-    background: var(--line); margin: 0 4px;
-    flex-shrink: 0;
+    flex: none; align-self: center;
+    width: 1px; height: calc(var(--dock-base) * 0.72);
+    border-radius: 1px;
+    background: var(--dock-separator);
   }
 
   @media (max-width: 720px) {
-    .dock { bottom: 10px; padding: 6px 8px 8px; gap: 2px; border-radius: 16px; }
-    .dock__item { height: 26px; padding: 0 10px; }
-    .dock__label { font-size: 9.5px; }
-    .dock__sep { margin: 0 3px; height: 16px; }
+    .dock { bottom: 8px; padding: 7px; gap: 8px; border-radius: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dock__item, .dock__tile, .dock__face { transition: none !important; }
   }
 
   .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 52px 0 20px; display: flex; align-items: center; gap: 8px; }
@@ -797,74 +884,119 @@
   .splash-log::-webkit-scrollbar { width: 5px; }
   .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 
-  /* HoldButton — 完全匹配 React Bits 规格
-     size=md radius=14 fillDirection=right holdTime=2000
-     pressScale=0.97 wave waveAmplitude=6 glow releaseTime=200 resetAfter=1200
+  /* HoldButton — 1:1 from React Bits (HoldButton.jsx + HoldButton.css)
+     custom size: height=52px (fill preloader width), radius=14, holdTime=2000, fillDirection=right,
+     waveAmplitude=6, pressScale=0.97, glow=true, releaseTime=200, resetAfter=1200
+     backgroundColor=var(--card) fillColor=var(--accent) textColor=var(--ink) fillTextColor=#fff
   */
   .splash-hold {
-    --sh-p: 0;
-    --sh-radius: 14px;
-    --sh-fill: var(--accent);
-    --sh-bg: var(--card);
-    --sh-text: var(--ink);
-    --sh-fill-text: #fff;
-    --sh-wave: 6px;
-    --sh-press: 0.97;
+    --hb-radius: 14px;
+    --hb-bg: var(--card);
+    --hb-fill: var(--accent);
+    --hb-text: var(--ink);
+    --hb-fill-text: #fff;
+    --hb-hold: 2000ms;
+    --hb-release: 200ms;
+    --hb-press: 0.97;
+    --hb-wave: 6px;
+    --hb-w: 0px;
+    --hb-h: 0px;
+    --hb-cycles: 1.82;
+    --hb-p: 0;
+    --hb-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --hb-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --hb-glow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 10px 32px -6px color-mix(in srgb, var(--hb-fill) 70%, transparent);
 
     position: relative; isolation: isolate;
-    display: flex; align-items: center; justify-content: center;
-    width: 100%; height: 52px; border-radius: var(--sh-radius);
-    background: var(--sh-bg); border: 1px solid var(--line);
-    color: var(--sh-text); font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: .01em;
-    cursor: pointer; user-select: none;
-    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-    overflow: hidden; flex-shrink: 0;
-    transition: transform .18s ease, box-shadow .18s ease;
-    will-change: transform, box-shadow;
+    display: grid; place-items: center;
+    width: 100%; height: 52px;
+    margin: 0; border: 1px solid var(--line);
+    border-radius: var(--hb-radius);
+    background: var(--hb-bg);
+    color: var(--hb-text);
+    font-family: var(--display); font-weight: 600; font-size: 15px;
+    letter-spacing: 0.01em; line-height: 1;
+    box-shadow: var(--hb-shadow);
+    cursor: pointer; outline: none;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition:
+      transform 160ms var(--hb-ease-out),
+      background-color 160ms ease,
+      box-shadow var(--hb-release) var(--hb-ease-out);
+    flex-shrink: 0;
   }
-  /* 按下缩放 + 辉光（glow） */
-  .splash-hold[data-phase='holding'][data-input='pointer'] {
-    transform: scale(var(--sh-press));
-    box-shadow: 0 0 22px color-mix(in srgb, var(--sh-fill) 50%, transparent);
+  .splash-hold:hover:not(:disabled) { background: color-mix(in srgb, var(--hb-bg) 92%, #fff); }
+  .splash-hold[data-phase='holding'][data-input='pointer'] { transform: scale(var(--hb-press)); }
+  .splash-hold[data-glow='true'][data-phase='holding'],
+  .splash-hold[data-glow='true'][data-phase='done'] { box-shadow: var(--hb-glow); }
+  .splash-hold[data-glow='true'][data-phase='holding'] {
+    transition: transform 160ms var(--hb-ease-out), background-color 160ms ease,
+                box-shadow var(--hb-hold) linear;
   }
-  .splash-hold[data-phase='holding'][data-input='touch'] {
-    box-shadow: 0 0 22px color-mix(in srgb, var(--sh-fill) 50%, transparent);
+  .splash-hold:focus-visible { outline: 2px solid var(--hb-fill); outline-offset: 3px; }
+
+  .splash-hold__pulse { position: absolute; inset: 0; z-index: 0; border-radius: var(--hb-radius); pointer-events: none; opacity: 0; }
+  .splash-hold[data-glow='true'][data-phase='done'] .splash-hold__pulse { animation: hb-pulse 600ms var(--hb-ease-out) forwards; }
+  @keyframes hb-pulse {
+    from { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--hb-fill) 55%, transparent); }
+    to   { opacity: 0; box-shadow: 0 0 0 14px color-mix(in srgb, var(--hb-fill) 0%, transparent); }
   }
 
-  /* 液态填充层（::before）：从左向右（fillDirection=right） */
-  .splash-hold::before {
-    content: ""; position: absolute; inset: 0; z-index: 1;
-    background: var(--sh-fill); color: var(--sh-fill-text);
-    /* clip-path: 裁剪右侧显示填充宽度 + 波浪边缘 waveAmplitude=6 */
-    clip-path: inset(0 calc((1 - var(--sh-p)) * (100% + 0.75 * var(--sh-wave)) - var(--sh-p) * 0.25 * var(--sh-wave)) 0 0);
-    pointer-events: none;
-    transition: none; /* rAF 驱动 --sh-p，不要额外 transition */
+  .splash-hold__label { position: relative; z-index: 2; display: grid; place-items: center; }
+  .splash-hold__label > span {
+    grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+    transition: opacity 200ms ease, filter 200ms ease;
   }
-  /* 波浪 crest 层：用 SVG mask 做波浪边缘 */
-  .splash-hold::after {
-    content: ""; position: absolute; inset: 0; z-index: 1;
-    background: var(--sh-fill);
+  .splash-hold__done { opacity: 0; filter: blur(2px); }
+  .splash-hold[data-phase='done'] .splash-hold__idle { opacity: 0; filter: blur(2px); }
+  .splash-hold[data-phase='done'] .splash-hold__done { opacity: 1; filter: blur(0); }
+
+  .splash-hold__clip {
+    position: absolute; inset: 0; z-index: 3;
+    clip-path: inset(0 round var(--hb-radius));
+    pointer-events: none;
+  }
+  .splash-hold__fill {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    background: var(--hb-fill); color: var(--hb-fill-text);
+    clip-path: inset(0 calc((1 - var(--hb-p)) * (100% + 0.75 * var(--hb-wave)) - var(--hb-p) * 0.25 * var(--hb-wave)) 0 0);
+  }
+  .splash-hold__crest {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    background: var(--hb-fill); color: var(--hb-fill-text);
     -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
     -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
-    -webkit-mask-size: var(--sh-wave) 40px; mask-size: var(--sh-wave) 40px;
-    -webkit-mask-position-x: calc(-1 * var(--sh-wave) + var(--sh-p) * 160px);
-    mask-position-x: calc(-1 * var(--sh-wave) + var(--sh-p) * 160px);
-    opacity: 0.85;
-    pointer-events: none;
-    z-index: 2; /* 在 ::before 之上，波浪边缘叠在填充右边 */
+    -webkit-mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
+    mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
+    -webkit-mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
+    mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
+    -webkit-mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
+    mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
+  }
+  .splash-hold__label--fill { z-index: auto; }
+
+  .splash-hold__sr {
+    position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .splash-hold { transition: background-color 160ms ease, box-shadow var(--hb-release) ease; transform: none !important; }
+    .splash-hold__fill { clip-path: inset(0); opacity: 0; transition: opacity var(--hb-release) ease; }
+    .splash-hold__crest { display: none; }
+    .splash-hold[data-phase='holding'] .splash-hold__fill,
+    .splash-hold[data-phase='done'] .splash-hold__fill { opacity: 1; transition: opacity var(--hb-hold) linear; }
+    .splash-hold__pulse { animation: none !important; }
   }
 
-  /* 按钮文字内容 */
-  .splash-hold { isolation: isolate; }
-  .splash-hold > * { position: relative; z-index: 3; }
-  .splash-hold::before, .splash-hold::after { z-index: 1; }
-
-  /* done 脉冲 */
-  @keyframes sh-pulse {
-    from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--sh-fill) 55%, transparent); }
-    to   { box-shadow: 0 0 0 16px color-mix(in srgb, var(--sh-fill) 0%, transparent); }
-  }
+  /* 公告页日志卡片 */
   .log-group {
     display: flex; align-items: stretch; gap: 14px;
     padding: 14px 16px;
@@ -902,18 +1034,6 @@
     white-space: nowrap; flex-shrink: 0;
   }
 
-  /* HoldButton done 脉冲（复用 brand 的逻辑） */
-  .splash-hold[data-phase='done']::after {
-    content: ""; position: absolute; inset: 0; border-radius: var(--sh-radius);
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sh-fill) 55%, transparent);
-    animation: sh-pulse 550ms ease-out forwards;
-    pointer-events: none;
-  }
-  @keyframes sh-pulse {
-    from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--sh-fill) 55%, transparent); }
-    to   { box-shadow: 0 0 0 16px color-mix(in srgb, var(--sh-fill) 0%, transparent); }
-  }
-
   @media (max-width: 720px) {
     .splash-inner { padding: 24px 22px 20px; gap: 16px; max-width: 100%; height: min(82vh, 620px); }
     .splash-hold { height: 46px; font-size: 13px; }
@@ -949,7 +1069,30 @@
   <div class="splash-inner">
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <div class="splash-hold" id="splash-hold">长按进入主站</div>
+    <button type="button" class="splash-hold" id="splash-hold"
+            data-phase="idle" data-direction="right" data-glow="true"
+            aria-describedby="splash-hold-sr">
+      <span class="splash-hold__pulse"></span>
+      <span class="splash-hold__label">
+        <span class="splash-hold__idle">长按进入主站</span>
+        <span class="splash-hold__done">已进入</span>
+      </span>
+      <span class="splash-hold__clip">
+        <span class="splash-hold__fill">
+          <span class="splash-hold__label splash-hold__label--fill">
+            <span class="splash-hold__idle">长按进入主站</span>
+            <span class="splash-hold__done">已进入</span>
+          </span>
+        </span>
+        <span class="splash-hold__crest">
+          <span class="splash-hold__label splash-hold__label--fill">
+            <span class="splash-hold__idle">长按进入主站</span>
+            <span class="splash-hold__done">已进入</span>
+          </span>
+        </span>
+      </span>
+      <span id="splash-hold-sr" class="splash-hold__sr">按住 2 秒进入主站</span>
+    </button>
   </div>
 </div>
 
@@ -1069,7 +1212,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=98"></script>
+<script src="apps.js?v=99"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1207,13 +1350,15 @@
 
   function buildDock() {
     if (!dockEl) return;
-    recalcCounts(); // 每次重建都按当前 platform 重算
+    recalcCounts();
     var html = "";
     DOCK_ITEMS.forEach(function (it, i) {
       if (i === 1) html += '<div class="dock__sep"></div>';
       var count = catCounts[it.value] || 0;
       var badge = count > 0 ? '<span class="dock__badge">' + count + '</span>' : "";
       html += '<button type="button" class="dock__item" data-cat="' + esc(it.value) + '">' +
+        '<span class="dock__tile"><span class="dock__face">' + esc(it.label) + '</span></span>' +
+        '<span class="dock__dot"></span>' +
         '<span class="dock__label">' + esc(it.label) + '</span>' +
         badge +
       '</button>';
@@ -1241,40 +1386,126 @@
     });
   }
 
-  // Dock 文字放大：hover 标签字体放大 + 邻居按距离衰减
+  // Dock 完整弹簧物理系统 — 1:1 from React Bits Dock.jsx
+  // base=50 / peak=70 / distance=200 / spring: mass=0.1 stiffness=150 damping=12
   function dockMagnify() {
     if (!dockEl || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var BASE = 50, PEAK = 70, DISTANCE = 200;
+    var GAP = 10, ROUND = 0.5;
+    var MASS = 0.1, STIFFNESS = 150, DAMPING = 12;
+
     var items = dockEl.querySelectorAll(".dock__item");
     if (!items.length) return;
-    var BASE_FONT = 10.5, MAG_FONT = 13.5;
-    var HALF = 100;
 
-    function apply(fontSizes) {
-      items.forEach(function (el, i) {
-        var label = el.querySelector(".dock__label");
-        if (label) label.style.fontSize = fontSizes[i] + "px";
-        if (fontSizes[i] > BASE_FONT + 0.3) el.setAttribute("data-mag", "");
-        else el.removeAttribute("data-mag");
-      });
+    var state = [];
+    var rest = [];
+    var pointer = { x: -9999, y: -9999, inside: false };
+    var fit = 1;
+    var raf = 0;
+    var lastT = 0;
+
+    function reset() {
+      state = []; rest = [];
+      for (var i = 0; i < items.length; i++) {
+        state.push({ pos: BASE, vel: 0, tilt: 0, lift: 0 });
+        rest.push(0);
+      }
     }
-    var fontSizes = new Array(items.length).fill(BASE_FONT);
+    reset();
+
+    function updateFit() {
+      var cw = dockEl.clientWidth;
+      var total = items.length * BASE + (items.length - 1) * GAP;
+      fit = cw > 0 ? Math.min(1, cw / (total + 16)) : 1;
+      dockEl.style.setProperty("--dock-base", (BASE * fit) + "px");
+    }
+    updateFit();
+
+    // ResizeObserver: 容器尺寸变化时重新计算 fit，所有 state 按比例缩放
+    var ro = new ResizeObserver(function () {
+      var oldBase = parseFloat(dockEl.style.getPropertyValue("--dock-base")) || BASE;
+      updateFit();
+      var newBase = BASE * fit;
+      var ratio = newBase / (oldBase || newBase);
+      for (var i = 0; i < state.length; i++) {
+        state[i].pos *= ratio;
+        state[i].vel *= ratio;
+      }
+    });
+    ro.observe(dockEl);
+
+    // 记录每个 item 的 rest（中心 X 坐标，相对于 dockEl）
+    function layout() {
+      var rect = dockEl.getBoundingClientRect();
+      for (var i = 0; i < items.length; i++) {
+        var r = items[i].getBoundingClientRect();
+        rest[i] = r.left - rect.left + r.width / 2;
+      }
+    }
+    layout();
+    window.addEventListener("resize", layout);
+
+    // 物理 tick：每帧更新每个 item 的弹簧位置
+    function tick(now) {
+      if (!lastT) lastT = now;
+      var dt = Math.min(0.032, (now - lastT) / 1000);
+      lastT = now;
+
+      // 物理子步（大 dt 时分步）
+      var substeps = Math.max(1, Math.ceil(dt / 0.001));
+      var step = dt / substeps;
+
+      for (var i = 0; i < items.length; i++) {
+        var s = state[i];
+        var target = BASE * fit;
+        if (pointer.inside) {
+          var reach = Math.abs(pointer.x - rest[i]) / DISTANCE;
+          if (reach < 1) target = BASE * fit + (PEAK * fit - BASE * fit) * Math.pow(Math.cos(reach * Math.PI / 2), 2);
+          // 同时计算 tilt（邻近 item 倾斜）
+        }
+        // 弹簧力 F = k*(target - pos) - c*vel
+        var F = STIFFNESS * (target - s.pos) - DAMPING * s.vel;
+        var accel = F / MASS;
+        s.vel += accel * step;
+        s.pos += s.vel * step;
+      }
+
+      // apply：每个 item 的 tile transform + lift
+      for (var i = 0; i < items.length; i++) {
+        var el = items[i];
+        var tile = el.querySelector(".dock__tile");
+        var s = state[i];
+        if (tile) {
+          var itemSize = BASE * fit;
+          var lift = Math.max(0, (s.pos - itemSize));
+          // tiltX: 基于相邻 item 的 size 差，制造向中心倾斜效果
+          var tiltLeft = i > 0 ? state[i - 1].pos - s.pos : 0;
+          var tiltRight = i < items.length - 1 ? state[i + 1].pos - s.pos : 0;
+          var tilt = (tiltLeft - tiltRight) * 0.2;
+          tile.style.transform = "translate(" + tilt.toFixed(2) + "px, -" + lift.toFixed(2) + "px) scale(" + (s.pos / itemSize).toFixed(3) + ")";
+        }
+      }
+
+      raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
 
     dockEl.addEventListener("pointermove", function (e) {
       var rect = dockEl.getBoundingClientRect();
-      var cx = e.clientX - rect.left;
-      items.forEach(function (el, i) {
-        var r = el.getBoundingClientRect();
-        var ix = r.left - rect.left + r.width / 2;
-        var d = Math.abs(ix - cx);
-        var t = Math.max(0, 1 - d / HALF);
-        fontSizes[i] = BASE_FONT + (MAG_FONT - BASE_FONT) * t * t;
-      });
-      apply(fontSizes);
+      pointer.x = e.clientX - rect.left;
+      pointer.y = e.clientY - rect.top;
+      pointer.inside = true;
+      lastT = 0;
     });
     dockEl.addEventListener("pointerleave", function () {
-      for (var i = 0; i < items.length; i++) fontSizes[i] = BASE_FONT;
-      apply(fontSizes);
+      pointer.inside = false;
+      pointer.x = -9999;
+      lastT = 0;
     });
+    dockEl.addEventListener("pointerenter", function () { lastT = 0; });
+    // 每 150ms 重算 rest（内容变化时）
+    setInterval(function () { if (raf) layout(); }, 150);
   }
 
   function iconHtml(a, cls) {
@@ -1632,11 +1863,48 @@
     })();
   }, { once: true });
 
-  // ======== 公告页 HoldButton：长按 2 秒进入 ========
+  // ======== 公告页 HoldButton — 1:1 from React Bits ========
   (function () {
+    var TAP_MS = 250;
+    var HIT_PAD = 10;
+    var LINEAR = function (t) { return t; };
+    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
+    var HOLD_TIME = 2000;
+    var RELEASE_TIME = 200;
+    var PRESS_SCALE = 0.97;
+    var RESET_AFTER = 1200;
+
     var splash = document.getElementById("preloader");
     var btn = document.getElementById("splash-hold");
     if (!splash || !btn) return;
+
+    var state = { phase: "idle", input: null };
+    var gesture = { pointerId: null, start: 0, rect: null };
+    var motion = { raf: 0, p: 0, from: 0, to: 0, start: 0 };
+    var timers = { complete: 0, reset: 0 };
+
+    function go(next, kind) {
+      state.phase = next; state.input = kind || null;
+      btn.setAttribute("data-phase", next);
+      if (kind) btn.setAttribute("data-input", kind);
+      else btn.removeAttribute("data-input");
+    }
+    function clearTimers() { clearTimeout(timers.complete); clearTimeout(timers.reset); }
+
+    // rAF 驱动 --hb-p（完整复刻 React Bits drive）
+    function drive(to, duration, ease) {
+      cancelAnimationFrame(motion.raf);
+      motion.from = motion.p; motion.to = to; motion.start = performance.now();
+      function step(now) {
+        var t = duration > 0 ? Math.min(1, (now - motion.start) / duration) : 1;
+        motion.p = motion.from + (motion.to - motion.from) * ease(t);
+        btn.style.setProperty("--hb-p", motion.p.toFixed(4));
+        if (t < 1) { motion.raf = requestAnimationFrame(step); return; }
+        motion.raf = 0;
+        if (to === 1) complete();
+      }
+      motion.raf = requestAnimationFrame(step);
+    }
 
     function dismiss() {
       if (splash.classList.contains("hide")) return;
@@ -1645,83 +1913,100 @@
       console.log("%c免费的小工具 · 每天精选上架","color:#6f6f78");
     }
 
-    // HoldButton 状态机（复用 brand 的，改 --sh-p）
-    var HB = {
-      phase: "idle", raf: 0, p: 0, from: 0, to: 0, start: 0,
-      completeTimer: 0, resetTimer: 0, input: null,
-      clear: function () { clearTimeout(this.completeTimer); clearTimeout(this.resetTimer); },
-      go: function (ph, input) {
-        this.phase = ph; this.input = input || null;
-        btn.setAttribute("data-phase", ph);
-        if (input) btn.setAttribute("data-input", input);
-        else btn.removeAttribute("data-input");
-      },
-      drive: function (to, duration, ease) {
-        var self = this;
-        cancelAnimationFrame(this.raf);
-        this.from = this.p; this.to = to; this.start = performance.now();
-        function step(now) {
-          var t = duration > 0 ? Math.min(1, (now - self.start) / duration) : 1;
-          self.p = self.from + (self.to - self.from) * ease(t);
-          btn.style.setProperty("--sh-p", self.p.toFixed(4));
-          if (t < 1) { self.raf = requestAnimationFrame(step); return; }
-          self.raf = 0;
-          if (to === 1) complete();
-        }
-        this.raf = requestAnimationFrame(step);
-      }
-    };
-    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
-
     function complete() {
-      if (HB.phase !== "holding") return;
-      HB.clear();
-      HB.go("done");
-      dismiss(); // 填满立即进入
-      // resetAfter=1200：1.2s 后按钮恢复原状（但用户已经看不到了，dismiss 已 hide splash）
-      HB.resetTimer = setTimeout(function () {
-        HB.go("idle");
-        HB.drive(0, 200, EASE_OUT); // releaseTime=200
-      }, 1200);
+      if (state.phase !== "holding") return;
+      // React Bits 防提前触发：elapsed 必须 >= holdTime - 50ms
+      if (performance.now() - gesture.start < HOLD_TIME - 50) return;
+      clearTimers();
+      go("done", state.input);
+      dismiss();
+      if (RESET_AFTER > 0) {
+        timers.reset = setTimeout(function () {
+          go("idle");
+          drive(0, RELEASE_TIME, EASE_OUT);
+        }, RESET_AFTER);
+      }
     }
+
     function begin(kind) {
-      if (HB.phase !== "idle") return false;
-      HB.clear();
-      HB.go("holding", kind);
-      HB.drive(1, 2000, function (t) { return t; }); // holdTime=2000 LINEAR
-      HB.completeTimer = setTimeout(complete, 2100); // 容错 100ms
+      if (state.phase !== "idle") return false;
+      clearTimers();
+      gesture.start = performance.now();
+      gesture.rect = btn.getBoundingClientRect();
+      go("holding", kind);
+      drive(1, HOLD_TIME, LINEAR);
+      timers.complete = setTimeout(complete, HOLD_TIME + 100);
       return true;
     }
+
     function release() {
-      if (HB.phase !== "holding") return;
-      HB.clear();
-      HB.go("idle");
-      HB.drive(0, 200, EASE_OUT); // releaseTime=200
+      if (state.phase !== "holding") return;
+      clearTimers();
+      go("idle", null);
+      drive(0, RELEASE_TIME, EASE_OUT);
     }
 
-    function startHold(e) { e.preventDefault(); begin(e.type.startsWith("touch") ? "touch" : "pointer"); }
-    function cancelHold() { if (HB.phase === "holding") release(); }
+    function endPointer(e) {
+      if (e.pointerId !== gesture.pointerId) return;
+      gesture.pointerId = null;
+      try { if (btn.hasPointerCapture(e.pointerId)) btn.releasePointerCapture(e.pointerId); } catch (_) {}
+      release();
+    }
 
-    btn.addEventListener("mousedown", startHold);
-    btn.addEventListener("mouseup", cancelHold);
-    btn.addEventListener("mouseleave", cancelHold);
-    btn.addEventListener("touchstart", startHold, { passive: false });
-    btn.addEventListener("touchend", cancelHold);
-    btn.addEventListener("touchcancel", cancelHold);
-    window.addEventListener("blur", cancelHold);
-    document.addEventListener("visibilitychange", function () { if (document.hidden) cancelHold(); });
+    function onPointerDown(e) {
+      if (e.button !== 0 || !e.isPrimary || gesture.pointerId !== null) return;
+      if (!begin("pointer")) return;
+      gesture.pointerId = e.pointerId;
+      try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+    }
+    function onPointerMove(e) {
+      if (e.pointerId !== gesture.pointerId) return;
+      var r = gesture.rect;
+      if (!r) return;
+      var out = e.clientX < r.left - HIT_PAD || e.clientX > r.right + HIT_PAD ||
+                e.clientY < r.top - HIT_PAD || e.clientY > r.bottom + HIT_PAD;
+      if (out) endPointer(e);
+    }
+    function onPointerUp(e) { endPointer(e); }
+    function onPointerLeave(e) { if (e.pointerType !== "touch") release(); }
 
-    // 兜底：键盘 Space/Enter 触发（无鼠标设备）—— 但必须长按 holdTime=2000
-    document.addEventListener("keydown", function (e) {
+    function onKeyDown(e) {
+      if (e.key === "Escape") { if (state.input === "key") release(); return; }
       if (e.key !== " " && e.key !== "Enter") return;
-      if (splash.classList.contains("hide")) return;
       e.preventDefault();
-      begin("pointer");
-    });
-    document.addEventListener("keyup", function (e) {
+      if (!e.repeat) begin("key");
+    }
+    function onKeyUp(e) {
       if (e.key !== " " && e.key !== "Enter") return;
-      cancelHold();
-    });
+      e.preventDefault();
+      if (state.input === "key") release();
+    }
+
+    // ResizeObserver — 动态设置 --hb-w / --hb-h（crest mask-position 公式需要）
+    (function () {
+      var ro = new ResizeObserver(function () {
+        btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
+        btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
+      });
+      ro.observe(btn);
+      btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
+      btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
+    })();
+
+    btn.addEventListener("pointerdown", onPointerDown);
+    btn.addEventListener("pointermove", onPointerMove);
+    btn.addEventListener("pointerup", onPointerUp);
+    btn.addEventListener("pointercancel", onPointerUp);
+    btn.addEventListener("pointerleave", onPointerLeave);
+    btn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keyup", onKeyUp);
+
+    // 安全网 — blur / visibilitychange
+    window.addEventListener("blur", release);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) release(); });
+
+    // cleanup（preloader dismiss 后不需要了，保持事件绑着也无害）
   })();
 
   // ======== 公告页：更新日志渲染 ========
