@@ -714,71 +714,67 @@
     .modal .sec { margin-top: 24px; }
   }
 
-  /* ======== 公告条 ======== */
-  .announce {
-    display: flex;
+  /* ======== 顶栏公告胶囊 ======== */
+  .announce-mini {
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-    margin: 0 auto;
-    max-width: 1200px;
-    padding: 0 40px;
-    height: 40px;
-    margin-top: 12px;
+    gap: 8px;
+    height: 28px;
+    padding: 0 10px;
     background: var(--soft);
     border: 1px solid var(--line);
-    border-radius: 10px;
-    overflow: hidden;
-    font-size: 13px;
+    border-radius: 14px;
+    font-size: 12px;
     color: var(--muted);
-    position: relative;
-    transition: height .25s ease, opacity .25s ease, margin .25s ease;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: opacity .2s ease, width .25s ease, padding .2s ease, border-width .2s ease;
   }
-  .announce.is-hidden {
-    height: 0;
+  .announce-mini.is-hidden {
     opacity: 0;
-    margin-top: 0;
-    margin-bottom: 0;
+    width: 0;
+    padding: 0;
     border-width: 0;
   }
-  .announce-track {
-    flex: 1;
+  .announce-mini .am-track {
     position: relative;
     height: 100%;
-    overflow: hidden;
+    min-width: 100px;
+    flex-shrink: 0;
   }
-  .announce-item {
+  .announce-mini .am-item {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     white-space: nowrap;
     opacity: 0;
-    transform: translateY(8px);
-    transition: opacity .4s ease, transform .4s ease;
+    transition: opacity .35s ease;
     pointer-events: none;
   }
-  .announce-item.active {
+  .announce-mini .am-item.active {
     opacity: 1;
-    transform: translateY(0);
     pointer-events: auto;
   }
-  .announce-item b { color: var(--ink); font-weight: 600; }
-  .announce-close {
-    flex-shrink: 0;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+  .announce-mini .am-close {
     border: none;
     background: transparent;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 10px;
     cursor: pointer;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     transition: background .15s, color .15s;
   }
-  .announce-close:hover { background: var(--line); color: var(--ink); }
+  .announce-mini .am-close:hover { background: var(--line); color: var(--ink); }
+  @media (max-width: 720px) {
+    .announce-mini { display: none; }
+  }
 
 </style>
 
@@ -802,7 +798,16 @@
       <input id="q" type="search" required autocomplete="off">
       <label for="q" id="q-label"></label>
     </div>
-    <label class="theme-switch" title="切换深浅色">
+
+  <div class="announce-mini" id="announce-mini">
+    <span class="am-track">
+      <span class="am-item active">🎉 Zed v1.27.0 新上架</span>
+      <span class="am-item">✨ 每日精选 GitHub Trending</span>
+    </span>
+    <button class="am-close" aria-label="关闭">✕</button>
+  </div>
+
+  <label class="theme-switch" title="切换深浅色">
       <input type="checkbox" class="theme-switch__checkbox">
       <div class="theme-switch__container">
         <div class="theme-switch__circle-container">
@@ -860,14 +865,6 @@
       </span>
     </div>
 
-  <div class="announce" id="announce">
-    <div class="announce-track" id="announce-track">
-      <span class="announce-item active">🎉 新上架 <b>Zed v1.27.0</b> — Rust 写的高性能多人协同代码编辑器</span>
-      <span class="announce-item">✨ 每天自动精选 GitHub Trending 热门开源软件上架</span>
-    </div>
-    <button class="announce-close" aria-label="关闭公告">✕</button>
-  </div>
-
 <main class="wrap">
   <aside class="side"><nav class="ms-nav" id="cats"></nav></aside>
   <div class="content"><section id="list"></section></div>
@@ -899,7 +896,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=83"></script>
+<script src="apps.js?v=84"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1338,24 +1335,23 @@
   buildCats();
   renderList(true); // 首次加载跳过淡入淡出
 
-  // ======== 公告条初始化 ========
+  // ======== 顶栏公告胶囊 ========
   (function () {
-    var bar = document.getElementById("announce");
+    var bar = document.getElementById("announce-mini");
     if (!bar) return;
-    // 用户关闭过 → 折叠（不占高度、隐藏）
     if (localStorage.getItem("announce-closed") === "1") {
       bar.classList.add("is-hidden");
       return;
     }
-    var items = bar.querySelectorAll(".announce-item");
+    var items = bar.querySelectorAll(".am-item");
     if (items.length <= 1) return;
     var idx = 0;
     setInterval(function () {
       items[idx].classList.remove("active");
       idx = (idx + 1) % items.length;
       items[idx].classList.add("active");
-    }, 4000); // 4 秒轮播
-    bar.querySelector(".announce-close").addEventListener("click", function () {
+    }, 4000);
+    bar.querySelector(".am-close").addEventListener("click", function () {
       bar.classList.add("is-hidden");
       localStorage.setItem("announce-closed", "1");
     });
