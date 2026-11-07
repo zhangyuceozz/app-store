@@ -66,6 +66,11 @@ const MAP = {
   "VoiceStudio-0.5.7-mac-arm64.dmg": "/debpalash/VoiceStudio/releases/download/v0.5.7/VoiceStudio-0.5.7-mac-arm64.dmg",
   "VoiceStudio-0.5.7-mac-x64.dmg": "/debpalash/VoiceStudio/releases/download/v0.5.7/VoiceStudio-0.5.7-mac-x64.dmg",
   "VoiceStudio-0.5.7-linux-x64.AppImage": "/debpalash/VoiceStudio/releases/download/v0.5.7/VoiceStudio-0.5.7-linux-x64.AppImage",
+  // Zed v1.27.0（zed-industries，Rust 高性能多人协同代码编辑器）
+  "Zed-x86_64.exe": "/zed-industries/zed/releases/download/v1.27.0/Zed-x86_64.exe",
+  "Zed-aarch64.exe": "/zed-industries/zed/releases/download/v1.27.0/Zed-aarch64.exe",
+  "Zed-x86_64.dmg": "/zed-industries/zed/releases/download/v1.27.0/Zed-x86_64.dmg",
+  "Zed-aarch64.dmg": "/zed-industries/zed/releases/download/v1.27.0/Zed-aarch64.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {

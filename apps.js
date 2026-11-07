@@ -1,4 +1,4 @@
-﻿﻿﻿// ============================================================
+﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -594,6 +594,33 @@ const APPS = [
       "视频配音：导入 mp4 → 自动识别画面里说话的人 → 替换成克隆声音的新音轨。",
       "TTS 朗读：输入中文/英文文本 → 选声音 → 导出 mp3。",
       "全部本地处理，录音不上传服务器，隐私 100% 自己掌控。",
+    ],
+  },
+  {
+    id: "zed",
+    name: "Zed",
+    category: "开发工具",
+    date: "2026-11-04",
+    tagline: "Rust 写的高性能多人协同代码编辑器",
+    description: "Zed 是用 Rust 从零重写的下一代代码编辑器，由 Atom 和 Tree-sitter 创始人主导。专为速度打造：多线程利用多核 CPU，直接调用 GPU 渲染，打开超大项目也瞬间流畅。内置 Agent 面板（AI 并行编辑文件、导航代码、跑命令）、实时多人协作（屏幕共享、光标同步）、Vim 模式、LSP 补全、Markdown 预览。跨 macOS / Windows / Linux 三端，完全免费开源（GPL-3.0）。",
+    icon: "apps/zed/icon.png",
+    preview: "apps/zed/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)",         file: "/dl/apps/zed/download/Zed-x86_64.exe",          size: "62 MB" },
+      { platform: "Windows (ARM64)",       file: "/dl/apps/zed/download/Zed-aarch64.exe",         size: "55 MB" },
+      { platform: "macOS (Intel)",         file: "/dl/apps/zed/download/Zed-x86_64.dmg",          size: "92 MB" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/zed/download/Zed-aarch64.dmg",         size: "84 MB" },
+    ],
+    install: [
+      "Windows：双击 .exe 安装（需要 Windows 10 2004+ 或 Windows 11），或 winget install ZedIndustries.Zed。",
+      "macOS：双击 .dmg 把 Zed 拖进「应用程序」，首次打开右键 → 打开（Gatekeeper 提示）。",
+      "Linux：curl -f https://zed.dev/install.sh | sh（或 apt install zed / pacman -S zed）。",
+    ],
+    usage: [
+      "首次启动会自动导入 VS Code / JetBrains 的键位习惯（可跳过）。",
+      "内置 AI Agent 面板（Cmd+Shift+O / Ctrl+Shift+O），可以并行发多个 agent 任务。",
+      "多人协作：右上角 Share Project → 生成分享链接 → 邀请他人实时编辑。",
+      "设置里开启 Vim 模式、Relative Line Numbers、Lazy Git 等常见偏好。",
     ],
   },
 ];
