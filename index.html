@@ -606,6 +606,19 @@
     line-height: 1;
   }
   .card .c-date[data-fresh="brand-new"] .c-date__sub { opacity: 1; }
+
+  /* 全局 brand-new 标签下方「🔥 热乎的！」—— 卡片日期 + splash 日志日期通用 */
+  .card .c-date[data-fresh="brand-new"]::after,
+  .log-date[data-fresh="brand-new"]::after {
+    content: "🔥 热乎的！";
+    display: block;
+    font-size: 8px; font-weight: 600;
+    color: var(--accent);
+    letter-spacing: .03em;
+    opacity: 1;
+    line-height: 1;
+    margin-top: 1px;
+  }
   /* 7 档新鲜度颜色（应用卡片 + 日志卡片共用） */
   .card .c-date[data-fresh="brand-new"],  .log-date[data-fresh="brand-new"]  { color: var(--accent);    border-color: color-mix(in srgb, var(--accent) 50%, var(--line));    background: color-mix(in srgb, var(--accent) 10%, var(--soft)); }
   .card .c-date[data-fresh="coral"],      .log-date[data-fresh="coral"]      { color: #ef4444;          border-color: color-mix(in srgb, #ef4444 45%, var(--line));          background: color-mix(in srgb, #ef4444 10%, var(--soft)); }
@@ -1230,7 +1243,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=102"></script>
+<script src="apps.js?v=103"></script>
 <script>
 (function () {
   var esc = function (s) {
