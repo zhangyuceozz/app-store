@@ -1243,7 +1243,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=104"></script>
+<script src="apps.js?v=105"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1888,6 +1888,9 @@
       splash.classList.add("hide");
       setTimeout(function () { splash.remove(); }, 600);
     }
+
+    // 兜底：5 秒后无论如何自动隐藏（防止长按不工作卡死）
+    setTimeout(dismiss, 5000);
 
     function start() {
       if (phase !== "idle") return;
