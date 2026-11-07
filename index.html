@@ -484,8 +484,84 @@
   .lb-close:hover { background: rgba(255,255,255,.18); transform: rotate(90deg); border-color: rgba(255,255,255,.35); }
   .lb-inner { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 48px; height: 100%; padding: 6vh 6vw; animation: lbIn .35s cubic-bezier(.22,1,.36,1); }
   @keyframes lbIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
-  .lb-image-wrap { max-width: min(68vw, 900px); max-height: 82vh; border-radius: 14px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,.5); flex-shrink: 0; }
-  .lb-image-wrap img { width: 100%; height: auto; display: block; max-height: 82vh; object-fit: contain; }
+  .lb-image-wrap {
+    position: relative;
+    max-width: min(68vw, 900px);
+    max-height: 82vh;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,.5);
+    flex-shrink: 0;
+    background: #1a1a1a;
+    isolation: isolate;
+  }
+  .lb-image-wrap img {
+    width: 100%; height: auto; display: block; max-height: 82vh; object-fit: contain;
+    filter: blur(0) saturate(1);
+    transform: scale(1);
+    transition: filter 0.6s cubic-bezier(.22,1,.36,1), transform 0.6s cubic-bezier(.22,1,.36,1), opacity 0.4s ease;
+    opacity: 1;
+  }
+  /* 加载中状态 */
+  .lb-image-wrap.is-loading img {
+    filter: blur(14px) saturate(0.4);
+    transform: scale(1.06);
+    opacity: 0.82;
+  }
+  /* sweep 光带 */
+  .lb-sweep {
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.18) 50%, transparent 62%);
+    background-size: 260% 100%;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 2;
+  }
+  .lb-image-wrap.is-loading .lb-sweep {
+    opacity: 1;
+    animation: lbSweep 2.2s linear infinite;
+  }
+  @keyframes lbSweep {
+    from { background-position: 130% 0; }
+    to   { background-position: -130% 0; }
+  }
+  /* chip 状态标签 */
+  .lb-chip {
+    position: absolute; bottom: 14px; left: 14px;
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 26px; padding: 0 10px 0 8px;
+    border-radius: 13px;
+    background: rgba(20,20,22,.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: rgba(255,255,255,.9);
+    font-size: 12px; font-weight: 500;
+    pointer-events: none;
+    opacity: 0; transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 3;
+  }
+  .lb-image-wrap.is-loading .lb-chip { opacity: 1; transform: none; }
+  .lb-image-wrap.is-ready .lb-chip { opacity: 0; transform: translateY(4px); transition-delay: 0.8s; }
+  .lb-chip-mark {
+    width: 13px; height: 13px;
+    border: 2px solid rgba(255,255,255,.35);
+    border-top-color: rgba(255,255,255,.9);
+    border-radius: 50%;
+    animation: lbSpin 0.9s linear infinite;
+  }
+  .lb-image-wrap.is-ready .lb-chip-mark {
+    animation: none;
+    border: none;
+    background: #22c55e;
+    border-radius: 50%;
+    position: relative;
+  }
+  .lb-image-wrap.is-ready .lb-chip-mark::after {
+    content: ""; position: absolute; inset: 3px;
+    background: #fff; clip-path: polygon(14% 44%, 34% 64%, 84% 20%, 92% 28%, 36% 76%, 16% 58%);
+  }
+  @keyframes lbSpin { to { transform: rotate(360deg); } }
   .lb-caption { max-width: 320px; color: rgba(255,255,255,.88); }
   .lb-caption .lb-cat { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 14px; font-weight: 600; }
   .lb-caption .lb-name { font-family: var(--display); font-size: 40px; font-weight: 600; line-height: 1.08; letter-spacing: -0.02em; }
@@ -880,7 +956,12 @@
   <div class="lb-backdrop" data-close-lb></div>
   <button class="lb-close" data-close-lb aria-label="关闭">&times;</button>
   <div class="lb-inner">
-    <div class="lb-image-wrap">
+    <div class="lb-image-wrap" id="lb-wrap">
+      <div class="lb-sweep" id="lb-sweep"></div>
+      <div class="lb-chip" id="lb-chip">
+        <span class="lb-chip-mark" id="lb-mark"></span>
+        <span class="lb-chip-label" id="lb-label">加载中…</span>
+      </div>
       <img id="lb-img" src="" alt="">
     </div>
     <div class="lb-caption" id="lb-caption"></div>
@@ -896,7 +977,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=84"></script>
+<script src="apps.js?v=85"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1283,19 +1364,54 @@
   }
 
   var _lbCloseTimer = null;
+  var _lbPreload = null;
 
   function openPreview(id) {
     var a = APPS.filter(function (x) { return x.id === id; })[0];
     if (!a || !a.preview) return;
     clearTimeout(_lbCloseTimer);
-    document.getElementById("lb-img").src = a.preview;
+
+    var wrap = document.getElementById("lb-wrap");
+    var img = document.getElementById("lb-img");
+    var label = document.getElementById("lb-label");
+
+    // 重置状态
+    wrap.classList.remove("is-ready");
+    wrap.classList.add("is-loading");
+    label.textContent = "加载中…";
+    img.removeAttribute("src"); // 强制重新加载（即使缓存了也走动画）
+
+    // 打开 lightbox
+    document.getElementById("lightbox").classList.add("open");
     document.getElementById("lb-caption").innerHTML =
       '<div class="lb-cat">' + esc(a.category || "") + '</div>' +
       '<div class="lb-name">' + esc(a.name) + '</div>' +
       (a.tagline ? '<div class="lb-tag">' + esc(a.tagline) + '</div>' : '') +
       '<div class="lb-divider"></div>' +
       (a.description ? '<div class="lb-desc">' + esc(a.description) + '</div>' : '');
-    document.getElementById("lightbox").classList.add("open");
+
+    // 预加载图片（后台）
+    if (_lbPreload) _lbPreload.onload = _lbPreload.onerror = null;
+    var pre = new Image();
+    _lbPreload = pre;
+    pre.onload = function () {
+      img.src = pre.src;
+      // 确保过渡生效：强制一帧重排后切状态
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          label.textContent = "已就绪";
+          wrap.classList.remove("is-loading");
+          wrap.classList.add("is-ready");
+          // 1.2s 后清掉 ready，隐藏 chip
+          setTimeout(function () { wrap.classList.remove("is-ready"); }, 1200);
+        });
+      });
+    };
+    pre.onerror = function () {
+      label.textContent = "加载失败";
+      wrap.classList.remove("is-loading");
+    };
+    pre.src = a.preview;
   }
 
   function closeLightbox() {
