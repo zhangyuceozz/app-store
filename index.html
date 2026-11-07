@@ -779,40 +779,65 @@
     opacity: 0; visibility: hidden; pointer-events: none;
   }
   .splash-inner {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 36px; padding: 40px; text-align: center;
-    max-width: 440px; width: 100%;
+    display: flex; flex-direction: column; align-items: stretch;
+    gap: 20px; padding: 32px 36px; text-align: left;
+    max-width: 540px; width: 100%;
     animation: splashIn .5s cubic-bezier(.22,1,.36,1);
   }
   @keyframes splashIn {
     from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: none; }
   }
-  /* BounceCards: splash 弹簧卡片 */
-  .bounce-cards {
-    position: relative; width: 220px; height: 140px;
-    touch-action: none; -webkit-tap-highlight-color: transparent;
+  .splash-title {
+    font-family: var(--display); font-size: 11px; font-weight: 600;
+    letter-spacing: .22em; text-transform: uppercase;
+    color: var(--muted);
   }
-  .bounce-cards__card {
-    position: absolute; top: 50%; left: 50%;
-    width: 110px; height: 70px; aspect-ratio: auto;
-    border: 2px solid var(--card);
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0,0,0,.12), 0 10px 22px -8px rgba(0,0,0,.25);
-    transform: translate(-50%, -50%) var(--bc-tr:translate(var(--bc-x,0),var(--bc-y,0)) rotate(var(--bc-r,0)) scale(0));
-    transition: box-shadow 0.25s ease;
-    will-change: transform;
+
+  /* 更新日志卡片 */
+  .splash-log { display: flex; flex-direction: column; gap: 10px; }
+  .log-group {
+    display: flex; align-items: stretch; gap: 14px;
+    padding: 14px 16px;
     background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
   }
-  .bounce-cards__card[data-active] {
-    box-shadow: 0 3px 8px rgba(0,0,0,.16), 0 18px 36px -10px rgba(0,0,0,.38);
+  .log-dot {
+    width: 3px; border-radius: 2px;
+    background: var(--accent);
+    flex-shrink: 0;
   }
-  .bounce-cards__card img {
-    display: block; width: 100%; height: 100%; object-fit: cover;
-    pointer-events: none; user-select: none;
+  .log-group[data-type="fix"] .log-dot  { background: #22c55e; }
+  .log-group[data-type="change"] .log-dot { background: #60a5fa; }
+  .log-group[data-type="new"] .log-dot   { background: var(--accent); }
+
+  .log-body { flex: 1; min-width: 0; }
+  .log-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
   }
-  .splash-bar { width: 220px; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+  .log-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 2px 7px; border-radius: 6px;
+  }
+  .log-group[data-type="fix"]    .log-tag { background: rgba(34,197,94,.12); color: #16a34a; }
+  .log-group[data-type="change"] .log-tag { background: rgba(96,165,250,.14); color: #2563eb; }
+  .log-group[data-type="new"]    .log-tag { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+
+  .log-text { font-size: 13px; color: var(--ink); line-height: 1.55; }
+  .log-date {
+    font-size: 10px; font-weight: 600; letter-spacing: .02em;
+    padding: 1px 6px; border-radius: 8px;
+    background: var(--soft); border: 1px solid var(--line);
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .log-date[data-fresh="fresh"]  { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); background: color-mix(in srgb, var(--accent) 10%, var(--soft)); }
+  .log-date[data-fresh="warm"]   { color: color-mix(in srgb, var(--accent) 55%, var(--muted)); }
+  .log-date[data-fresh="normal"] { color: var(--muted); }
+  .log-date[data-fresh="stale"]  { color: color-mix(in srgb, var(--muted) 55%, transparent); }
+
+  .splash-bar { width: 100%; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
   .splash-bar-fill {
     height: 100%; width: 0%; border-radius: 2px;
     background: var(--accent);
@@ -820,8 +845,13 @@
   }
 
   @media (max-width: 720px) {
-    .splash-inner { padding: 28px 24px; gap: 28px; }
-    .splash-bar { width: 180px; }
+    .splash-inner { padding: 24px 22px; gap: 16px; max-width: 100%; }
+    .log-group { padding: 12px 14px; gap: 12px; border-radius: 12px; }
+    .log-text { font-size: 12px; }
+    .wrap { padding: 0 20px; }
+    .top { height: auto; flex-wrap: wrap; padding: 14px 0; gap: 12px 16px; }
+    .search { order: 4; flex-basis: 100%; max-width: none; }
+    .theme-switch { order: 2; }
     main { padding: 32px 0 200px; }
     .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
     .card { padding: 10px; gap: 6px; }
@@ -846,13 +876,8 @@
 
 <div class="preloader" id="preloader">
   <div class="splash-inner">
-    <div class="bounce-cards" id="splash-bc">
-      <div class="bounce-cards__card" style="--bc-x:-55px;--bc-y:0px;--bc-r:-8deg;z-index:1;"><img src="apps/zed/preview.jpg" alt="Zed"></div>
-      <div class="bounce-cards__card" style="--bc-x:-28px;--bc-y:-4px;--bc-r:5deg;z-index:2;"><img src="apps/pdfcraft/preview.jpg" alt="PdfCraft"></div>
-      <div class="bounce-cards__card" style="--bc-x:0px;--bc-y:0px;--bc-r:-3deg;z-index:3;"><img src="apps/bongocat/preview.jpg" alt="BongoCat"></div>
-      <div class="bounce-cards__card" style="--bc-x:28px;--bc-y:-4px;--bc-r:7deg;z-index:4;"><img src="apps/linkswift/preview.jpg" alt="LinkSwift"></div>
-      <div class="bounce-cards__card" style="--bc-x:55px;--bc-y:0px;--bc-r:-6deg;z-index:5;"><img src="apps/mineradio/preview.jpg" alt="Mineradio"></div>
-    </div>
+    <div class="splash-title">更新日志</div>
+    <div class="splash-log" id="splash-log"></div>
     <div class="splash-bar">
       <div class="splash-bar-fill" id="splash-bar-fill"></div>
     </div>
@@ -975,7 +1000,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=91"></script>
+<script src="apps.js?v=92"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1578,106 +1603,34 @@
     setTimeout(dismiss, 2600);
   })();
 
-  // ======== BounceCards 弹簧物理（splash 公告页） ========
-  (function () {
-    var bc = document.getElementById("splash-bc");
-    if (!bc) return;
-    var cards = Array.prototype.slice.call(bc.querySelectorAll(".bounce-cards__card"));
-    if (!cards.length) return;
+  // ======== 公告页：更新日志渲染 ========
+  // 每条改动带类型（new/change/fix）+ 日期
+  var SPLASH_LOG = [
+    { type: "new",    text: "Zed v1.27.0 新上架 — Rust 写的高性能多人协同代码编辑器", date: "2026-11-07" },
+    { type: "change", text: "分类导航从左侧栏换成底部 Dock，hover 自动放大", date: "2026-11-07" },
+    { type: "fix",    text: "修复切换分类时图片重复加载的问题（Cache-Control 改为 immutable）", date: "2026-11-07" },
+    { type: "change", text: "应用卡片新增发行时间显示，越新越鲜艳", date: "2026-11-07" },
+  ];
 
-    // 从 inline style 解析初始 slot（transform 目标位置）
-    var slots = cards.map(function (el) {
-      var cs = getComputedStyle(el);
-      var x = parseFloat(cs.getPropertyValue("--bc-x")) || 0;
-      var y = parseFloat(cs.getPropertyValue("--bc-y")) || 0;
-      var r = parseFloat(cs.getPropertyValue("--bc-r")) || 0;
-      return { x: x, y: y, rotate: r };
+  (function renderSplashLog() {
+    var box = document.getElementById("splash-log");
+    if (!box) return;
+    var html = "";
+    SPLASH_LOG.forEach(function (item) {
+      var fresh = classifyFresh(item.date);
+      var typeLabel = { new: "新增", change: "改动", fix: "修复" }[item.type] || "改动";
+      html += '<div class="log-group" data-type="' + item.type + '">' +
+        '<span class="log-dot"></span>' +
+        '<div class="log-body">' +
+          '<div class="log-head">' +
+            '<span class="log-tag">' + typeLabel + '</span>' +
+            '<span class="log-date" data-fresh="' + fresh + '">' + timeAgo(item.date) + '</span>' +
+          '</div>' +
+          '<div class="log-text">' + esc(item.text) + '</div>' +
+        '</div>' +
+      '</div>';
     });
-
-    var reduce = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false;
-    var state = { hovered: -1, time: 0 };
-    var bodies = cards.map(function (el, i) {
-      return { x: slots[i].x, y: slots[i].y, rotate: slots[i].rotate, scale: reduce ? 1 : 0, vx: 0, vy: 0, vr: 0, vs: 0, born: 0 };
-    });
-
-    function step(val, vel, target, stiffness, damping, dt) {
-      var next = vel + ((target - val) * stiffness - vel * damping) * dt;
-      return [val + next * dt, next];
-    }
-
-    function frame(now) {
-      var last = frame._last || now;
-      frame._last = now;
-      var dt = Math.min(1 / 30, Math.max(1 / 240, (now - last) / 1000));
-      state.time += dt;
-      var popS = 170, popD = 2 * (1 - 0.85 * 0.6) * Math.sqrt(popS);
-      var moveS = 210, moveD = 2 * (reduce ? 1 : 0.72) * Math.sqrt(moveS);
-      var hovered = state.hovered;
-      var delay = 0.5, stagger = 0.06;
-
-      cards.forEach(function (el, i) {
-        var slot = slots[i];
-        var appeared = reduce || state.time - bodies[i].born >= delay + i * stagger;
-        var tx = slot.x, ty = slot.y, tr = slot.rotate, ts = appeared ? 1 : 0;
-        if (hovered >= 0 && appeared) {
-          if (i === hovered) { tr = 0; ts = 1.06; ty = slot.y - 3; }
-          else { tx = slot.x + Math.sign(i - hovered) * 55; }
-        }
-        var h = dt; // substep 1
-        bodies[i].x = step(bodies[i].x, bodies[i].vx, tx, moveS, moveD, h)[0];
-        bodies[i].vx = step(bodies[i].x, bodies[i].vx, tx, moveS, moveD, h)[1];
-        bodies[i].y = step(bodies[i].y, bodies[i].vy, ty, moveS, moveD, h)[0];
-        bodies[i].vy = step(bodies[i].y, bodies[i].vy, ty, moveS, moveD, h)[1];
-        bodies[i].rotate = step(bodies[i].rotate, bodies[i].vr, tr, moveS, moveD, h)[0];
-        bodies[i].vr = step(bodies[i].rotate, bodies[i].vr, tr, moveS, moveD, h)[1];
-        if (reduce) bodies[i].scale = ts;
-        else {
-          bodies[i].scale = step(bodies[i].scale, bodies[i].vs, ts, popS, popD, h)[0];
-          bodies[i].vs = step(bodies[i].scale, bodies[i].vs, ts, popS, popD, h)[1];
-        }
-        el.style.transform = "translate(-50%, -50%) translate3d(" + bodies[i].x.toFixed(1) + "px," + bodies[i].y.toFixed(1) + "px,0) rotate(" + bodies[i].rotate.toFixed(2) + "deg) scale(" + Math.max(0, bodies[i].scale).toFixed(3) + ")";
-      });
-
-      // 入场错峰 born 时间
-      if (bodies[0].born === 0) bodies.forEach(function (b, i) { b.born = state.time - (delay + i * stagger); });
-
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-
-    // hover 交互
-    function pick(e) {
-      var rect = bc.getBoundingClientRect();
-      var px = e.clientX - rect.left - rect.width / 2;
-      var py = e.clientY - rect.top - rect.height / 2;
-      var best = -1, dist = Infinity;
-      slots.forEach(function (s, i) {
-        var d = Math.abs(px - s.x);
-        if (d < dist) { dist = d; best = i; }
-      });
-      if (best < 0) return -1;
-      var s = slots[best];
-      if (Math.abs(py - s.y) > 38 || dist > 55) return -1;
-      return best;
-    }
-    bc.addEventListener("pointermove", function (e) {
-      var next = pick(e);
-      if (next !== state.hovered) {
-        state.hovered = next;
-        cards.forEach(function (c, i) {
-          c.style.zIndex = i === next ? slots.length + 1 : i + 1;
-          if (i === next) c.setAttribute("data-active", "");
-          else c.removeAttribute("data-active");
-        });
-      }
-    });
-    bc.addEventListener("pointerleave", function () {
-      state.hovered = -1;
-      cards.forEach(function (c, i) {
-        c.style.zIndex = i + 1;
-        c.removeAttribute("data-active");
-      });
-    });
+    box.innerHTML = html;
   })();
 
   // 事件委托：卡片 → 打开详情弹窗
