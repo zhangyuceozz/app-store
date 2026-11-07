@@ -833,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=76"></script>
+<script src="apps.js?v=77"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1070,17 +1070,11 @@
       var sentinel = document.getElementById("scroll-sentinel");
       if (sentinel && !__loadingMore) {
         var r = sentinel.getBoundingClientRect();
-        console.log('[SCROLL] check: sentinel.top=' + r.top.toFixed(0) + ' triggerY=' + triggerY + ' loading=' + __loadingMore + ' scrollTop=' + document.documentElement.scrollTop);
         if (r.top < triggerY && r.bottom > 0) {
-          console.log('[SCROLL] → 触底！loadMore(false)');
           __loadingMore = true;
           loadMore(false);
           setTimeout(function () { __loadingMore = false; }, 600);
         }
-      } else if (!sentinel) {
-        console.log('[SCROLL] sentinel 不存在');
-      } else {
-        console.log('[SCROLL] __loadingMore 锁中，跳过');
       }
 
       document.querySelectorAll(".card:not(.in-view)").forEach(function (c) {
@@ -1094,7 +1088,6 @@
   // 双重保险：scroll 事件 + setInterval 兜底（某些环境 scroll 事件不冒泡）
   window.addEventListener("scroll", checkScroll, { passive: true });
   setInterval(checkScroll, 800);
-  console.log('[SCROLL] checkScroll 已绑定到 window.scroll + 800ms 定时器');
 
   function renderList() {
     var list = APPS.filter(matches);
@@ -1126,7 +1119,6 @@
     var start = pageIndex * PAGE_SIZE;
     var end = Math.min(start + PAGE_SIZE, fullList.length);
     var batch = fullList.slice(start, end);
-    console.log('[LOADMORE] reset=' + reset + ' pageIndex=' + pageIndex + ' start=' + start + ' end=' + end + ' fullList=' + fullList.length + ' batch=' + batch.length);
     if (reset && !batch.length) {
       listEl.innerHTML = '<div class="empty">' +
         (query ? "没找到相关的应用" : "这个分类下还没有应用") +
@@ -1134,12 +1126,10 @@
       return;
     }
     if (!reset && !batch.length) {
-      console.log('[LOADMORE] reset=false 但 batch 为空！直接 return');
       return;
     }
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
-    console.log('[LOADMORE] batch 已插入，新 cards 数=' + document.querySelectorAll('.card').length);
 
     if (reset) {
       // 首次/切分类：纯 setTimeout 错峰
