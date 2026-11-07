@@ -825,7 +825,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=80"></script>
+<script src="apps.js?v=81"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1080,15 +1080,28 @@
       loadMore(true);
       return;
     }
-    // 切换过渡：先淡出 → 重建 → 淡入
-    listEl.style.transition = "opacity .15s ease-out";
+    // 切换过渡：旧内容上飘消失 → 重建 → 新内容下浮出现
+    var _t = "transform .22s cubic-bezier(.22,1,.36,1), opacity .22s ease-out";
+    listEl.style.transition = _t;
+    listEl.style.willChange = "transform, opacity";
+    listEl.style.transform = "translateY(-12px)";
     listEl.style.opacity = "0";
     setTimeout(function () {
+      listEl.style.transition = "none";
       loadMore(true);
-      listEl.style.transition = "opacity .22s ease-out";
+      // 新内容初始：在下方 14px + 透明
+      listEl.style.transform = "translateY(14px)";
+      listEl.style.opacity = "0";
+      // 强制一帧重排后加 transition
+      void listEl.offsetHeight;
+      listEl.style.transition = _t;
+      listEl.style.transform = "translateY(0)";
       listEl.style.opacity = "1";
-      setTimeout(function () { listEl.style.transition = ""; }, 220);
-    }, 150);
+      setTimeout(function () {
+        listEl.style.transition = "";
+        listEl.style.willChange = "";
+      }, 240);
+    }, 220);
   }
 
   function loadMore(reset) {
