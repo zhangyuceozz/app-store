@@ -589,12 +589,23 @@
   .card .c-meta-row { display: flex; align-items: center; gap: 6px; }
   .card .c-meta { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
   .card .c-date {
+    display: inline-flex; flex-direction: column; align-items: flex-end; gap: 1px;
     font-size: 10px; font-weight: 600; letter-spacing: .02em;
-    padding: 1px 6px; border-radius: 8px; line-height: 1.4;
+    padding: 2px 7px; border-radius: 8px; line-height: 1.2;
     background: var(--soft); border: 1px solid var(--line);
     white-space: nowrap; flex-shrink: 0;
     transition: color .3s ease, border-color .3s ease, background .3s ease;
+    font-variant-numeric: tabular-nums;
   }
+  .card .c-date__sub {
+    font-size: 8px; font-weight: 600;
+    color: var(--accent);
+    letter-spacing: .02em;
+    opacity: 0;
+    transition: opacity .25s ease;
+    line-height: 1;
+  }
+  .card .c-date[data-fresh="brand-new"] .c-date__sub { opacity: 1; }
   /* 7 档新鲜度颜色（应用卡片 + 日志卡片共用） */
   .card .c-date[data-fresh="brand-new"],  .log-date[data-fresh="brand-new"]  { color: var(--accent);    border-color: color-mix(in srgb, var(--accent) 50%, var(--line));    background: color-mix(in srgb, var(--accent) 10%, var(--soft)); }
   .card .c-date[data-fresh="coral"],      .log-date[data-fresh="coral"]      { color: #ef4444;          border-color: color-mix(in srgb, #ef4444 45%, var(--line));          background: color-mix(in srgb, #ef4444 10%, var(--soft)); }
@@ -1219,7 +1230,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=101"></script>
+<script src="apps.js?v=102"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1522,7 +1533,7 @@
             '<div class="c-name">' + esc(a.name) + "</div>" +
             '<div class="c-meta-row">' +
               (meta ? '<span class="c-meta">' + esc(meta) + "</span>" : "") +
-              (a.date ? '<span class="c-date" data-date="' + esc(a.date) + '">—</span>' : "") +
+              (a.date ? '<span class="c-date" data-date="' + esc(a.date) + '">—<span class="c-date__sub"></span></span>' : "") +
             "</div>" +
           "</div>" +
         "</div>" +
@@ -1590,9 +1601,16 @@
   function fillDates(root) {
     (root || document).querySelectorAll(".c-date[data-date]").forEach(function (el) {
       var d = el.getAttribute("data-date");
-      if (!d || el.textContent !== "—") return; // 只填一次
+      if (!d) return;
+      // 已经填过了就跳过（有 c-date__sub 或 textContent 不再是 "—"）
+      if (el.querySelector(".c-date__sub") || el.childNodes.length > 1) return;
+      var fresh = classifyFresh(d);
+      el.setAttribute("data-fresh", fresh);
       el.textContent = timeAgo(d);
-      el.setAttribute("data-fresh", classifyFresh(d));
+      var sub = document.createElement("span");
+      sub.className = "c-date__sub";
+      if (fresh === "brand-new") sub.textContent = "🔥 热乎的！";
+      el.appendChild(sub);
     });
   }
 
