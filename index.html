@@ -420,7 +420,8 @@
   .dock {
     position: fixed; z-index: 80;
     bottom: 12px; left: 50%; transform: translateX(-50%);
-    display: flex; gap: 10px;
+    display: grid; grid-template-columns: repeat(4, 50px);
+    gap: 10px;
     padding: 9px;
     border-radius: 22px;
     background: var(--dock-panel);
@@ -428,13 +429,12 @@
     -webkit-backdrop-filter: blur(20px) saturate(1.6);
     backdrop-filter: blur(20px) saturate(1.6);
     touch-action: none;
-    overflow-x: auto; overflow-y: visible; scrollbar-width: none;
     --dock-base: 50px; --dock-thickness: 68px; --dock-round: 0.5; --dock-gap: 10px;
+    overflow: visible;
   }
-  .dock::-webkit-scrollbar { display: none; }
 
   .dock__item {
-    position: relative; flex: none;
+    position: relative;
     width: var(--dock-base); height: var(--dock-base);
     margin: 0; padding: 0; border: 0; background: none;
     color: var(--dock-ink);
@@ -456,10 +456,15 @@
     border-radius: calc(var(--dock-base) * var(--dock-round) * 0.5);
     background: var(--dock-tile);
     box-shadow: inset 0 0 0 1px var(--dock-tile-edge), inset 0 1px 0 var(--dock-tile-highlight), var(--dock-tile-shadow);
-    font-size: calc(var(--dock-base) * 0.30);
+    font-size: 10.5px;
+    font-weight: 500;
     line-height: 1;
+    letter-spacing: 0;
     transition: filter 0.2s ease;
     color: var(--dock-ink);
+    white-space: nowrap;
+    text-align: center;
+    word-break: keep-all;
   }
   .dock__item:active .dock__face { filter: var(--dock-press); transition-duration: 0s; }
   .dock__item:focus-visible .dock__face { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -516,14 +521,16 @@
   }
 
   .dock__sep {
-    flex: none; align-self: center;
-    width: 1px; height: calc(var(--dock-base) * 0.72);
+    box-sizing: border-box;
     border-radius: 1px;
     background: var(--dock-separator);
   }
 
   @media (max-width: 720px) {
-    .dock { bottom: 8px; padding: 7px; gap: 8px; border-radius: 18px; }
+    .dock { bottom: 8px; padding: 7px; gap: 8px; border-radius: 18px;
+      grid-template-columns: repeat(4, minmax(42px, 1fr)); }
+    .dock__item, .dock__tile { width: 100%; height: var(--dock-base, 42px); }
+    .dock__face { font-size: 9px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .dock__item, .dock__tile, .dock__face { transition: none !important; }
@@ -1212,7 +1219,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=100"></script>
+<script src="apps.js?v=101"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1352,8 +1359,7 @@
     if (!dockEl) return;
     recalcCounts();
     var html = "";
-    DOCK_ITEMS.forEach(function (it, i) {
-      if (i === 1) html += '<div class="dock__sep"></div>';
+    DOCK_ITEMS.forEach(function (it) {
       var count = catCounts[it.value] || 0;
       var badge = count > 0 ? '<span class="dock__badge">' + count + '</span>' : "";
       html += '<button type="button" class="dock__item" data-cat="' + esc(it.value) + '">' +
@@ -1374,7 +1380,9 @@
       });
     });
     setDockState();
-    dockMagnify();
+    // 注意：dockMagnify 只初始化一次（全局 flag），buildDock 只更新 items
+    if (!_dockMgr.raf) _dockMgr.init();
+    else _dockMgr.rebind();
   }
 
   function setDockState() {
@@ -1386,127 +1394,100 @@
     });
   }
 
-  // Dock 完整弹簧物理系统 — 1:1 from React Bits Dock.jsx
-  // base=50 / peak=70 / distance=200 / spring: mass=0.1 stiffness=150 damping=12
-  function dockMagnify() {
-    if (!dockEl || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // ========== Dock 物理系统 — 单例管理器 ==========
+  var _dockMgr = {
+    raf: 0, lastT: 0, state: [], rest: [], centerX: [], centerY: [], items: null,
+    pointer: { x: -9999, y: -9999, inside: false },
+    BASE: 50, PEAK: 70, DISTANCE: 150,
+    MASS: 0.1, STIFFNESS: 150, DAMPING: 12,
+    _w: 0, _ro: null, _sep: null,
+    init: function () {
+      if (this.raf || !dockEl) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      this.items = dockEl.querySelectorAll(".dock__item");
+      this.rebuild();
+      var self = this;
 
-    var BASE = 50, PEAK = 70, DISTANCE = 200;
-    var GAP = 10, ROUND = 0.5;
-    var MASS = 0.1, STIFFNESS = 150, DAMPING = 12;
+      // ResizeObserver — 容器尺寸变化 → 重算 rest
+      this._ro = new ResizeObserver(function () { self.rebuild(); });
+      this._ro.observe(dockEl);
 
-    var items = dockEl.querySelectorAll(".dock__item");
-    if (!items.length) return;
+      dockEl.addEventListener("pointermove", function (e) {
+        var rect = dockEl.getBoundingClientRect();
+        self.pointer.x = e.clientX - rect.left;
+        self.pointer.y = e.clientY - rect.top;
+        self.pointer.inside = true;
+        self.lastT = 0;
+      });
+      dockEl.addEventListener("pointerleave", function () {
+        self.pointer.inside = false;
+        self.pointer.x = -9999; self.pointer.y = -9999;
+        self.lastT = 0;
+      });
+      dockEl.addEventListener("pointerenter", function () { self.lastT = 0; });
+      window.addEventListener("resize", function () { self.rebuild(); });
 
-    var state = [];
-    var rest = [];
-    var pointer = { x: -9999, y: -9999, inside: false };
-    var fit = 1;
-    var raf = 0;
-    var lastT = 0;
+      // 物理 tick — 永不停止
+      function tick(now) {
+        self.raf = requestAnimationFrame(tick);
+        if (!self.items || !self.items.length) return;
+        if (!self.lastT) self.lastT = now;
+        var dt = Math.min(0.032, (now - self.lastT) / 1000);
+        self.lastT = now;
+        var substeps = Math.max(1, Math.ceil(dt / 0.002));
+        var step = dt / substeps;
 
-    function reset() {
-      state = []; rest = [];
-      for (var i = 0; i < items.length; i++) {
-        state.push({ pos: BASE, vel: 0, tilt: 0, lift: 0 });
-        rest.push(0);
-      }
-    }
-    reset();
-
-    function updateFit() {
-      var cw = dockEl.clientWidth;
-      var total = items.length * BASE + (items.length - 1) * GAP;
-      fit = cw > 0 ? Math.min(1, cw / (total + 16)) : 1;
-      dockEl.style.setProperty("--dock-base", (BASE * fit) + "px");
-    }
-    updateFit();
-
-    // ResizeObserver: 容器尺寸变化时重新计算 fit，所有 state 按比例缩放
-    var ro = new ResizeObserver(function () {
-      var oldBase = parseFloat(dockEl.style.getPropertyValue("--dock-base")) || BASE;
-      updateFit();
-      var newBase = BASE * fit;
-      var ratio = newBase / (oldBase || newBase);
-      for (var i = 0; i < state.length; i++) {
-        state[i].pos *= ratio;
-        state[i].vel *= ratio;
-      }
-    });
-    ro.observe(dockEl);
-
-    // 记录每个 item 的 rest（中心 X 坐标，相对于 dockEl）
-    function layout() {
-      var rect = dockEl.getBoundingClientRect();
-      for (var i = 0; i < items.length; i++) {
-        var r = items[i].getBoundingClientRect();
-        rest[i] = r.left - rect.left + r.width / 2;
-      }
-    }
-    layout();
-    window.addEventListener("resize", layout);
-
-    // 物理 tick：每帧更新每个 item 的弹簧位置
-    function tick(now) {
-      if (!lastT) lastT = now;
-      var dt = Math.min(0.032, (now - lastT) / 1000);
-      lastT = now;
-
-      // 物理子步（大 dt 时分步）
-      var substeps = Math.max(1, Math.ceil(dt / 0.001));
-      var step = dt / substeps;
-
-      for (var i = 0; i < items.length; i++) {
-        var s = state[i];
-        var target = BASE * fit;
-        if (pointer.inside) {
-          var reach = Math.abs(pointer.x - rest[i]) / DISTANCE;
-          if (reach < 1) target = BASE * fit + (PEAK * fit - BASE * fit) * Math.pow(Math.cos(reach * Math.PI / 2), 2);
-          // 同时计算 tilt（邻近 item 倾斜）
+        var n = self.state.length;
+        for (var i = 0; i < n; i++) {
+          var s = self.state[i];
+          var target = self.BASE;
+          if (self.pointer.inside) {
+            var dx = self.centerX[i] - self.pointer.x;
+            var dy = self.centerY[i] - self.pointer.y;
+            var reach = Math.sqrt(dx * dx + dy * dy) / self.DISTANCE;
+            if (reach < 1) target = self.BASE + (self.PEAK - self.BASE) * Math.pow(Math.cos(reach * Math.PI / 2), 2);
+          }
+          var F = self.STIFFNESS * (target - s.pos) - self.DAMPING * s.vel;
+          s.vel += (F / self.MASS) * step;
+          s.pos += s.vel * step;
         }
-        // 弹簧力 F = k*(target - pos) - c*vel
-        var F = STIFFNESS * (target - s.pos) - DAMPING * s.vel;
-        var accel = F / MASS;
-        s.vel += accel * step;
-        s.pos += s.vel * step;
-      }
 
-      // apply：每个 item 的 tile transform + lift
-      for (var i = 0; i < items.length; i++) {
-        var el = items[i];
-        var tile = el.querySelector(".dock__tile");
-        var s = state[i];
-        if (tile) {
-          var itemSize = BASE * fit;
-          var lift = Math.max(0, (s.pos - itemSize));
-          // tiltX: 基于相邻 item 的 size 差，制造向中心倾斜效果
-          var tiltLeft = i > 0 ? state[i - 1].pos - s.pos : 0;
-          var tiltRight = i < items.length - 1 ? state[i + 1].pos - s.pos : 0;
-          var tilt = (tiltLeft - tiltRight) * 0.2;
-          tile.style.transform = "translate(" + tilt.toFixed(2) + "px, -" + lift.toFixed(2) + "px) scale(" + (s.pos / itemSize).toFixed(3) + ")";
+        for (var i = 0; i < n; i++) {
+          var el = self.items[i];
+          if (!el) continue;
+          var tile = el.querySelector(".dock__tile");
+          if (!tile) continue;
+          var s = self.state[i];
+          var itemSize = self.BASE;
+          var lift = Math.max(0, s.pos - itemSize);
+          var tiltL = i > 0 ? self.state[i - 1].pos - s.pos : 0;
+          var tiltR = i < n - 1 ? self.state[i + 1].pos - s.pos : 0;
+          var tilt = (tiltL - tiltR) * 0.15;
+          tile.style.transform = "translate(" + tilt.toFixed(2) + "px,-" + lift.toFixed(2) + "px) scale(" + (s.pos / itemSize).toFixed(3) + ")";
         }
       }
-
-      raf = requestAnimationFrame(tick);
-    }
-    raf = requestAnimationFrame(tick);
-
-    dockEl.addEventListener("pointermove", function (e) {
+      this.raf = requestAnimationFrame(tick);
+    },
+    rebuild: function () {
+      if (!dockEl) return;
+      this.items = dockEl.querySelectorAll(".dock__item");
+      var n = this.items.length;
+      this.state = new Array(n);
+      this.centerX = new Array(n);
+      this.centerY = new Array(n);
       var rect = dockEl.getBoundingClientRect();
-      pointer.x = e.clientX - rect.left;
-      pointer.y = e.clientY - rect.top;
-      pointer.inside = true;
-      lastT = 0;
-    });
-    dockEl.addEventListener("pointerleave", function () {
-      pointer.inside = false;
-      pointer.x = -9999;
-      lastT = 0;
-    });
-    dockEl.addEventListener("pointerenter", function () { lastT = 0; });
-    // 每 150ms 重算 rest（内容变化时）
-    setInterval(function () { if (raf) layout(); }, 150);
-  }
+      for (var i = 0; i < n; i++) {
+        this.state[i] = { pos: this.BASE, vel: 0 };
+        var r = this.items[i].getBoundingClientRect();
+        this.centerX[i] = r.left - rect.left + r.width / 2;
+        this.centerY[i] = r.top - rect.top + r.height / 2;
+      }
+    },
+    rebind: function () {
+      // buildDock 重建 innerHTML 后，items DOM 引用变了，重算 rest 和 state
+      this.rebuild();
+    }
+  };
 
   function iconHtml(a, cls) {
     if (a.icon) return '<img class="' + cls + '" src="' + esc(a.icon) + '" alt="" loading="lazy" decoding="async">';
