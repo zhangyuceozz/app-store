@@ -833,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=73"></script>
+<script src="apps.js?v=74"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1124,14 +1124,20 @@
     var start = pageIndex * PAGE_SIZE;
     var end = Math.min(start + PAGE_SIZE, fullList.length);
     var batch = fullList.slice(start, end);
+    console.log('[LOADMORE] reset=' + reset + ' pageIndex=' + pageIndex + ' start=' + start + ' end=' + end + ' fullList=' + fullList.length + ' batch=' + batch.length);
     if (reset && !batch.length) {
       listEl.innerHTML = '<div class="empty">' +
         (query ? "没找到相关的应用" : "这个分类下还没有应用") +
         '<div class="hint">' + (query ? "换个关键词试试" : "看看其他分类") + "</div></div>";
       return;
     }
+    if (!reset && !batch.length) {
+      console.log('[LOADMORE] reset=false 但 batch 为空！直接 return');
+      return;
+    }
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
     pageIndex++;
+    console.log('[LOADMORE] batch 已插入，新 cards 数=' + document.querySelectorAll('.card').length);
 
     if (reset) {
       // 首次/切分类：纯 setTimeout 错峰
