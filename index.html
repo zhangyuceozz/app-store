@@ -830,7 +830,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=78"></script>
+<script src="apps.js?v=79"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1076,7 +1076,7 @@
   window.addEventListener("scroll", checkScroll, { passive: true });
   setInterval(checkScroll, 800);
 
-  function renderList() {
+  function renderList(skipFade) {
     var list = APPS.filter(matches);
     list = list.slice().sort(function (a, b) {
       return (a.date || "0000-00-00").localeCompare(b.date || "0000-00-00");
@@ -1086,7 +1086,20 @@
     }
     fullList = list;
     pageIndex = 0;
-    loadMore(true);
+
+    if (skipFade) {
+      loadMore(true);
+      return;
+    }
+    // 切换过渡：先淡出 → 重建 → 淡入
+    listEl.style.transition = "opacity .15s ease-out";
+    listEl.style.opacity = "0";
+    setTimeout(function () {
+      loadMore(true);
+      listEl.style.transition = "opacity .22s ease-out";
+      listEl.style.opacity = "1";
+      setTimeout(function () { listEl.style.transition = ""; }, 220);
+    }, 150);
   }
 
   function loadMore(reset) {
@@ -1247,7 +1260,7 @@
   });
 
   buildCats();
-  renderList();
+  renderList(true); // 首次加载跳过淡入淡出
 
   // 事件委托：卡片 → 打开详情弹窗
   listEl.addEventListener("click", function (e) {
