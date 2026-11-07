@@ -833,7 +833,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=71"></script>
+<script src="apps.js?v=72"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1157,8 +1157,9 @@
       }
       return;
     }
-    // 主动触发一次 checkScroll，以防 sentinel 恰好已在触底范围内
-    checkScroll();
+    // reset=true 时 setTimeout 错峰已经处理了，不要再调 checkScroll 抢白
+    // reset=false 时需要 checkScroll 处理无限滚动新加载的卡
+    if (!reset) checkScroll();
   }
 
   var qTimer = null;
