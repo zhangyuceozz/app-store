@@ -807,40 +807,52 @@
   .splash-log::-webkit-scrollbar { width: 5px; }
   .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 
-  /* HoldButton — 长按进入按钮 */
+  /* HoldButton — 完全匹配 React Bits 规格
+     size=md radius=14 fillDirection=right holdTime=2000
+     pressScale=0.97 wave waveAmplitude=6 glow releaseTime=200 resetAfter=1200
+  */
   .splash-hold {
+    --sh-p: 0;
     --sh-radius: 14px;
     --sh-fill: var(--accent);
+    --sh-bg: var(--card);
     --sh-text: var(--ink);
     --sh-fill-text: #fff;
-    --sh-press: 0.985;
     --sh-wave: 6px;
-    --sh-p: 0;
+    --sh-press: 0.97;
 
     position: relative; isolation: isolate;
     display: flex; align-items: center; justify-content: center;
     width: 100%; height: 52px; border-radius: var(--sh-radius);
-    background: var(--card); border: 1px solid var(--line);
+    background: var(--sh-bg); border: 1px solid var(--line);
     color: var(--sh-text); font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: .01em;
     cursor: pointer; user-select: none;
     touch-action: manipulation; -webkit-tap-highlight-color: transparent;
     overflow: hidden; flex-shrink: 0;
-    transition: transform 180ms ease, box-shadow 180ms ease;
+    transition: transform .18s ease, box-shadow .18s ease;
+    will-change: transform, box-shadow;
   }
-  .splash-hold[data-phase='holding'][data-input='pointer'] { transform: scale(var(--sh-press)); box-shadow: 0 0 22px color-mix(in srgb, var(--sh-fill) 45%, transparent); }
+  /* 按下缩放 + 辉光（glow） */
+  .splash-hold[data-phase='holding'][data-input='pointer'] {
+    transform: scale(var(--sh-press));
+    box-shadow: 0 0 22px color-mix(in srgb, var(--sh-fill) 50%, transparent);
+  }
+  .splash-hold[data-phase='holding'][data-input='touch'] {
+    box-shadow: 0 0 22px color-mix(in srgb, var(--sh-fill) 50%, transparent);
+  }
 
-  .sh-idle { position: relative; z-index: 2; transition: opacity 180ms, filter 180ms; }
-  .splash-hold[data-phase='done'] .sh-idle { opacity: 0; filter: blur(2px); }
-
-  .sh-clip { position: absolute; inset: 0; z-index: 3; clip-path: inset(0 round var(--sh-radius)); pointer-events: none; }
-  .sh-fill {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
+  /* 液态填充层（::before）：从左向右（fillDirection=right） */
+  .splash-hold::before {
+    content: ""; position: absolute; inset: 0; z-index: 1;
     background: var(--sh-fill); color: var(--sh-fill-text);
+    /* clip-path: 裁剪右侧显示填充宽度 + 波浪边缘 waveAmplitude=6 */
     clip-path: inset(0 calc((1 - var(--sh-p)) * (100% + 0.75 * var(--sh-wave)) - var(--sh-p) * 0.25 * var(--sh-wave)) 0 0);
+    pointer-events: none;
+    transition: none; /* rAF 驱动 --sh-p，不要额外 transition */
   }
-  .sh-crest {
-    position: absolute; inset: 0;
+  /* 波浪 crest 层：用 SVG mask 做波浪边缘 */
+  .splash-hold::after {
+    content: ""; position: absolute; inset: 0; z-index: 1;
     background: var(--sh-fill);
     -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
@@ -848,7 +860,20 @@
     -webkit-mask-size: var(--sh-wave) 40px; mask-size: var(--sh-wave) 40px;
     -webkit-mask-position-x: calc(-1 * var(--sh-wave) + var(--sh-p) * 160px);
     mask-position-x: calc(-1 * var(--sh-wave) + var(--sh-p) * 160px);
-    opacity: 0.9;
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: 2; /* 在 ::before 之上，波浪边缘叠在填充右边 */
+  }
+
+  /* 按钮文字内容 */
+  .splash-hold { isolation: isolate; }
+  .splash-hold > * { position: relative; z-index: 3; }
+  .splash-hold::before, .splash-hold::after { z-index: 1; }
+
+  /* done 脉冲 */
+  @keyframes sh-pulse {
+    from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--sh-fill) 55%, transparent); }
+    to   { box-shadow: 0 0 0 16px color-mix(in srgb, var(--sh-fill) 0%, transparent); }
   }
   .log-group {
     display: flex; align-items: stretch; gap: 14px;
@@ -934,15 +959,7 @@
   <div class="splash-inner">
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <div class="splash-hold" id="splash-hold">
-      <span class="sh-idle">长按进入主站</span>
-      <span class="sh-clip" aria-hidden="true">
-        <span class="sh-fill">
-          <span class="sh-idle">释放进入</span>
-        </span>
-        <span class="sh-crest" aria-hidden="true"></span>
-      </span>
-    </div>
+    <div class="splash-hold" id="splash-hold">长按进入主站</div>
   </div>
 </div>
 
@@ -1062,7 +1079,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=95"></script>
+<script src="apps.js?v=96"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1684,25 +1701,26 @@
       if (HB.phase !== "holding") return;
       HB.clear();
       HB.go("done");
-      dismiss(); // 填满立即进入，不等 reset
+      dismiss(); // 填满立即进入
+      // resetAfter=1200：1.2s 后按钮恢复原状（但用户已经看不到了，dismiss 已 hide splash）
       HB.resetTimer = setTimeout(function () {
         HB.go("idle");
-        HB.drive(0, 200, EASE_OUT);
-      }, 1100);
+        HB.drive(0, 200, EASE_OUT); // releaseTime=200
+      }, 1200);
     }
     function begin(kind) {
       if (HB.phase !== "idle") return false;
       HB.clear();
       HB.go("holding", kind);
-      HB.drive(1, 2000, function (t) { return t; }); // LINEAR 2s
-      HB.completeTimer = setTimeout(complete, 2100);
+      HB.drive(1, 2000, function (t) { return t; }); // holdTime=2000 LINEAR
+      HB.completeTimer = setTimeout(complete, 2100); // 容错 100ms
       return true;
     }
     function release() {
       if (HB.phase !== "holding") return;
       HB.clear();
       HB.go("idle");
-      HB.drive(0, 200, EASE_OUT);
+      HB.drive(0, 200, EASE_OUT); // releaseTime=200
     }
 
     function startHold(e) { e.preventDefault(); begin(e.type.startsWith("touch") ? "touch" : "pointer"); }
@@ -1717,8 +1735,17 @@
     window.addEventListener("blur", cancelHold);
     document.addEventListener("visibilitychange", function () { if (document.hidden) cancelHold(); });
 
-    // 兜底：无输入设备时 5s 后自动进入（防卡壳）
-    setTimeout(function () { if (!splash.classList.contains("hide")) dismiss(); }, 5000);
+    // 兜底：键盘 Space/Enter 触发（无鼠标设备）—— 但必须长按 holdTime=2000
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== " " && e.key !== "Enter") return;
+      if (splash.classList.contains("hide")) return;
+      e.preventDefault();
+      begin("pointer");
+    });
+    document.addEventListener("keyup", function (e) {
+      if (e.key !== " " && e.key !== "Enter") return;
+      cancelHold();
+    });
   })();
 
   // ======== 公告页：更新日志渲染 ========
