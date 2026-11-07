@@ -496,7 +496,19 @@
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
   .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .card .c-name { font-family: var(--display); font-size: 14px; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card .c-meta { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .c-meta-row { display: flex; align-items: center; gap: 6px; }
+  .card .c-meta { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+  .card .c-date {
+    font-size: 10px; font-weight: 600; letter-spacing: .02em;
+    padding: 1px 6px; border-radius: 8px; line-height: 1.4;
+    background: var(--soft); border: 1px solid var(--line);
+    white-space: nowrap; flex-shrink: 0;
+    transition: color .3s ease, border-color .3s ease, background .3s ease;
+  }
+  .card .c-date[data-fresh="fresh"]   { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); background: color-mix(in srgb, var(--accent) 10%, var(--soft)); }
+  .card .c-date[data-fresh="warm"]    { color: color-mix(in srgb, var(--accent) 55%, var(--muted)); }
+  .card .c-date[data-fresh="normal"]  { color: var(--muted); }
+  .card .c-date[data-fresh="stale"]   { color: color-mix(in srgb, var(--muted) 55%, transparent); }
 
   /* 获取按钮：卡片底部，hover 时显示 */
   .card .c-dl-btn { display: block; width: 100%; padding: 6px 10px; border: 0; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600; cursor: pointer; margin-top: auto; opacity: 0; pointer-events: none; transition: opacity .2s ease-out, transform .2s ease-out; }
@@ -978,7 +990,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=88"></script>
+<script src="apps.js?v=89"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1183,7 +1195,10 @@
           iconHtml(a, "c-icon") +
           '<div class="c-body">' +
             '<div class="c-name">' + esc(a.name) + "</div>" +
-            (meta ? '<div class="c-meta">' + esc(meta) + "</div>" : "") +
+            '<div class="c-meta-row">' +
+              (meta ? '<span class="c-meta">' + esc(meta) + "</span>" : "") +
+              (a.date ? '<span class="c-date" data-date="' + esc(a.date) + '">—</span>' : "") +
+            "</div>" +
           "</div>" +
         "</div>" +
         (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
@@ -1217,6 +1232,41 @@
   }
   window.addEventListener("scroll", checkScroll, { passive: true });
   setInterval(checkScroll, 1500);
+
+  // ======== 时间格式 + 新鲜度分类 ========
+  function timeAgo(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    if (isNaN(d.getTime())) return "";
+    var now = new Date();
+    var ms = now - d;
+    var mins = ms / 60000, hrs = ms / 3600000, days = ms / 86400000;
+    if (ms < 0) return "刚上架";
+    if (days < 1) {
+      if (hrs < 1) return Math.max(1, Math.round(mins)) + "分钟前";
+      return Math.max(1, Math.round(hrs)) + "小时前";
+    }
+    if (days < 7) return Math.round(days) + "天前";
+    if (days < 30) return Math.round(days / 7) + "周前";
+    if (days < 365) return Math.round(days / 30) + "个月前";
+    return Math.round(days / 365) + "年前";
+  }
+  function classifyFresh(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    if (isNaN(d.getTime())) return "normal";
+    var days = (new Date() - d) / 86400000;
+    if (days < 1)  return "fresh";   // 鲜艳 accent
+    if (days < 7)  return "warm";    // accent 混 muted
+    if (days < 30) return "normal";  // muted
+    return "stale";                  // muted 透明（几乎看不见）
+  }
+  function fillDates(root) {
+    (root || document).querySelectorAll(".c-date[data-date]").forEach(function (el) {
+      var d = el.getAttribute("data-date");
+      if (!d || el.textContent !== "—") return; // 只填一次
+      el.textContent = timeAgo(d);
+      el.setAttribute("data-fresh", classifyFresh(d));
+    });
+  }
 
   function renderList(skipFade) {
     var list = APPS.filter(matches);
@@ -1284,6 +1334,7 @@
       return;
     }
     batch.forEach(function (a) { grid.insertAdjacentHTML("beforeend", cardHtml(a)); });
+    fillDates(grid);
     pageIndex++;
 
     if (!reset) checkScroll();
