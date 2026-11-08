@@ -372,107 +372,47 @@
   .ms-nav { width: 160px; display: flex; flex-direction: column; gap: 0; }
   main.wrap { padding: 48px 0 140px; }
 
-  /* ===== BranchedMenu 侧栏导航 — React Bits 规格 ===== */
-  :root {
-    --bm-ink: var(--ink);
-    --bm-accent: #2563eb;
-    --bm-line: #d4d4d8;
-    --bm-line-w: 1.5px;
-    --bm-row-h: 36px;
-    --bm-indent: 24px;
-    --bm-font: 14px;
-    --bm-radius: 10px;
-    --bm-draw: 400ms;
-    --bm-fold: 300ms;
+  /* ===== 简化版 Dock 分类栏 — 纯 CSS grid，无物理特效 ===== */
+  .dock {
+    position: fixed; z-index: 80;
+    bottom: 14px; left: 50%; transform: translateX(-50%);
+    display: grid; grid-template-columns: repeat(4, auto);
+    gap: 6px; padding: 8px 10px;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    border: 1px solid var(--line); border-radius: 16px;
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow: 0 4px 18px -8px color-mix(in srgb, var(--ink) 20%, transparent);
   }
-  @media (prefers-color-scheme: dark) {
-    :root { --bm-line: #3f3f46; --bm-accent: #60a5fa; }
+  .dock__item {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 7px 12px; height: 32px;
+    border: 0; background: none; border-radius: 10px;
+    font-size: 13px; font-weight: 500; color: var(--ink);
+    cursor: pointer; white-space: nowrap; line-height: 1;
+    transition: background .18s ease, color .18s ease;
   }
-
-  .wrap { display: flex; gap: 48px; align-items: flex-start; }
-  .wrap section { flex: 1; min-width: 0; }
-  .side {
-    width: 200px; flex-shrink: 0;
-    position: sticky; top: 96px; align-self: flex-start;
-    padding: 0;
-    overflow: hidden;
-  }
-  .bm-section { margin-bottom: 4px; }
-  .bm-head {
-    display: flex; align-items: center; gap: 6px;
-    height: var(--bm-row-h);
-    padding: 0 10px;
-    font-size: var(--bm-font);
+  .dock__item:hover { background: var(--soft); }
+  .dock__item[data-active] {
+    background: color-mix(in srgb, var(--bm-accent, #2563eb) 12%, var(--soft));
+    color: var(--bm-accent, #2563eb);
     font-weight: 600;
-    color: var(--bm-ink);
-    border-radius: var(--bm-radius);
-    cursor: pointer;
-    user-select: none;
-    background: none; border: 0; width: 100%; text-align: left;
-    position: relative;
   }
-  .bm-head:hover { background: var(--soft); }
-  .bm-head .bm-chev {
-    width: 12px; height: 12px; flex-shrink: 0;
-    color: var(--muted);
-    transition: transform var(--bm-fold) cubic-bezier(.22,1,.36,1);
-  }
-  .bm-head[data-folded="true"] .bm-chev { transform: rotate(-90deg); }
-  .bm-body {
-    display: grid; grid-template-rows: 1fr;
-    transition: grid-template-rows var(--bm-fold) cubic-bezier(.22,1,.36,1);
-    overflow: hidden;
-    padding-left: calc(var(--bm-indent) - 14px);
-  }
-  .bm-head[data-folded="true"] + .bm-body { grid-template-rows: 0fr; }
-  .bm-body > div { min-height: 0; }
-
-  .bm-item {
-    position: relative;
-    display: flex; align-items: center; gap: 8px;
-    height: var(--bm-row-h);
-    padding: 0 10px 0 14px;
-    font-size: var(--bm-font);
-    color: var(--ink);
-    border-radius: var(--bm-radius);
-    cursor: pointer;
-    background: none; border: 0; width: 100%; text-align: left;
-  }
-  .bm-item:hover { background: var(--soft); }
-  .bm-item[data-active] {
-    background: color-mix(in srgb, var(--bm-accent) 12%, transparent);
-    color: var(--bm-accent);
-  }
-  .bm-item .bm-line {
-    position: absolute;
-    left: -10px; top: 0; bottom: 0;
-    width: 0;
-    border-left: var(--bm-line-w) solid var(--bm-line);
-    transition: height var(--bm-draw) cubic-bezier(.22,1,.36,1), border-color var(--bm-draw);
-    pointer-events: none;
-  }
-  .bm-item[data-active] .bm-line { border-color: var(--bm-accent); }
-  .bm-item[data-active] .bm-reach {
-    position: absolute; left: calc(-10px - var(--bm-line-w) + 1px); top: 0;
-    width: calc(var(--bm-line-w) + 12px); height: 100%;
-    pointer-events: none;
-  }
-  .bm-badge {
-    margin-left: auto;
-    font-size: 11px; font-weight: 600;
-    padding: 1px 6px;
-    border-radius: 999px;
+  .dock__badge {
+    font-size: 10.5px; font-weight: 600;
+    padding: 1px 6px; border-radius: 999px;
     background: var(--soft); color: var(--muted);
     font-variant-numeric: tabular-nums;
+    min-width: 18px; text-align: center;
   }
-  .bm-item[data-active] .bm-badge {
-    background: color-mix(in srgb, var(--bm-accent) 20%, transparent);
-    color: var(--bm-accent);
+  .dock__item[data-active] .dock__badge {
+    background: color-mix(in srgb, var(--bm-accent, #2563eb) 18%, transparent);
+    color: var(--bm-accent, #2563eb);
   }
 
   @media (max-width: 720px) {
-    .wrap { flex-direction: column; gap: 24px; }
-    .side { width: 100%; position: static; }
+    .dock { grid-template-columns: repeat(3, auto); bottom: 10px; gap: 4px; padding: 6px 8px; }
+    .dock__item { padding: 6px 9px; height: 28px; font-size: 12px; }
   }
 
   .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 52px 0 20px; display: flex; align-items: center; gap: 8px; }
@@ -557,6 +497,27 @@
     opacity: 1;
     line-height: 1;
     margin-top: 1px;
+  }
+
+  /* 卡片右上角「🔥 热乎的！」大字横幅 —— brand-new 档显 */
+  .card { position: relative; }
+  .card .c-hot {
+    position: absolute; top: 0; right: 0;
+    padding: 4px 10px;
+    font-size: 10px; font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep, #c2410c) 100%);
+    border-radius: 0 18px 0 14px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 40%, transparent);
+    z-index: 2;
+    transform-origin: top right;
+    animation: c-hot-pop 0.4s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes c-hot-pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
   }
   /* 7 档新鲜度颜色（应用卡片 + 日志卡片共用） */
   .card .c-date[data-fresh="brand-new"],  .log-date[data-fresh="brand-new"]  { color: var(--accent);    border-color: color-mix(in srgb, var(--accent) 50%, var(--line));    background: color-mix(in srgb, var(--accent) 10%, var(--soft)); }
@@ -1145,10 +1106,11 @@
     </div>
 
 <main class="wrap">
-  <!-- 左侧 BranchedMenu 分类导航 -->
-  <aside class="side" id="side"></aside>
   <section id="list"></section>
 </main>
+
+<!-- 底部简化版 Dock 分类栏 -->
+<nav class="dock" id="dock"></nav>
 
 <div class="modal" id="modal">
   <div class="backdrop" data-close></div>
@@ -1181,7 +1143,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=110"></script>
+<script src="apps.js?v=111"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1232,7 +1194,7 @@
   console.log("%c想看点有意思的？长按左上角 logo 试试。", "font-size:13px;color:#888;");
   console.log("%c或者你就是个喜欢看控制台的人，那我们是同类。", "font-size:12px;color:#aaa;font-style:italic;");
 
-  var sideEl = document.getElementById("side");
+  var dockEl = document.getElementById("dock");
   var listEl = document.getElementById("list");
   var qEl = document.getElementById("q");
 
@@ -1279,7 +1241,7 @@
     localStorage.setItem("store-platform", platform);
     if (platCb) platCb.checked = platform === "mac";
     updatePlatNote();
-    buildSide();
+    buildDock();
     renderList();
   }
   if (platCb) {
@@ -1312,70 +1274,36 @@
   }
   recalcCounts();
 
-  var bmSections = [
-    { title: "浏览", items: [{ value: "最近上架", label: "最近上架" }] },
-    { title: "分类", items: categories.map(function (c) { return { value: c, label: c }; }) }
-  ];
-  var bmFolded = {}; // key: section index, value: true/false
-  function buildSide() {
-    if (!sideEl) return;
+  // ---------- 简化版 Dock 分类栏（纯 innerHTML，无物理系统） ----------
+  var DOCK_ITEMS = [{ value: "最近上架", label: "最近上架" }].concat(
+    categories.map(function (c) { return { value: c, label: c }; })
+  );
+  function buildDock() {
+    if (!dockEl) return;
     recalcCounts();
     var html = "";
-    bmSections.forEach(function (sec, si) {
-      var folded = bmFolded[si] === true;
-      html += '<div class="bm-section" data-si="' + si + '">';
-      html += '<button class="bm-head" data-folded="' + (folded ? "true" : "false") + '" data-si="' + si + '">';
-      html += '<svg class="bm-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4.5l3 3 3-3"/></svg>';
-      html += esc(sec.title);
-      html += '</button>';
-      html += '<div class="bm-body"><div>';
-      sec.items.forEach(function (it) {
-        var count = catCounts[it.value] || 0;
-        var badge = count > 0 ? '<span class="bm-badge">' + count + '</span>' : "";
-        html += '<button type="button" class="bm-item" data-cat="' + esc(it.value) + '">';
-        html += '<span class="bm-line"></span><span class="bm-reach"></span>';
-        html += esc(it.label);
-        html += badge;
-        html += '</button>';
-      });
-      html += '</div></div></div>';
+    DOCK_ITEMS.forEach(function (it) {
+      var count = catCounts[it.value] || 0;
+      var badge = count > 0 ? '<span class="dock__badge">' + count + '</span>' : "";
+      html += '<button type="button" class="dock__item" data-cat="' + esc(it.value) + '">' +
+        esc(it.label) + badge + '</button>';
     });
-    sideEl.innerHTML = html;
-
-    sideEl.querySelectorAll(".bm-head").forEach(function (h) {
-      h.addEventListener("click", function () {
-        var si = parseInt(h.getAttribute("data-si"), 10);
-        bmFolded[si] = !bmFolded[si];
-        h.setAttribute("data-folded", bmFolded[si] ? "true" : "false");
-      });
-    });
-
-    sideEl.querySelectorAll(".bm-item").forEach(function (btn) {
+    dockEl.innerHTML = html;
+    dockEl.querySelectorAll(".dock__item").forEach(function (btn) {
       btn.addEventListener("click", function () {
         active = btn.getAttribute("data-cat");
-        setSideState();
+        setDockState();
         renderList();
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
-    setSideState();
+    setDockState();
   }
-
-  function setSideState() {
-    if (!sideEl) return;
-    sideEl.querySelectorAll(".bm-item").forEach(function (btn) {
-      var isActive = btn.getAttribute("data-cat") === active;
-      if (isActive) btn.setAttribute("data-active", "");
+  function setDockState() {
+    if (!dockEl) return;
+    dockEl.querySelectorAll(".dock__item").forEach(function (btn) {
+      if (btn.getAttribute("data-cat") === active) btn.setAttribute("data-active", "");
       else btn.removeAttribute("data-active");
-    });
-    // 激活线 reach 宽度动画：让 .bm-line 的 height 从 0 → 100%
-    requestAnimationFrame(function () {
-      sideEl.querySelectorAll(".bm-item").forEach(function (btn) {
-        var line = btn.querySelector(".bm-line");
-        if (line) {
-          line.style.height = btn.hasAttribute("data-active") ? "100%" : "0%";
-        }
-      });
     });
   }
 
@@ -1417,6 +1345,7 @@
           "</div>" +
         "</div>" +
         (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
+        '<span class="c-hot" hidden>🔥 热乎的！</span>' +
       "</div>"
     );
   }
@@ -1481,18 +1410,18 @@
     (root || document).querySelectorAll(".c-date[data-date]").forEach(function (el) {
       var d = el.getAttribute("data-date");
       if (!d) return;
-      // 如果已经填过（textContent 不再是初始的 "—"），跳过
       if (el.getAttribute("data-fresh")) return;
       var fresh = classifyFresh(d);
       el.setAttribute("data-fresh", fresh);
-      // 把所有子节点清掉，只留纯文本 + 可选的 sub span
       var sub = el.querySelector(".c-date__sub");
       el.textContent = timeAgo(d);
-      if (sub && fresh === "brand-new") {
-        sub.textContent = "🔥 热乎的！";
-        el.appendChild(sub);
-      } else if (sub) {
-        sub.remove();
+      if (sub && fresh === "brand-new") { sub.textContent = "🔥 热乎的！"; el.appendChild(sub); }
+      else if (sub) { sub.remove(); }
+      // 卡片右上角「🔥 热乎的！」角标
+      var card = el.closest(".card");
+      if (card) {
+        var hot = card.querySelector(".c-hot");
+        if (hot) { if (fresh === "brand-new") hot.hidden = false; else hot.hidden = true; }
       }
     });
   }
@@ -1729,7 +1658,7 @@
     if (e.target.hasAttribute && e.target.hasAttribute("data-close-lb")) closeLightbox();
   });
 
-  buildSide();
+  buildDock();
   renderList(true); // 首次加载跳过淡入淡出
 
   // ======== 后台预加载全部 preview.jpg ========
@@ -1758,9 +1687,6 @@
       splash.classList.add("hide");
       setTimeout(function () { splash.remove(); }, 600);
     }
-
-    // 兜底：5 秒后无论如何自动隐藏（防止长按不工作卡死）
-    setTimeout(dismiss, 5000);
 
     function start() {
       if (phase !== "idle") return;
