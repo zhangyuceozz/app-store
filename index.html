@@ -369,11 +369,11 @@
   .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__comets { opacity: 1; }
   @keyframes auroraWave { 0% { transform: translateY(-100%) translateX(-50%); } 100% { transform: translateY(-100%) translateX(50%); } }
 
-  main.wrap { padding: 48px 0 140px; display: flex; gap: 32px; align-items: flex-start; }
-  main.wrap section { flex: 1; min-width: 0; }
+  main.wrap { padding: 0 0 140px; display: flex; gap: 32px; align-items: flex-start; }
+  main.wrap section { flex: 1; min-width: 0; padding-top: 24px; }
   .side {
-    width: 180px; flex-shrink: 0;
-    position: sticky; top: 96px;
+    width: 130px; flex-shrink: 0;
+    position: sticky; top: 76px;
     align-self: flex-start;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
@@ -1340,7 +1340,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=140"></script>
+<script src="apps.js?v=141"></script>
 <script>
 (function () {
   var esc = function (s) {
