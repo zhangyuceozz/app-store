@@ -372,6 +372,39 @@
   .ms-nav { width: 160px; display: flex; flex-direction: column; gap: 0; }
   main.wrap { padding: 48px 0 140px; }
 
+  /* ===== 主站分类选择条（横向 pills） ===== */
+  .cat-bar {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 12px 0 24px;
+  }
+  .cat-bar__pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; height: 34px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--card);
+    font-size: 13px; font-weight: 500; color: var(--ink);
+    cursor: pointer; white-space: nowrap; line-height: 1;
+    transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+  }
+  .cat-bar__pill:hover { background: var(--soft); border-color: color-mix(in srgb, var(--ink) 20%, var(--line)); }
+  .cat-bar__pill[data-active] {
+    background: color-mix(in srgb, var(--bm-accent, #2563eb) 12%, var(--soft));
+    border-color: color-mix(in srgb, var(--bm-accent, #2563eb) 40%, var(--line));
+    color: var(--bm-accent, #2563eb);
+    font-weight: 600;
+  }
+  .cat-bar__pill .cb-count {
+    font-size: 11px; font-weight: 600;
+    padding: 1px 7px; border-radius: 999px;
+    background: var(--soft); color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 18px; text-align: center;
+  }
+  .cat-bar__pill[data-active] .cb-count {
+    background: color-mix(in srgb, var(--bm-accent, #2563eb) 18%, transparent);
+    color: var(--bm-accent, #2563eb);
+  }
+
   /* ===== 简化版 Dock 分类栏 — 纯 CSS grid，无物理特效 ===== */
   .dock {
     position: fixed; z-index: 80;
@@ -1116,6 +1149,7 @@
     </div>
 
 <main class="wrap">
+  <div class="cat-bar" id="cat-bar"></div>
   <section id="list"></section>
 </main>
 
@@ -1153,7 +1187,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=112"></script>
+<script src="apps.js?v=113"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1205,6 +1239,7 @@
   console.log("%c或者你就是个喜欢看控制台的人，那我们是同类。", "font-size:12px;color:#aaa;font-style:italic;");
 
   var dockEl = document.getElementById("dock");
+  var catBarEl = document.getElementById("cat-bar");
   var listEl = document.getElementById("list");
   var qEl = document.getElementById("q");
 
@@ -1252,6 +1287,7 @@
     if (platCb) platCb.checked = platform === "mac";
     updatePlatNote();
     buildDock();
+    buildCatBar();
     renderList();
   }
   if (platCb) {
@@ -1308,10 +1344,40 @@
       });
     });
     setDockState();
+    buildCatBar(); // 同步更新分类条的计数
   }
   function setDockState() {
     if (!dockEl) return;
     dockEl.querySelectorAll(".dock__item").forEach(function (btn) {
+      if (btn.getAttribute("data-cat") === active) btn.setAttribute("data-active", "");
+      else btn.removeAttribute("data-active");
+    });
+    setCatBarState();
+  }
+
+  function buildCatBar() {
+    if (!catBarEl) return;
+    recalcCounts();
+    var html = "";
+    DOCK_ITEMS.forEach(function (it) {
+      var count = catCounts[it.value] || 0;
+      html += '<button type="button" class="cat-bar__pill" data-cat="' + esc(it.value) + '">' +
+        esc(it.label) + '<span class="cb-count">' + count + '</span></button>';
+    });
+    catBarEl.innerHTML = html;
+    catBarEl.querySelectorAll(".cat-bar__pill").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        active = btn.getAttribute("data-cat");
+        setDockState();
+        renderList();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+    setCatBarState();
+  }
+  function setCatBarState() {
+    if (!catBarEl) return;
+    catBarEl.querySelectorAll(".cat-bar__pill").forEach(function (btn) {
       if (btn.getAttribute("data-cat") === active) btn.setAttribute("data-active", "");
       else btn.removeAttribute("data-active");
     });
