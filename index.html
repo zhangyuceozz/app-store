@@ -884,77 +884,73 @@
   .bounce-cards {
     position: relative;
     width: 100%;
-    height: 380px;
+    height: 320px;
     touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
     flex-shrink: 0;
   }
   .bounce-cards__card {
     position: absolute;
-    top: 42%;
+    top: 35%;
     left: 50%;
     width: var(--bounce-cards-size, 240px);
     aspect-ratio: 1;
     overflow: hidden;
     border: var(--bounce-cards-border, 5px) solid var(--bounce-cards-border-color, #fff);
     border-radius: var(--bounce-cards-radius, 25px);
-    background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
+    background: #1a1a1a;
     box-shadow: var(--bounce-cards-shadow, 0 1px 2px rgba(0,0,0,.12), 0 10px 28px -6px rgba(0,0,0,.32));
     transform: translate(-50%, -50%) scale(0);
     transition: box-shadow 0.3s ease;
     will-change: transform;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 20px; gap: 12px;
-    box-sizing: border-box;
   }
   @media (prefers-color-scheme: dark) {
-    .bounce-cards__card {
-      background: linear-gradient(135deg, #2a2a30 0%, #1a1a20 100%);
-      --bounce-cards-border-color: var(--card);
-    }
+    .bounce-cards__card { --bounce-cards-border-color: #2a2a2a; }
   }
   .bounce-cards__card[data-active] {
     box-shadow: var(--bounce-cards-shadow-active, 0 2px 4px rgba(0,0,0,.14), 0 22px 44px -10px rgba(0,0,0,.42));
   }
-  .bounce-cards__card .bc-bg {
+
+  /* 图标直接铺满卡面 */
+  .bounce-cards__card .bc-img {
     position: absolute; inset: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(245,73,31,.10) 0%, transparent 55%);
-    pointer-events: none;
-  }
-  .bounce-cards__card .bc-icon {
-    width: 92px; height: 92px; border-radius: 20px;
-    object-fit: cover; flex-shrink: 0;
-    background: #fff;
-    border: 1px solid rgba(0,0,0,.06);
-    box-shadow: 0 4px 14px -4px rgba(0,0,0,.18);
-    z-index: 1;
+    width: 100%; height: 100%;
+    object-fit: cover;
     pointer-events: none;
     user-select: none;
   }
   .bounce-cards__card .bc-avatar {
+    position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    font-size: 32px; font-weight: 600; color: var(--accent);
-    background: linear-gradient(135deg, #fff 0%, #f0f0f5 100%);
+    font-size: 96px; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, #333 0%, #111 100%);
   }
-  .bounce-cards__card .bc-text {
-    text-align: center; z-index: 1; pointer-events: none;
-    display: flex; flex-direction: column; gap: 4px; align-items: center;
+  /* 底部暗遮罩（叠文字用） */
+  .bounce-cards__card .bc-overlay {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 55%;
+    background: linear-gradient(to top, rgba(0,0,0,.78) 0%, rgba(0,0,0,.45) 60%, transparent 100%);
+    pointer-events: none;
+  }
+  /* 底部名字+分类 */
+  .bounce-cards__card .bc-caption {
+    position: absolute; left: 0; right: 0; bottom: 14px;
+    padding: 0 16px;
+    pointer-events: none;
+    text-align: left;
+    z-index: 2;
   }
   .bounce-cards__card .bc-name {
-    font-size: 17px; font-weight: 600; color: var(--ink);
-    line-height: 1.2;
-    max-width: 100%;
+    font-size: 15px; font-weight: 600; color: #fff;
+    line-height: 1.2; letter-spacing: .01em;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0,0,0,.5);
   }
   .bounce-cards__card .bc-cat {
-    font-size: 12px; font-weight: 500; color: var(--muted);
-    padding: 2px 10px;
-    background: rgba(0,0,0,.04);
-    border-radius: 999px;
-    letter-spacing: .01em;
-  }
-  @media (prefers-color-scheme: dark) {
-    .bounce-cards__card .bc-cat { background: rgba(255,255,255,.08); }
+    font-size: 11px; font-weight: 500; color: rgba(255,255,255,.75);
+    margin-top: 3px;
+    letter-spacing: .02em;
+    text-shadow: 0 1px 2px rgba(0,0,0,.5);
   }
 
   .preloader {
@@ -969,12 +965,11 @@
   }
   .splash-inner {
     display: flex; flex-direction: column;
-    gap: 20px; padding: 40px 44px 36px;
+    gap: 28px; padding: 40px 44px 36px;
     width: 100%; max-width: 640px;
     animation: splashIn .5s cubic-bezier(.22,1,.36,1);
-    /* 撑满 preloader 高度，让卡片区尽量大 */
     height: min(72vh, 680px);
-    justify-content: space-between;
+    justify-content: flex-start;
   }
   @keyframes splashIn {
     from { opacity: 0; transform: translateY(16px); }
@@ -1327,7 +1322,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=123"></script>
+<script src="apps.js?v=124"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2143,14 +2138,17 @@
       var el = document.createElement("div");
       el.className = "bounce-cards__card";
       el.style.zIndex = String(i + 1);
-      var iconHtml = app.icon
-        ? '<img class="bc-icon" src="' + esc(app.icon) + '" alt="" loading="lazy">'
-        : '<div class="bc-icon bc-avatar">' + esc((app.name || "?").charAt(0)) + "</div>";
-      // 直接显示：图标 + 名字 + 分类（单层，不 flip）
+      // 图标直接当卡面，叠加名字+分类在底部
+      var iconBg = app.icon
+        ? '<img class="bc-img" src="' + esc(app.icon) + '" alt="" loading="lazy">'
+        : "";
+      var avatar = !app.icon
+        ? '<div class="bc-avatar">' + esc((app.name || "?").charAt(0)) + '</div>'
+        : "";
       el.innerHTML =
-        '<div class="bc-bg"></div>' +
-        iconHtml +
-        '<div class="bc-text">' +
+        iconBg + avatar +
+        '<div class="bc-overlay"></div>' +
+        '<div class="bc-caption">' +
           '<div class="bc-name">' + esc(app.name) + '</div>' +
           '<div class="bc-cat">' + esc(app.category || "") + '</div>' +
         '</div>';
