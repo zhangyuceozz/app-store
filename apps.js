@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -630,7 +630,7 @@ const APPS = [
     date: "2026-11-08",
     tagline: "逆向+创作，看懂任何软件然后自己做",
     description: "Craft Anything 由 storytold（PdfCraft/ArtCraft 作者）开源，Rust 写的桌面工作台。核心想法：给它任意软件（二进制、源码、网页），它先帮你看透内部原理，再引导你做出自己的版本。底层用 LLVM、Ghidra、Tree-sitter 等工具链做静态分析，结合 AI 模型生成可读的解释文档和代码脚手架。适合想学习软件内部原理、或者想复刻某个工具的开发者。v0.5.0 刚发布，20.4k⭐。",
-    icon: "apps/craft-anything/icon.svg",
+    icon: "apps/craft-anything/icon.png",
     preview: "apps/craft-anything/preview.jpg",
     downloads: [
       { platform: "Windows (x64)",         file: "/dl/apps/craft-anything/download/craft-anything-0.5.0-windows-x64.msi",          size: "57 MB" },
