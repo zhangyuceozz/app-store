@@ -1064,12 +1064,6 @@
     white-space: nowrap; flex-shrink: 0;
   }
 
-  .splash-hint {
-    font-size: 11px; font-weight: 400; color: var(--muted);
-    letter-spacing: .08em; text-align: center;
-    padding: 0 0 6px;
-  }
-
   /* HoldButton — 1:1 from React Bits (HoldButton.jsx + HoldButton.css)
      custom size: height=52px (fill preloader width), radius=14, holdTime=2000, fillDirection=right,
      waveAmplitude=6, pressScale=0.97, glow=true, releaseTime=200, resetAfter=1200
@@ -1230,19 +1224,18 @@
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <div class="splash-hint">往里进</div>
     <button type="button" class="splash-hold" id="splash-hold"
             data-phase="idle" data-direction="right" data-glow="true"
             aria-describedby="splash-hold-sr">
       <span class="splash-hold__pulse"></span>
       <span class="splash-hold__label">
-        <span class="splash-hold__idle">长按进入主站</span>
+        <span class="splash-hold__idle">往里进</span>
         <span class="splash-hold__done">已进入</span>
       </span>
       <span class="splash-hold__clip">
         <span class="splash-hold__fill">
           <span class="splash-hold__label splash-hold__label--fill">
-            <span class="splash-hold__idle">长按进入主站</span>
+            <span class="splash-hold__idle">往里进</span>
             <span class="splash-hold__done">已进入</span>
           </span>
         </span>
@@ -1373,7 +1366,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=134"></script>
+<script src="apps.js?v=135"></script>
 <script>
 (function () {
   var esc = function (s) {
