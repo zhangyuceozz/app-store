@@ -1167,6 +1167,16 @@
     position: absolute; width: 1px; height: 1px;
     overflow: hidden; clip-path: inset(50%); white-space: nowrap;
   }
+  .splash-hint {
+    text-align: center; margin: 10px 0 0;
+    font-size: 11px; font-weight: 500; letter-spacing: .1em;
+    color: var(--muted);
+    animation: hintPulse 2.8s ease-in-out infinite;
+  }
+  @keyframes hintPulse {
+    0%, 100% { opacity: .45; }
+    50% { opacity: .95; }
+  }
   @media (prefers-reduced-motion: reduce) {
     .splash-hold { transition: background-color 160ms ease, box-shadow var(--hb-release) ease; transform: none !important; }
     .splash-hold__fill { clip-path: inset(0); opacity: 0; transition: opacity var(--hb-release) ease; }
@@ -1238,6 +1248,7 @@
       </span>
       <span id="splash-hold-sr" class="splash-hold__sr">按住 2 秒进入主站</span>
     </button>
+    <p class="splash-hint">长按按钮 · 走进来 · 别客气 👀</p>
   </div>
 </div>
 
@@ -1355,7 +1366,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=131"></script>
+<script src="apps.js?v=132"></script>
 <script>
 (function () {
   var esc = function (s) {
