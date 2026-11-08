@@ -838,15 +838,55 @@
     color: var(--muted); flex-shrink: 0;
   }
 
-  /* 更新日志卡片（可滚动） */
+  /* 公告页更新日志 — 横向 pills 条样式（与主站分类条一致） */
   .splash-log {
-    display: flex; flex-direction: column; gap: 10px;
+    display: flex; flex-wrap: wrap; gap: 8px;
     flex: 1; min-height: 0;
-    overflow-y: auto;
-    scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+    align-content: flex-start;
   }
   .splash-log::-webkit-scrollbar { width: 5px; }
   .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+
+  .log-group {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; height: 34px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--card);
+    font-size: 13px; font-weight: 500; color: var(--ink);
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(10px);
+    will-change: transform, opacity;
+    transition: transform 0.35s cubic-bezier(.22,1,.36,1), opacity 0.35s cubic-bezier(.22,1,.36,1), background .18s ease, border-color .18s ease;
+  }
+  .log-group.show { opacity: 1; transform: translateY(0); }
+  .log-group:hover { background: var(--soft); border-color: color-mix(in srgb, var(--ink) 20%, var(--line)); transform: translateY(-1px); }
+
+  .log-group .log-dot { display: none; }
+
+  .log-group .log-body { display: contents; }
+  .log-group .log-head { display: contents; }
+
+  .log-tag {
+    font-size: 11px; font-weight: 600; letter-spacing: .04em;
+    padding: 2px 7px; border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .log-group[data-type="fix"]    .log-tag { background: rgba(34,197,94,.14); color: #16a34a; }
+  .log-group[data-type="change"] .log-tag { background: rgba(96,165,250,.16); color: #2563eb; }
+  .log-group[data-type="new"]    .log-tag { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+
+  .log-group .log-text {
+    font-size: 12.5px; color: var(--ink); line-height: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 180px;
+  }
+  .log-group .log-date {
+    font-size: 10.5px; font-weight: 600; letter-spacing: .01em;
+    padding: 1px 7px; border-radius: 999px;
+    background: var(--soft); border: 1px solid var(--line);
+    white-space: nowrap; flex-shrink: 0;
+  }
 
   /* HoldButton — 1:1 from React Bits (HoldButton.jsx + HoldButton.css)
      custom size: height=52px (fill preloader width), radius=14, holdTime=2000, fillDirection=right,
@@ -960,59 +1000,12 @@
     .splash-hold__pulse { animation: none !important; }
   }
 
-  /* 公告页日志卡片 */
-  .log-group {
-    display: flex; align-items: stretch; gap: 14px;
-    padding: 14px 16px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    opacity: 0;
-    transform: translateY(20px);
-    will-change: transform, opacity;
-    transition: transform 0.45s cubic-bezier(.22,1,.36,1), opacity 0.45s cubic-bezier(.22,1,.36,1), border-color .18s ease, box-shadow .18s ease;
-  }
-  .log-group.show { opacity: 1; transform: translateY(0); }
-  .log-group:hover {
-    border-color: color-mix(in srgb, var(--ink) 25%, var(--line));
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--ink) 22%, transparent);
-  }
-  .log-dot {
-    width: 3px; border-radius: 2px;
-    background: var(--accent);
-    flex-shrink: 0;
-  }
-  .log-group[data-type="fix"] .log-dot  { background: #22c55e; }
-  .log-group[data-type="change"] .log-dot { background: #60a5fa; }
-  .log-group[data-type="new"] .log-dot   { background: var(--accent); }
-
-  .log-body { flex: 1; min-width: 0; }
-  .log-head {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
-  }
-  .log-tag {
-    font-size: 10px; font-weight: 700; letter-spacing: .12em;
-    text-transform: uppercase;
-    padding: 2px 7px; border-radius: 6px;
-  }
-  .log-group[data-type="fix"]    .log-tag { background: rgba(34,197,94,.12); color: #16a34a; }
-  .log-group[data-type="change"] .log-tag { background: rgba(96,165,250,.14); color: #2563eb; }
-  .log-group[data-type="new"]    .log-tag { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
-
-  .log-text { font-size: 13px; color: var(--ink); line-height: 1.55; }
-  .log-date {
-    font-size: 10px; font-weight: 600; letter-spacing: .02em;
-    padding: 1px 6px; border-radius: 8px;
-    background: var(--soft); border: 1px solid var(--line);
-    white-space: nowrap; flex-shrink: 0;
-  }
+  /* 公告页日志样式已在上方定义 */
 
   @media (max-width: 720px) {
     .splash-inner { padding: 24px 22px 20px; gap: 16px; max-width: 100%; height: min(82vh, 620px); }
     .splash-hold { height: 46px; font-size: 13px; }
-    .log-group { padding: 12px 14px; gap: 12px; border-radius: 12px; }
-    .log-text { font-size: 12px; }
+    .log-group { padding: 6px 12px; height: 30px; font-size: 12px; }
     .wrap { padding: 0 20px; }
     .top { height: auto; flex-wrap: wrap; padding: 14px 0; gap: 12px 16px; }
     .search { order: 4; flex-basis: 100%; max-width: none; }
@@ -1187,7 +1180,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=113"></script>
+<script src="apps.js?v=114"></script>
 <script>
 (function () {
   var esc = function (s) {
