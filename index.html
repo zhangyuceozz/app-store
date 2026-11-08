@@ -369,7 +369,6 @@
   .theme-switch__checkbox:checked + .theme-switch__container .theme-switch__comets { opacity: 1; }
   @keyframes auroraWave { 0% { transform: translateY(-100%) translateX(-50%); } 100% { transform: translateY(-100%) translateX(50%); } }
 
-  .ms-nav { width: 160px; display: flex; flex-direction: column; gap: 0; }
   main.wrap { padding: 48px 0 140px; display: flex; gap: 32px; align-items: flex-start; }
   main.wrap section { flex: 1; min-width: 0; }
   .side {
@@ -504,7 +503,16 @@
   @media (hover: hover) and (pointer: fine) {
     .branched-menu__item:hover { color: var(--bm-ink); }
   }
-  .branched-menu__item[data-active] { color: var(--bm-accent); font-weight: 500; }
+  .branched-menu__item[data-active] {
+    color: var(--bm-accent); font-weight: 500;
+    background: color-mix(in srgb, var(--bm-accent) 12%, transparent);
+    border-radius: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .branched-menu__item[data-active] {
+      background: color-mix(in srgb, var(--bm-accent) 18%, transparent);
+    }
+  }
 
   .branched-menu__label { white-space: nowrap; }
 
@@ -541,10 +549,14 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease;
     box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 12px -4px rgba(0,0,0,.06);
   }
-  .card:hover { transform: translateY(-2px); z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,.08), 0 16px 36px -12px rgba(0,0,0,.14); border-color: var(--line); }
+  .card:hover {
+    transform: translateY(-3px) scale(1.01); z-index: 10;
+    box-shadow: 0 6px 16px rgba(0,0,0,.10), 0 22px 44px -14px rgba(0,0,0,.18);
+    border-color: color-mix(in srgb, var(--ink) 22%, var(--line));
+  }
 
   /* 点击涟漪 */
   .card .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: rippleAnim .6s ease-out; pointer-events: none; background: color-mix(in srgb, var(--accent) 22%, transparent); z-index: 5; }
@@ -1349,7 +1361,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=127"></script>
+<script src="apps.js?v=128"></script>
 <script>
 (function () {
   var esc = function (s) {
