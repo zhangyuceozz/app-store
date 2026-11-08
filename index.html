@@ -1366,7 +1366,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=138"></script>
+<script src="apps.js?v=139"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1595,7 +1595,6 @@
         html += '</svg>';
         // 每个 kid 的 item
         kids.forEach(function (kid) {
-          var count = catCounts[kid.value] || 0;
           html += '<button type="button" class="branched-menu__item' + (kid.value === bmActive ? '" data-active=""' : '"') + '" data-value="' + esc(kid.value) + '" aria-current="' + (kid.value === bmActive ? "true" : "false") + '">';
           html += '<span class="branched-menu__label">' + esc(kid.label) + '</span>';
           html += '</button>';
