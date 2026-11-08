@@ -398,7 +398,7 @@
   .branched-menu {
     --bm-w: 130px;
     --bm-ink: var(--ink);
-    --bm-accent: #2563eb;
+    --bm-accent: var(--ink);
     --bm-line: var(--bm-line, #d4d4d8);
     --bm-font: 13px;
     --bm-row: 42px;
@@ -422,7 +422,7 @@
     line-height: 1.2;
   }
   @media (prefers-color-scheme: dark) {
-    .branched-menu { --bm-line: #3f3f46; --bm-accent: #60a5fa; }
+    .branched-menu { --bm-line: #3f3f46; --bm-accent: var(--ink); }
   }
 
   .branched-menu::before {
@@ -1354,7 +1354,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=142"></script>
+<script src="apps.js?v=143"></script>
 <script>
 (function () {
   var esc = function (s) {
