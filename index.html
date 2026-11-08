@@ -474,20 +474,8 @@
     transition: opacity .25s ease;
     line-height: 1;
   }
-  .card .c-date[data-fresh="brand-new"] .c-date__sub { opacity: 1; }
 
-  /* 全局 brand-new 标签下方「🔥 热乎的！」—— 卡片日期 + splash 日志日期通用 */
-  .card .c-date[data-fresh="brand-new"]::after,
-  .log-date[data-fresh="brand-new"]::after {
-    content: "🔥 热乎的！";
-    display: block;
-    font-size: 8px; font-weight: 600;
-    color: var(--accent);
-    letter-spacing: .03em;
-    opacity: 1;
-    line-height: 1;
-    margin-top: 1px;
-  }
+  .card .c-date[data-fresh="brand-new"] .c-date__sub { opacity: 1; }
 
   /* 7 档新鲜度颜色（应用卡片 + 日志卡片共用） */
   .card .c-date[data-fresh="brand-new"],  .log-date[data-fresh="brand-new"]  { color: var(--accent);    border-color: var(--line); background: var(--soft); }
@@ -1144,7 +1132,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=146"></script>
+<script src="apps.js?v=147"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1525,10 +1513,7 @@
       if (el.getAttribute("data-fresh")) return;
       var fresh = classifyFresh(d);
       el.setAttribute("data-fresh", fresh);
-      var sub = el.querySelector(".c-date__sub");
       el.textContent = timeAgo(d);
-      if (sub && fresh === "brand-new") { sub.textContent = "🔥 热乎的！"; el.appendChild(sub); }
-      else if (sub) { sub.remove(); }
     });
   }
 
