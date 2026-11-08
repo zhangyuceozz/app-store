@@ -934,6 +934,16 @@
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: transform, opacity;
+    transition: transform 0.45s cubic-bezier(.22,1,.36,1), opacity 0.45s cubic-bezier(.22,1,.36,1), border-color .18s ease, box-shadow .18s ease;
+  }
+  .log-group.show { opacity: 1; transform: translateY(0); }
+  .log-group:hover {
+    border-color: color-mix(in srgb, var(--ink) 25%, var(--line));
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--ink) 22%, transparent);
   }
   .log-dot {
     width: 3px; border-radius: 2px;
@@ -1143,7 +1153,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=111"></script>
+<script src="apps.js?v=112"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1264,7 +1274,7 @@
     return hasAnyMacWin ? matched : app.downloads.slice();
   }
 
-  // ---------- BranchedMenu 侧栏导航 ----------
+  // ---------- 简化版 Dock 分类栏（纯 innerHTML，无物理系统） ----------
   var catCounts = {};
   function recalcCounts() {
     var byPlatform = APPS.filter(function (a) { return filteredDownloads(a).length > 0; });
@@ -1781,6 +1791,11 @@
       '</div>';
     });
     box.innerHTML = html;
+    // 错峰浮现：每个 log-group 依次从下方 20px 浮入
+    var groups = box.querySelectorAll(".log-group");
+    groups.forEach(function (g, i) {
+      setTimeout(function () { g.classList.add("show"); }, 30 + i * 120);
+    });
   })();
 
   // 事件委托：卡片 → 打开详情弹窗
