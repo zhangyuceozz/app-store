@@ -370,13 +370,20 @@
   @keyframes auroraWave { 0% { transform: translateY(-100%) translateX(-50%); } 100% { transform: translateY(-100%) translateX(50%); } }
 
   .ms-nav { width: 160px; display: flex; flex-direction: column; gap: 0; }
-  main.wrap { padding: 48px 0 140px; display: flex; gap: 48px; align-items: flex-start; }
+  main.wrap { padding: 48px 0 140px; display: flex; gap: 40px; align-items: flex-start; }
   main.wrap section { flex: 1; min-width: 0; }
-  .side { width: 200px; flex-shrink: 0; position: sticky; top: 96px; align-self: flex-start; }
+  .side {
+    width: 240px; flex-shrink: 0;
+    position: sticky; top: 96px;
+    align-self: flex-start;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    padding-right: 8px;
+  }
 
   /* ===== React Bits BranchedMenu — 完整 CSS（按源码 1:1） ===== */
   .branched-menu {
-    --bm-w: 200px;
+    --bm-w: 240px;
     --bm-ink: var(--ink);
     --bm-accent: #2563eb;
     --bm-line: var(--bm-line, #d4d4d8);
@@ -392,9 +399,10 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    width: fit-content;
+    width: 100%;
     max-width: min(var(--bm-w), 100%);
     padding-left: 14px;
+    padding-right: 14px;
     color: var(--bm-ink);
     font-family: inherit;
     font-size: var(--bm-font);
@@ -1355,7 +1363,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=120"></script>
+<script src="apps.js?v=121"></script>
 <script>
 (function () {
   var esc = function (s) {
