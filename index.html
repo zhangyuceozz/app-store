@@ -370,44 +370,145 @@
   @keyframes auroraWave { 0% { transform: translateY(-100%) translateX(-50%); } 100% { transform: translateY(-100%) translateX(50%); } }
 
   .ms-nav { width: 160px; display: flex; flex-direction: column; gap: 0; }
-  main.wrap { padding: 48px 0 140px; }
+  main.wrap { padding: 48px 0 140px; display: flex; gap: 48px; align-items: flex-start; }
+  main.wrap section { flex: 1; min-width: 0; }
+  .side { width: 200px; flex-shrink: 0; position: sticky; top: 96px; align-self: flex-start; }
 
-  /* ===== 主站分类选择条（横向 pills） ===== */
-  .cat-bar {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    padding: 12px 0 24px;
+  /* ===== React Bits BranchedMenu — 完整 CSS（按源码 1:1） ===== */
+  .branched-menu {
+    --bm-w: 200px;
+    --bm-ink: var(--ink);
+    --bm-accent: #2563eb;
+    --bm-line: var(--bm-line, #d4d4d8);
+    --bm-font: 14px;
+    --bm-row: 36px;
+    --bm-indent: 40px;
+    --bm-line-w: 1.5;
+    --bm-draw: 400ms;
+    --bm-fold: 300ms;
+    --bm-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --bm-muted: color-mix(in srgb, var(--bm-ink) 55%, transparent);
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    max-width: min(var(--bm-w), 100%);
+    padding-left: 14px;
+    color: var(--bm-ink);
+    font-family: inherit;
+    font-size: var(--bm-font);
+    line-height: 1.2;
   }
-  .cat-bar__pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 14px; height: 34px;
-    border: 1px solid var(--line); border-radius: 999px;
-    background: var(--card);
-    font-size: 13px; font-weight: 500; color: var(--ink);
-    cursor: pointer; white-space: nowrap; line-height: 1;
-    transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+  @media (prefers-color-scheme: dark) {
+    .branched-menu { --bm-line: #3f3f46; --bm-accent: #60a5fa; }
   }
-  .cat-bar__pill:hover { background: var(--soft); border-color: color-mix(in srgb, var(--ink) 20%, var(--line)); }
-  .cat-bar__pill[data-active] {
-    background: color-mix(in srgb, var(--bm-accent, #2563eb) 12%, var(--soft));
-    border-color: color-mix(in srgb, var(--bm-accent, #2563eb) 40%, var(--line));
-    color: var(--bm-accent, #2563eb);
-    font-weight: 600;
+
+  .branched-menu::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    border-radius: 1px;
+    background: linear-gradient(to bottom, var(--bm-line) 0%, var(--bm-line) 55%, transparent 100%);
   }
-  .cat-bar__pill .cb-count {
-    font-size: 11px; font-weight: 600;
-    padding: 1px 7px; border-radius: 999px;
-    background: var(--soft); color: var(--muted);
-    font-variant-numeric: tabular-nums;
-    min-width: 18px; text-align: center;
+
+  .branched-menu__marker {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    z-index: 1;
+    width: 2px;
+    height: 16px;
+    border-radius: 1px;
+    background: var(--bm-accent);
+    opacity: 0;
+    transition: top 220ms var(--bm-ease-out), opacity 150ms ease;
   }
-  .cat-bar__pill[data-active] .cb-count {
-    background: color-mix(in srgb, var(--bm-accent, #2563eb) 18%, transparent);
-    color: var(--bm-accent, #2563eb);
+  .branched-menu__marker[data-on] { opacity: 1; }
+
+  .branched-menu__section { display: flex; flex-direction: column; }
+
+  .branched-menu__head {
+    display: block; margin: 0;
+    padding: 9px 0;
+    border: 0; background: none;
+    color: var(--bm-muted);
+    font: inherit; font-size: calc(var(--bm-font) + 1px); font-weight: 500;
+    text-align: left; cursor: pointer; outline: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 200ms ease;
+  }
+  .branched-menu__section[data-open] .branched-menu__head,
+  .branched-menu__head[data-active] { color: var(--bm-ink); }
+  @media (hover: hover) and (pointer: fine) {
+    .branched-menu__head:hover { color: var(--bm-ink); }
+  }
+
+  .branched-menu__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--bm-fold) var(--bm-ease-out);
+  }
+  .branched-menu__section[data-open] .branched-menu__body { grid-template-rows: 1fr; }
+
+  .branched-menu__fold { min-height: 0; overflow: hidden; }
+
+  .branched-menu__tree { position: relative; padding: 6px 0; box-sizing: border-box; }
+
+  .branched-menu__lines {
+    position: absolute; top: 0; left: 0;
+    overflow: visible;
+    opacity: 0; pointer-events: none;
+    transition: opacity 200ms ease;
+  }
+  .branched-menu__section[data-open] .branched-menu__lines {
+    opacity: 1;
+    transition: opacity 250ms ease 100ms;
+  }
+
+  .branched-menu__base,
+  .branched-menu__reach {
+    fill: none;
+    stroke-width: var(--bm-line-w);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .branched-menu__base { stroke: var(--bm-line); }
+  .branched-menu__reach {
+    stroke: var(--bm-accent);
+    transition: stroke-dashoffset var(--bm-draw) var(--bm-ease-out);
+  }
+
+  .branched-menu__item {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; height: var(--bm-row);
+    margin: 0; padding: 0 0 0 var(--bm-indent);
+    border: 0; background: none;
+    color: var(--bm-muted);
+    font: inherit; text-align: left; cursor: pointer;
+    outline: none; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 200ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .branched-menu__item:hover { color: var(--bm-ink); }
+  }
+  .branched-menu__item[data-active] { color: var(--bm-accent); font-weight: 500; }
+
+  .branched-menu__label { white-space: nowrap; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .branched-menu__marker { transition: opacity 150ms ease; }
+    .branched-menu__body { transition: none; }
+    .branched-menu__reach { transition: none; }
   }
 
   @media (max-width: 720px) {
-    .cat-bar { gap: 6px; }
-    .cat-bar__pill { padding: 6px 11px; height: 30px; font-size: 12px; }
+    main.wrap { flex-direction: column; gap: 24px; }
+    .side { width: 100%; position: static; }
   }
 
   .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 52px 0 20px; display: flex; align-items: center; gap: 8px; }
@@ -1145,7 +1246,7 @@
     </div>
 
 <main class="wrap">
-  <div class="cat-bar" id="cat-bar"></div>
+  <aside class="side"><nav class="branched-menu" id="branched-menu"></nav></aside>
   <section id="list"></section>
 </main>
 
@@ -1180,7 +1281,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=116"></script>
+<script src="apps.js?v=117"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1231,7 +1332,7 @@
   console.log("%c想看点有意思的？长按左上角 logo 试试。", "font-size:13px;color:#888;");
   console.log("%c或者你就是个喜欢看控制台的人，那我们是同类。", "font-size:12px;color:#aaa;font-style:italic;");
 
-  var catBarEl = document.getElementById("cat-bar");
+  var bmEl = document.getElementById("branched-menu");
   var listEl = document.getElementById("list");
   var qEl = document.getElementById("q");
 
@@ -1278,7 +1379,7 @@
     localStorage.setItem("store-platform", platform);
     if (platCb) platCb.checked = platform === "mac";
     updatePlatNote();
-    buildCatBar();
+    buildBranchedMenu();
     renderList();
   }
   if (platCb) {
@@ -1311,36 +1412,149 @@
   }
   recalcCounts();
 
-  // ---------- 分类 pills 导航（顶部横排） ----------
-  var DOCK_ITEMS = [{ value: "最近上架", label: "最近上架" }].concat(
-    categories.map(function (c) { return { value: c, label: c }; })
-  );
-  function buildCatBar() {
-    if (!catBarEl) return;
-    recalcCounts();
-    var html = "";
-    DOCK_ITEMS.forEach(function (it) {
-      var count = catCounts[it.value] || 0;
-      html += '<button type="button" class="cat-bar__pill" data-cat="' + esc(it.value) + '">' +
-        esc(it.label) + '<span class="cb-count">' + count + '</span></button>';
+  // ===== React Bits BranchedMenu — 原生 JS 完整移植（1:1 源码） =====
+  var BM_PAD = 6;
+  var BM_MARK = 16;
+  var BM_ROW = 36;
+  var BM_INDENT = 40;
+  var BM_TRUNK = 14;
+  var BM_RADIUS = 10;
+  var BM_LINE_W = 1.5;
+  var BM_ENDX = BM_INDENT - 8;
+
+  // 分组数据 — 浏览 + 分类
+  var bmSections = [
+    {
+      label: "浏览",
+      children: [{ value: "最近上架", label: "最近上架" }]
+    },
+    {
+      label: "分类",
+      children: categories.map(function (c) { return { value: c, label: c }; })
+    }
+  ];
+  // 默认展开：浏览(0) + 分类(1) 都展开；默认激活：最近上架
+  var bmOpen = new Set([0, 1]);
+  // 取第一个打开 section 的第一个 child 作为默认 active
+  var bmActive = "最近上架";
+  var bmHeads = [];
+  var bmMarker = null;
+  var bmRO = null;
+
+  // SVG path 几何公式（1:1 从 React 源码移植）
+  var bmR = Math.min(BM_RADIUS, BM_ROW / 2 - 2);
+  function bmRowY(k) { return BM_PAD + k * BM_ROW + BM_ROW / 2; }
+  function bmBranch(k) {
+    return "M " + BM_TRUNK + " " + (bmRowY(k) - bmR) +
+      " A " + bmR + " " + bmR + " 0 0 0 " + (BM_TRUNK + bmR) + " " + bmRowY(k) +
+      " H " + BM_ENDX;
+  }
+  function bmReach(k) {
+    return "M " + BM_TRUNK + " 0" +
+      " V " + (bmRowY(k) - bmR) +
+      " A " + bmR + " " + bmR + " 0 0 0 " + (BM_TRUNK + bmR) + " " + bmRowY(k) +
+      " H " + BM_ENDX;
+  }
+  function bmLength(k) { return bmRowY(k) - bmR + (Math.PI * bmR) / 2 + (BM_ENDX - BM_TRUNK - bmR); }
+
+  function placeMarker(glide) {
+    if (!bmMarker) return;
+    var activeSection = -1;
+    bmSections.forEach(function (sec, si) {
+      if (sec.children && sec.children.some(function (kid) { return kid.value === bmActive; })) {
+        activeSection = si;
+      }
     });
-    catBarEl.innerHTML = html;
-    catBarEl.querySelectorAll(".cat-bar__pill").forEach(function (btn) {
+    var markerShown = activeSection >= 0 && bmOpen.has(activeSection);
+    var head = bmHeads[activeSection];
+    if (!glide) bmMarker.style.transition = "none";
+    if (markerShown && head) {
+      bmMarker.style.top = (head.offsetTop + (head.offsetHeight - BM_MARK) / 2) + "px";
+    }
+    if (markerShown) bmMarker.setAttribute("data-on", ""); else bmMarker.removeAttribute("data-on");
+    if (!glide) {
+      void bmMarker.offsetHeight;
+      bmMarker.style.transition = "";
+    }
+  }
+
+  function buildBranchedMenu() {
+    if (!bmEl) return;
+    recalcCounts();
+
+    var html = '<span class="branched-menu__marker" aria-hidden="true"></span>';
+    bmSections.forEach(function (sec, si) {
+      var kids = sec.children;
+      var isOpen = kids ? bmOpen.has(si) : false;
+      html += '<div class="branched-menu__section' + (isOpen ? '" data-open=""' : '"') + '">';
+      html += '<button type="button" class="branched-menu__head" data-si="' + si + '" aria-expanded="' + (kids ? isOpen : "false") + '">';
+      html += esc(sec.label);
+      html += '</button>';
+      if (kids) {
+        var bodyH = BM_PAD * 2 + kids.length * BM_ROW;
+        html += '<div class="branched-menu__body"><div class="branched-menu__fold">';
+        html += '<div class="branched-menu__tree" style="height:' + bodyH + 'px">';
+        html += '<svg class="branched-menu__lines" width="' + BM_INDENT + '" height="' + bodyH + '" aria-hidden="true">';
+        // 树干（灰色）：从 trunk 到最后一个 kid 的 rowY - r
+        html += '<path class="branched-menu__base" d="M ' + BM_TRUNK + ' 0 V ' + (bmRowY(kids.length - 1) - bmR) + '"/>';
+        // 每个 kid 的 branch（灰色弧 + 横线）
+        kids.forEach(function (kid, k) {
+          html += '<path class="branched-menu__base" d="' + bmBranch(k) + '"/>';
+        });
+        // 每个 kid 的 reach（橙色动画线）
+        kids.forEach(function (kid, k) {
+          var len = bmLength(k);
+          var isActive = kid.value === bmActive;
+          html += '<path class="branched-menu__reach" d="' + bmReach(k) + '" style="stroke-dasharray:' + len + ';stroke-dashoffset:' + (isActive ? 0 : len) + '"/>';
+        });
+        html += '</svg>';
+        // 每个 kid 的 item
+        kids.forEach(function (kid) {
+          var count = catCounts[kid.value] || 0;
+          html += '<button type="button" class="branched-menu__item' + (kid.value === bmActive ? '" data-active=""' : '"') + '" data-value="' + esc(kid.value) + '" aria-current="' + (kid.value === bmActive ? "true" : "false") + '">';
+          html += '<span class="branched-menu__label">' + esc(kid.label) + '</span>';
+          if (count > 0) html += '<span style="margin-left:auto;font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:var(--soft);color:var(--muted);font-variant-numeric:tabular-nums;">' + count + '</span>';
+          html += '</button>';
+        });
+        html += '</div></div></div>';
+      }
+      html += '</div>';
+    });
+    bmEl.innerHTML = html;
+
+    // 保存 heads 引用
+    bmHeads = [];
+    bmEl.querySelectorAll(".branched-menu__head").forEach(function (h) {
+      bmHeads.push(h);
+      h.addEventListener("click", function () {
+        var si = parseInt(h.getAttribute("data-si"), 10);
+        var isOpenNow = bmOpen.has(si);
+        if (isOpenNow) bmOpen.delete(si); else bmOpen.add(si);
+        buildBranchedMenu(); // 重建 DOM 刷 state（包含 SVG reach 线的 dashoffset 动画）
+        renderList();
+      });
+    });
+
+    // marker 引用
+    bmMarker = bmEl.querySelector(".branched-menu__marker");
+
+    // item 点击
+    bmEl.querySelectorAll(".branched-menu__item").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        active = btn.getAttribute("data-cat");
-        setCatBarState();
+        bmActive = btn.getAttribute("data-value");
+        active = bmActive;
+        buildBranchedMenu(); // 重建以更新 marker 位置 + reach 线
         renderList();
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
-    setCatBarState();
-  }
-  function setCatBarState() {
-    if (!catBarEl) return;
-    catBarEl.querySelectorAll(".cat-bar__pill").forEach(function (btn) {
-      if (btn.getAttribute("data-cat") === active) btn.setAttribute("data-active", "");
-      else btn.removeAttribute("data-active");
-    });
+
+    // ResizeObserver 跟随 marker
+    if (bmRO) bmRO.disconnect();
+    bmRO = new ResizeObserver(function () { placeMarker(false); });
+    bmRO.observe(bmEl);
+
+    placeMarker(true);
   }
 
   function iconHtml(a, cls) {
@@ -1694,7 +1908,7 @@
     if (e.target.hasAttribute && e.target.hasAttribute("data-close-lb")) closeLightbox();
   });
 
-  buildCatBar();
+  buildBranchedMenu();
   renderList(true); // 首次加载跳过淡入淡出
 
   // ======== 后台预加载全部 preview.jpg ========
