@@ -405,47 +405,9 @@
     color: var(--bm-accent, #2563eb);
   }
 
-  /* ===== 简化版 Dock 分类栏 — 纯 CSS grid，无物理特效 ===== */
-  .dock {
-    position: fixed; z-index: 80;
-    bottom: 14px; left: 50%; transform: translateX(-50%);
-    display: grid; grid-template-columns: repeat(4, auto);
-    gap: 6px; padding: 8px 10px;
-    background: color-mix(in srgb, var(--bg) 85%, transparent);
-    border: 1px solid var(--line); border-radius: 16px;
-    backdrop-filter: blur(14px) saturate(1.4);
-    -webkit-backdrop-filter: blur(14px) saturate(1.4);
-    box-shadow: 0 4px 18px -8px color-mix(in srgb, var(--ink) 20%, transparent);
-  }
-  .dock__item {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 7px 12px; height: 32px;
-    border: 0; background: none; border-radius: 10px;
-    font-size: 13px; font-weight: 500; color: var(--ink);
-    cursor: pointer; white-space: nowrap; line-height: 1;
-    transition: background .18s ease, color .18s ease;
-  }
-  .dock__item:hover { background: var(--soft); }
-  .dock__item[data-active] {
-    background: color-mix(in srgb, var(--bm-accent, #2563eb) 12%, var(--soft));
-    color: var(--bm-accent, #2563eb);
-    font-weight: 600;
-  }
-  .dock__badge {
-    font-size: 10.5px; font-weight: 600;
-    padding: 1px 6px; border-radius: 999px;
-    background: var(--soft); color: var(--muted);
-    font-variant-numeric: tabular-nums;
-    min-width: 18px; text-align: center;
-  }
-  .dock__item[data-active] .dock__badge {
-    background: color-mix(in srgb, var(--bm-accent, #2563eb) 18%, transparent);
-    color: var(--bm-accent, #2563eb);
-  }
-
   @media (max-width: 720px) {
-    .dock { grid-template-columns: repeat(3, auto); bottom: 10px; gap: 4px; padding: 6px 8px; }
-    .dock__item { padding: 6px 9px; height: 28px; font-size: 12px; }
+    .cat-bar { gap: 6px; }
+    .cat-bar__pill { padding: 6px 11px; height: 30px; font-size: 12px; }
   }
 
   .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 52px 0 20px; display: flex; align-items: center; gap: 8px; }
@@ -1146,9 +1108,6 @@
   <section id="list"></section>
 </main>
 
-<!-- 底部简化版 Dock 分类栏 -->
-<nav class="dock" id="dock"></nav>
-
 <div class="modal" id="modal">
   <div class="backdrop" data-close></div>
   <div class="panel" id="panel"></div>
@@ -1180,7 +1139,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=114"></script>
+<script src="apps.js?v=115"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1231,7 +1190,6 @@
   console.log("%c想看点有意思的？长按左上角 logo 试试。", "font-size:13px;color:#888;");
   console.log("%c或者你就是个喜欢看控制台的人，那我们是同类。", "font-size:12px;color:#aaa;font-style:italic;");
 
-  var dockEl = document.getElementById("dock");
   var catBarEl = document.getElementById("cat-bar");
   var listEl = document.getElementById("list");
   var qEl = document.getElementById("q");
@@ -1279,7 +1237,6 @@
     localStorage.setItem("store-platform", platform);
     if (platCb) platCb.checked = platform === "mac";
     updatePlatNote();
-    buildDock();
     buildCatBar();
     renderList();
   }
@@ -1313,41 +1270,10 @@
   }
   recalcCounts();
 
-  // ---------- 简化版 Dock 分类栏（纯 innerHTML，无物理系统） ----------
+  // ---------- 分类 pills 导航（顶部横排） ----------
   var DOCK_ITEMS = [{ value: "最近上架", label: "最近上架" }].concat(
     categories.map(function (c) { return { value: c, label: c }; })
   );
-  function buildDock() {
-    if (!dockEl) return;
-    recalcCounts();
-    var html = "";
-    DOCK_ITEMS.forEach(function (it) {
-      var count = catCounts[it.value] || 0;
-      var badge = count > 0 ? '<span class="dock__badge">' + count + '</span>' : "";
-      html += '<button type="button" class="dock__item" data-cat="' + esc(it.value) + '">' +
-        esc(it.label) + badge + '</button>';
-    });
-    dockEl.innerHTML = html;
-    dockEl.querySelectorAll(".dock__item").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        active = btn.getAttribute("data-cat");
-        setDockState();
-        renderList();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    });
-    setDockState();
-    buildCatBar(); // 同步更新分类条的计数
-  }
-  function setDockState() {
-    if (!dockEl) return;
-    dockEl.querySelectorAll(".dock__item").forEach(function (btn) {
-      if (btn.getAttribute("data-cat") === active) btn.setAttribute("data-active", "");
-      else btn.removeAttribute("data-active");
-    });
-    setCatBarState();
-  }
-
   function buildCatBar() {
     if (!catBarEl) return;
     recalcCounts();
@@ -1361,7 +1287,7 @@
     catBarEl.querySelectorAll(".cat-bar__pill").forEach(function (btn) {
       btn.addEventListener("click", function () {
         active = btn.getAttribute("data-cat");
-        setDockState();
+        setCatBarState();
         renderList();
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
@@ -1727,7 +1653,7 @@
     if (e.target.hasAttribute && e.target.hasAttribute("data-close-lb")) closeLightbox();
   });
 
-  buildDock();
+  buildCatBar();
   renderList(true); // 首次加载跳过淡入淡出
 
   // ======== 后台预加载全部 preview.jpg ========
