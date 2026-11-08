@@ -80,7 +80,7 @@
 
   /* ---------- 顶栏 ---------- */
   header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid transparent; transition: background .3s ease, border-color .3s ease, box-shadow .4s ease; }
-  header.scrolled { background: color-mix(in srgb, var(--card) 86%, transparent); border-bottom-color: var(--line); -webkit-backdrop-filter: saturate(180%) blur(14px); backdrop-filter: saturate(180%) blur(14px); box-shadow: 0 1px 0 rgba(0,0,0,.02), 0 8px 24px -8px rgba(0,0,0,.08); }
+  header.scrolled { background: var(--bg); border-bottom-color: var(--line); box-shadow: 0 1px 0 rgba(0,0,0,.03); }
 
   .top { display: flex; align-items: center; height: 76px; gap: 24px; }
 
@@ -542,13 +542,13 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 12px -4px rgba(0,0,0,.06);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
   }
   .card:hover {
-    transform: translateY(-3px) scale(1.01); z-index: 10;
-    box-shadow: 0 6px 16px rgba(0,0,0,.10), 0 22px 44px -14px rgba(0,0,0,.18);
-    border-color: color-mix(in srgb, var(--ink) 22%, var(--line));
+    transform: translateY(-2px); z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    border-color: var(--line);
   }
 
   /* 点击涟漪 */
@@ -608,28 +608,8 @@
     margin-top: 1px;
   }
 
-  /* 卡片右上角「🔥 热乎的！」大字横幅 —— brand-new 档显 */
-  .card { position: relative; }
-  .card .c-hot {
-    position: absolute; top: 0; right: 0;
-    padding: 4px 10px;
-    font-size: 10px; font-weight: 700;
-    color: #fff;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep, #c2410c) 100%);
-    border-radius: 0 18px 0 14px;
-    letter-spacing: 0.02em;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 40%, transparent);
-    z-index: 2;
-    transform-origin: top right;
-    animation: c-hot-pop 0.4s cubic-bezier(.22,1,.36,1);
-  }
-  @keyframes c-hot-pop {
-    0% { transform: scale(0.6); opacity: 0; }
-    60% { transform: scale(1.08); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-  }
   /* 7 档新鲜度颜色（应用卡片 + 日志卡片共用） */
-  .card .c-date[data-fresh="brand-new"],  .log-date[data-fresh="brand-new"]  { color: var(--accent);    border-color: color-mix(in srgb, var(--accent) 50%, var(--line));    background: color-mix(in srgb, var(--accent) 10%, var(--soft)); }
+  .card .c-date[data-fresh="brand-new"],  .log-date[data-fresh="brand-new"]  { color: var(--accent);    border-color: var(--line);                                         background: var(--soft); }
   .card .c-date[data-fresh="coral"],      .log-date[data-fresh="coral"]      { color: #ef4444;          border-color: color-mix(in srgb, #ef4444 45%, var(--line));          background: color-mix(in srgb, #ef4444 10%, var(--soft)); }
   .card .c-date[data-fresh="tangerine"],  .log-date[data-fresh="tangerine"]  { color: #ea580c;          border-color: color-mix(in srgb, #ea580c 45%, var(--line));          background: color-mix(in srgb, #ea580c 8%, var(--soft)); }
   .card .c-date[data-fresh="sky"],        .log-date[data-fresh="sky"]        { color: #3b82f6;          border-color: color-mix(in srgb, #3b82f6 40%, var(--line));          background: color-mix(in srgb, #3b82f6 8%, var(--soft)); }
@@ -644,10 +624,10 @@
   /* ---------- 弹窗 ---------- */
   .modal { display: none; position: fixed; inset: 0; z-index: 100; }
   .modal.open { display: block; }
-  .modal .backdrop { position: absolute; inset: 0; background: rgba(10, 10, 12, 0.55); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); animation: fadeIn .2s ease; }
+  .modal .backdrop { position: absolute; inset: 0; background: rgba(10, 10, 12, 0.4); animation: fadeIn .15s ease; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal .panel { position: relative; z-index: 1; max-width: 580px; margin: 7vh auto 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 44px 46px; max-height: 86vh; overflow-y: auto; overscroll-behavior: contain; animation: modalIn .28s cubic-bezier(.22,1,.36,1); transition: background .25s ease; box-shadow: 0 32px 64px rgba(0,0,0,.24); }
-  @keyframes modalIn { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+  .modal .panel { position: relative; z-index: 1; max-width: 580px; margin: 7vh auto 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 44px 46px; max-height: 86vh; overflow-y: auto; overscroll-behavior: contain; animation: modalIn .22s ease; transition: background .25s ease; box-shadow: 0 16px 32px rgba(0,0,0,.16); }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   .modal .close { position: absolute; top: 24px; right: 24px; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; transition: all .25s ease; }
   .modal .close:hover { color: var(--ink); border-color: var(--ink); transform: rotate(90deg); }
   .modal .head { display: flex; align-items: center; gap: 22px; }
@@ -663,11 +643,11 @@
   /* ---------- Lightbox 图片预览 ---------- */
   .lightbox { display: none; position: fixed; inset: 0; z-index: 200; }
   .lightbox.open { display: block; }
-  .lb-backdrop { position: absolute; inset: 0; background: rgba(5, 5, 7, 0.88); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); animation: fadeIn .2s ease; }
-  .lb-close { position: absolute; top: 28px; right: 36px; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(255,255,255,.06); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; z-index: 3; transition: all .25s ease; backdrop-filter: blur(8px); }
-  .lb-close:hover { background: rgba(255,255,255,.18); transform: rotate(90deg); border-color: rgba(255,255,255,.35); }
-  .lb-inner { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 48px; height: 100%; padding: 6vh 6vw; animation: lbIn .35s cubic-bezier(.22,1,.36,1); }
-  @keyframes lbIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+  .lb-backdrop { position: absolute; inset: 0; background: rgba(5, 5, 7, 0.85); animation: fadeIn .15s ease; }
+  .lb-close { position: absolute; top: 28px; right: 36px; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(255,255,255,.06); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; z-index: 3; transition: all .2s ease; }
+  .lb-close:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.35); }
+  .lb-inner { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 48px; height: 100%; padding: 6vh 6vw; animation: lbIn .25s ease; }
+  @keyframes lbIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   .lb-image-wrap {
     position: relative;
     max-width: min(68vw, 900px);
@@ -904,7 +884,7 @@
     border: var(--bounce-cards-border, 5px) solid var(--bounce-cards-border-color, #fff);
     border-radius: var(--bounce-cards-radius, 25px);
     background: #1a1a1a;
-    box-shadow: var(--bounce-cards-shadow, 0 1px 2px rgba(0,0,0,.12), 0 10px 28px -6px rgba(0,0,0,.32));
+    box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 6px 18px -6px rgba(0,0,0,.18));
     transform: translate(-50%, -50%) scale(0);
     transition: box-shadow 0.3s ease;
     will-change: transform;
@@ -913,7 +893,7 @@
     .bounce-cards__card { --bounce-cards-border-color: #2a2a2a; }
   }
   .bounce-cards__card[data-active] {
-    box-shadow: var(--bounce-cards-shadow-active, 0 2px 4px rgba(0,0,0,.14), 0 22px 44px -10px rgba(0,0,0,.42));
+    box-shadow: 0 2px 4px rgba(0,0,0,.1), 0 10px 22px -4px rgba(0,0,0,.24));
   }
 
   /* 图标直接铺满卡面 */
@@ -969,8 +949,6 @@
     padding: 2px 7px; flex-shrink: 0;
     border-radius: 999px; line-height: 1;
     letter-spacing: .02em;
-    box-shadow: 0 1px 3px rgba(0,0,0,.3);
-    animation: bc-badge-pulse 2.4s ease-in-out infinite;
   }
   .bounce-cards__card .bc-badge--hot {
     color: #fff;
@@ -979,10 +957,6 @@
   .bounce-cards__card .bc-badge--new {
     color: #fff;
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  }
-  @keyframes bc-badge-pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.06); opacity: .9; }
   }
 
   .preloader {
@@ -1366,7 +1340,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=139"></script>
+<script src="apps.js?v=140"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1678,7 +1652,6 @@
           "</div>" +
         "</div>" +
         (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
-        '<span class="c-hot" hidden>🔥 热乎的！</span>' +
       "</div>"
     );
   }
@@ -1750,12 +1723,6 @@
       el.textContent = timeAgo(d);
       if (sub && fresh === "brand-new") { sub.textContent = "🔥 热乎的！"; el.appendChild(sub); }
       else if (sub) { sub.remove(); }
-      // 卡片右上角「🔥 热乎的！」角标
-      var card = el.closest(".card");
-      if (card) {
-        var hot = card.querySelector(".c-hot");
-        if (hot) { if (fresh === "brand-new") hot.hidden = false; else hot.hidden = true; }
-      }
     });
   }
 
