@@ -939,18 +939,45 @@
     pointer-events: none;
     text-align: left;
     z-index: 2;
+    display: flex; flex-direction: column; gap: 5px;
   }
   .bounce-cards__card .bc-name {
-    font-size: 15px; font-weight: 600; color: #fff;
+    font-size: 16px; font-weight: 600; color: #fff;
     line-height: 1.2; letter-spacing: .01em;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    text-shadow: 0 1px 2px rgba(0,0,0,.5);
+    text-shadow: 0 1px 3px rgba(0,0,0,.7);
+    display: flex; align-items: center; gap: 6px;
   }
   .bounce-cards__card .bc-cat {
-    font-size: 11px; font-weight: 500; color: rgba(255,255,255,.75);
-    margin-top: 3px;
+    font-size: 11px; font-weight: 500; color: rgba(255,255,255,.8);
+    padding: 2px 8px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 999px;
+    backdrop-filter: blur(4px);
+    letter-spacing: .03em;
+    align-self: flex-start;
+  }
+  /* 新鲜度徽章 */
+  .bounce-cards__card .bc-badge {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 7px; flex-shrink: 0;
+    border-radius: 999px; line-height: 1;
     letter-spacing: .02em;
-    text-shadow: 0 1px 2px rgba(0,0,0,.5);
+    box-shadow: 0 1px 3px rgba(0,0,0,.3);
+    animation: bc-badge-pulse 2.4s ease-in-out infinite;
+  }
+  .bounce-cards__card .bc-badge--hot {
+    color: #fff;
+    background: linear-gradient(135deg, #f5491f 0%, #ea580c 100%);
+  }
+  .bounce-cards__card .bc-badge--new {
+    color: #fff;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+  @keyframes bc-badge-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.06); opacity: .9; }
   }
 
   .preloader {
@@ -1322,7 +1349,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=125"></script>
+<script src="apps.js?v=126"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2138,18 +2165,24 @@
       var el = document.createElement("div");
       el.className = "bounce-cards__card";
       el.style.zIndex = String(i + 1);
-      // 图标直接当卡面，叠加名字+分类在底部
       var iconBg = app.icon
         ? '<img class="bc-img" src="' + esc(app.icon) + '" alt="" loading="lazy">'
         : "";
       var avatar = !app.icon
         ? '<div class="bc-avatar">' + esc((app.name || "?").charAt(0)) + '</div>'
         : "";
+      // 新鲜度徽章
+      var freshBadge = "";
+      try {
+        var fresh = classifyFresh(app.date);
+        if (fresh === "brand-new") freshBadge = '<span class="bc-badge bc-badge--hot">🔥 新增</span>';
+        else if (fresh === "coral") freshBadge = '<span class="bc-badge bc-badge--new">新上架</span>';
+      } catch (e) {}
       el.innerHTML =
         iconBg + avatar +
         '<div class="bc-overlay"></div>' +
         '<div class="bc-caption">' +
-          '<div class="bc-name">' + esc(app.name) + '</div>' +
+          '<div class="bc-name">' + esc(app.name) + freshBadge + '</div>' +
           '<div class="bc-cat">' + esc(app.category || "") + '</div>' +
         '</div>';
       root.appendChild(el);
