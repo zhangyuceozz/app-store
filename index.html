@@ -771,6 +771,45 @@
   .modal .sec li::before { content: ""; position: absolute; left: 2px; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
 
   /* ---------- 进页面加载动画 ---------- */
+  /* ========== React Bits BounceCards（公告页顶部 fan 堆叠卡片） ========== */
+  .bounce-cards {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+  .bounce-cards__card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--bounce-cards-size, 150px);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: var(--bounce-cards-border, 4px) solid var(--bounce-cards-border-color, #fff);
+    border-radius: var(--bounce-cards-radius, 18px);
+    background: var(--bounce-cards-border-color, #fff);
+    box-shadow: var(--bounce-cards-shadow, 0 1px 2px rgba(0,0,0,.12), 0 10px 28px -6px rgba(0,0,0,.32));
+    transform: translate(-50%, -50%) scale(0);
+    transition: box-shadow 0.3s ease;
+    will-change: transform;
+  }
+  @media (prefers-color-scheme: dark) {
+    .bounce-cards__card { --bounce-cards-border-color: var(--card); }
+  }
+  .bounce-cards__card[data-active] {
+    box-shadow: var(--bounce-cards-shadow-active, 0 2px 4px rgba(0,0,0,.14), 0 22px 44px -10px rgba(0,0,0,.42));
+  }
+  .bounce-cards__card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    user-select: none;
+  }
+
   .preloader {
     position: fixed; inset: 0; z-index: 9999;
     display: flex; align-items: center; justify-content: center;
@@ -996,6 +1035,8 @@
 
 <div class="preloader" id="preloader">
   <div class="splash-inner">
+    <!-- React Bits BounceCards 组件（公告页顶部 fan 堆叠卡片） -->
+    <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
     <button type="button" class="splash-hold" id="splash-hold"
@@ -1139,7 +1180,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=115"></script>
+<script src="apps.js?v=116"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1781,6 +1822,209 @@
     groups.forEach(function (g, i) {
       setTimeout(function () { g.classList.add("show"); }, 30 + i * 120);
     });
+  })();
+
+  // ===== React Bits BounceCards — 原生 JS 移植（公告页顶部 fan 堆叠） =====
+  (function initBounceCards() {
+    var root = document.getElementById("bounce-cards");
+    if (!root) return;
+
+    var images = [
+      "https://images.unsplash.com/photo-1724152312974-d4d48b8b36fd?w=480&h=480&fit=crop",
+      "https://images.unsplash.com/photo-1762846818262-33c197852fa8?w=480&h=480&fit=crop",
+      "https://images.unsplash.com/photo-1721407964262-f9864b562453?w=480&h=480&fit=crop",
+      "https://images.unsplash.com/photo-1776394254711-4a0d7345269a?w=480&h=480&fit=crop",
+      "https://images.unsplash.com/photo-1763440519433-5467759054fc?w=480&h=480&fit=crop"
+    ];
+
+    var PATTERN = [1, 0.5, -0.3, -1, 0.2, 0.75, -0.6, 0.35, -0.85, 0.1];
+    var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
+
+    // 参数（按用户要求）
+    var cfg = {
+      cardSize: 130,
+      spread: 85,
+      rotation: 10,
+      arc: 0,
+      animationDelay: 0.4,
+      animationStagger: 0.06,
+      bounciness: 0.6,
+      enableHover: true,
+      pushDistance: 160,
+      hoverScale: 1.06,
+      borderWidth: 4,
+      borderColor: "#ffffff",
+      radius: 18,
+      shadow: true
+    };
+    var cardSize = cfg.cardSize;
+    var count = images.length;
+    var middle = (count - 1) / 2;
+    var reach = Math.max(1, middle);
+
+    // 计算每个 card 的目标 slot
+    var slots = images.map(function (_, i) {
+      var offset = i - middle;
+      return {
+        x: offset * cfg.spread,
+        y: cfg.arc * Math.pow(offset / reach, 2),
+        rotate: cfg.rotation * PATTERN[i % PATTERN.length]
+      };
+    });
+
+    // 生成 DOM
+    root.style.setProperty("--bounce-cards-size", cardSize + "px");
+    root.style.setProperty("--bounce-cards-border", cfg.borderWidth + "px");
+    root.style.setProperty("--bounce-cards-border-color", cfg.borderColor);
+    root.style.setProperty("--bounce-cards-radius", cfg.radius + "px");
+    root.style.setProperty("--bounce-cards-shadow", cfg.shadow ? "0 1px 2px rgba(0,0,0,.12), 0 10px 28px -6px rgba(0,0,0,.32)" : "none");
+    root.style.setProperty("--bounce-cards-shadow-active", cfg.shadow ? "0 2px 4px rgba(0,0,0,.14), 0 22px 44px -10px rgba(0,0,0,.42)" : "none");
+
+    var cardRefs = [];
+    images.forEach(function (src, i) {
+      var el = document.createElement("div");
+      el.className = "bounce-cards__card";
+      el.style.zIndex = String(i + 1);
+      el.innerHTML = '<img src="' + src + '" alt="" draggable="false" loading="lazy">';
+      root.appendChild(el);
+      cardRefs.push(el);
+    });
+
+    // 弹簧物理系统（1:1 移植 React 源码）
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var bodies = [];
+    var state = { hovered: -1, time: 0, layer: -1 };
+    var raf = 0;
+    var last = performance.now();
+    var alive = true;
+
+    var body = function (i) {
+      if (!bodies[i]) {
+        var slot = slots[i] || { x: 0, y: 0, rotate: 0 };
+        bodies[i] = {
+          x: slot.x, y: slot.y, rotate: slot.rotate,
+          scale: reduce ? 1 : 0,
+          vx: 0, vy: 0, vr: 0, vs: 0,
+          born: state.time
+        };
+      }
+      return bodies[i];
+    };
+
+    var step = function (value, velocity, target, stiffness, damping, dt) {
+      var next = velocity + ((target - value) * stiffness - velocity * damping) * dt;
+      return [value + next * dt, next];
+    };
+
+    var frame = function (now) {
+      raf = 0;
+      if (!alive) return;
+      var dt = Math.min(1 / 30, Math.max(1 / 240, (now - last) / 1000));
+      last = now;
+      state.time += dt;
+
+      var hovered = cfg.enableHover ? state.hovered : -1;
+      var popStiffness = 170;
+      var popDamping = 2 * (1 - 0.85 * cfg.bounciness) * Math.sqrt(popStiffness);
+      var moveStiffness = 210;
+      var moveDamping = 2 * (reduce ? 1 : 0.72) * Math.sqrt(moveStiffness);
+      var substeps = Math.ceil(dt / (1 / 240));
+      var h = dt / substeps;
+      var moving = 0;
+
+      for (var i = 0; i < slots.length; i++) {
+        var el = cardRefs[i];
+        if (!el) continue;
+        var card = body(i);
+        var slot = slots[i];
+        var appeared = reduce || state.time - card.born >= cfg.animationDelay + i * cfg.animationStagger;
+        var targetX = slot.x;
+        var targetY = slot.y;
+        var targetRotate = slot.rotate;
+        var targetScale = appeared ? 1 : 0;
+
+        if (hovered >= 0 && appeared) {
+          if (i === hovered) {
+            targetY = slot.y - cardSize * 0.04;
+            targetRotate = 0;
+            targetScale = cfg.hoverScale;
+          } else {
+            targetX = slot.x + Math.sign(i - hovered) * cfg.pushDistance;
+          }
+        }
+
+        for (var k = 0; k < substeps; k++) {
+          var s;
+          s = step(card.x, card.vx, targetX, moveStiffness, moveDamping, h); card.x = s[0]; card.vx = s[1];
+          s = step(card.y, card.vy, targetY, moveStiffness, moveDamping, h); card.y = s[0]; card.vy = s[1];
+          s = step(card.rotate, card.vr, targetRotate, moveStiffness, moveDamping, h); card.rotate = s[0]; card.vr = s[1];
+          if (reduce) { card.scale = targetScale; card.vs = 0; }
+          else { s = step(card.scale, card.vs, targetScale, popStiffness, popDamping, h); card.scale = s[0]; card.vs = s[1]; }
+        }
+        moving += Math.abs(card.vx) + Math.abs(card.vy) + Math.abs(card.vr) + Math.abs(card.vs) * 100
+          + Math.abs(targetX - card.x) + Math.abs(targetY - card.y) + Math.abs(targetRotate - card.rotate)
+          + Math.abs(targetScale - card.scale) * 100 + (appeared ? 0 : 1);
+        el.style.transform = "translate(-50%, -50%) translate3d(" + card.x.toFixed(2) + "px, " + card.y.toFixed(2) + "px, 0) rotate(" + card.rotate.toFixed(3) + "deg) scale(" + Math.max(0, card.scale).toFixed(4) + ")";
+      }
+
+      if (state.layer !== hovered) {
+        state.layer = hovered;
+        cardRefs.forEach(function (el, i) {
+          if (!el) return;
+          el.style.zIndex = i === hovered ? String(slots.length + 1) : String(i + 1);
+          if (i === hovered) el.setAttribute("data-active", ""); else el.removeAttribute("data-active");
+        });
+      }
+
+      if (moving > 0.02) raf = requestAnimationFrame(frame);
+    };
+
+    var wake = function () {
+      if (raf || !alive) return;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+
+    var pick = function (event) {
+      var rect = root.getBoundingClientRect();
+      var px = event.clientX - rect.left - rect.width / 2;
+      var py = event.clientY - rect.top - rect.height / 2;
+      var best = -1, distance = Infinity;
+      slots.forEach(function (slot, i) {
+        var gap = Math.abs(px - slot.x);
+        if (gap < distance) { distance = gap; best = i; }
+      });
+      if (best < 0) return -1;
+      var slot = slots[best];
+      var half = cardSize / 2;
+      if (Math.abs(py - slot.y) > half + 12 || distance > half + 12) return -1;
+      if (state.hovered >= 0 && state.hovered !== best) {
+        var cur = slots[state.hovered];
+        if (cur && Math.abs(px - cur.x) - distance < 6) return state.hovered;
+      }
+      return best;
+    };
+
+    var onMove = function (event) {
+      var next = pick(event);
+      if (next !== state.hovered) { state.hovered = next; wake(); }
+    };
+    var onLeave = function () {
+      if (state.hovered !== -1) { state.hovered = -1; wake(); }
+    };
+    var onClick = function (event) {
+      var index = pick(event);
+      if (index < 0) return;
+      var card = bodies[index];
+      if (card && !reduce) card.vs -= 2.2;
+      wake();
+    };
+
+    root.addEventListener("pointermove", onMove);
+    root.addEventListener("pointerdown", onMove);
+    root.addEventListener("pointerleave", onLeave);
+    root.addEventListener("click", onClick);
+    wake();
   })();
 
   // 事件委托：卡片 → 打开详情弹窗
