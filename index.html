@@ -1004,11 +1004,11 @@
   }
   .splash-inner {
     display: flex; flex-direction: column;
-    gap: 28px; padding: 40px 44px 36px;
+    gap: 0; padding: 36px 44px 32px;
     width: 100%; max-width: 640px;
     animation: splashIn .5s cubic-bezier(.22,1,.36,1);
-    height: min(72vh, 680px);
-    justify-content: flex-start;
+    height: min(76vh, 720px);
+    justify-content: space-between;
   }
   @keyframes splashIn {
     from { opacity: 0; transform: translateY(16px); }
@@ -1017,7 +1017,7 @@
   .splash-title {
     font-family: var(--display); font-size: 11px; font-weight: 600;
     letter-spacing: .22em; text-transform: uppercase;
-    color: var(--muted); flex-shrink: 0;
+    color: var(--muted); flex-shrink: 0; margin-top: 8px;
   }
 
   /* 公告页更新日志 — 横向 pills 条样式（与主站分类条一致） */
@@ -1025,6 +1025,7 @@
     display: flex; flex-wrap: wrap; gap: 8px;
     flex: 1; min-height: 0;
     align-content: flex-start;
+    margin: 10px 0;
   }
   .splash-log::-webkit-scrollbar { width: 5px; }
   .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
@@ -1185,7 +1186,7 @@
   /* 公告页日志样式已在上方定义 */
 
   @media (max-width: 720px) {
-    .splash-inner { padding: 24px 22px 20px; gap: 16px; max-width: 100%; height: min(82vh, 620px); }
+    .splash-inner { padding: 24px 22px 20px; max-width: 100%; height: min(85vh, 680px); gap: 0; }
     .splash-hold { height: 46px; font-size: 13px; }
     .log-group { padding: 6px 12px; height: 30px; font-size: 12px; }
     .wrap { padding: 0 20px; }
@@ -1361,7 +1362,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=128"></script>
+<script src="apps.js?v=129"></script>
 <script>
 (function () {
   var esc = function (s) {
