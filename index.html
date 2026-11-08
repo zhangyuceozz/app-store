@@ -370,10 +370,10 @@
   @keyframes auroraWave { 0% { transform: translateY(-100%) translateX(-50%); } 100% { transform: translateY(-100%) translateX(50%); } }
 
   .ms-nav { width: 160px; display: flex; flex-direction: column; gap: 0; }
-  main.wrap { padding: 48px 0 140px; display: flex; gap: 40px; align-items: flex-start; }
+  main.wrap { padding: 48px 0 140px; display: flex; gap: 32px; align-items: flex-start; }
   main.wrap section { flex: 1; min-width: 0; }
   .side {
-    width: 240px; flex-shrink: 0;
+    width: 180px; flex-shrink: 0;
     position: sticky; top: 96px;
     align-self: flex-start;
     max-height: calc(100vh - 120px);
@@ -383,13 +383,13 @@
 
   /* ===== React Bits BranchedMenu — 完整 CSS（按源码 1:1） ===== */
   .branched-menu {
-    --bm-w: 240px;
+    --bm-w: 180px;
     --bm-ink: var(--ink);
     --bm-accent: #2563eb;
     --bm-line: var(--bm-line, #d4d4d8);
-    --bm-font: 14px;
-    --bm-row: 36px;
-    --bm-indent: 40px;
+    --bm-font: 13px;
+    --bm-row: 32px;
+    --bm-indent: 32px;
     --bm-line-w: 1.5;
     --bm-draw: 400ms;
     --bm-fold: 300ms;
@@ -1322,7 +1322,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=124"></script>
+<script src="apps.js?v=125"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1455,13 +1455,13 @@
 
   // ===== React Bits BranchedMenu — 原生 JS 完整移植（1:1 源码） =====
   var BM_PAD = 6;
-  var BM_MARK = 16;
-  var BM_ROW = 36;
-  var BM_INDENT = 40;
-  var BM_TRUNK = 14;
-  var BM_RADIUS = 10;
+  var BM_MARK = 14;
+  var BM_ROW = 32;
+  var BM_INDENT = 32;
+  var BM_TRUNK = 12;
+  var BM_RADIUS = 9;
   var BM_LINE_W = 1.5;
-  var BM_ENDX = BM_INDENT - 8;
+  var BM_ENDX = BM_INDENT - 6;
 
   // 分组数据 — 浏览 + 分类
   var bmSections = [
