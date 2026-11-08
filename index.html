@@ -1066,16 +1066,13 @@
     --hb-hold: 2000ms;
     --hb-release: 200ms;
     --hb-press: 0.97;
-    --hb-wave: 6px;
+    --hb-wave: 0px;
     --hb-w: 0px;
     --hb-h: 0px;
     --hb-cycles: 1.82;
     --hb-p: 0;
-    --hb-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-    --hb-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --hb-glow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 10px 32px -6px color-mix(in srgb, var(--hb-fill) 70%, transparent);
+    --hb-ease-out: ease;
+    --hb-shadow: 0 1px 2px rgba(0,0,0,.04);
 
     position: relative; isolation: isolate;
     display: grid; place-items: center;
@@ -1092,27 +1089,14 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     transition:
-      transform 160ms var(--hb-ease-out),
+      transform 160ms ease,
       background-color 160ms ease,
-      box-shadow var(--hb-release) var(--hb-ease-out);
+      box-shadow var(--hb-release) ease;
     flex-shrink: 0;
   }
   .splash-hold:hover:not(:disabled) { background: color-mix(in srgb, var(--hb-bg) 92%, #fff); }
   .splash-hold[data-phase='holding'][data-input='pointer'] { transform: scale(var(--hb-press)); }
-  .splash-hold[data-glow='true'][data-phase='holding'],
-  .splash-hold[data-glow='true'][data-phase='done'] { box-shadow: var(--hb-glow); }
-  .splash-hold[data-glow='true'][data-phase='holding'] {
-    transition: transform 160ms var(--hb-ease-out), background-color 160ms ease,
-                box-shadow var(--hb-hold) linear;
-  }
   .splash-hold:focus-visible { outline: 2px solid var(--hb-fill); outline-offset: 3px; }
-
-  .splash-hold__pulse { position: absolute; inset: 0; z-index: 0; border-radius: var(--hb-radius); pointer-events: none; opacity: 0; }
-  .splash-hold[data-glow='true'][data-phase='done'] .splash-hold__pulse { animation: hb-pulse 600ms var(--hb-ease-out) forwards; }
-  @keyframes hb-pulse {
-    from { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--hb-fill) 55%, transparent); }
-    to   { opacity: 0; box-shadow: 0 0 0 14px color-mix(in srgb, var(--hb-fill) 0%, transparent); }
-  }
 
   .splash-hold__label { position: relative; z-index: 2; display: grid; place-items: center; }
   .splash-hold__label > span {
@@ -1120,9 +1104,9 @@
     white-space: nowrap;
     transition: opacity 200ms ease, filter 200ms ease;
   }
-  .splash-hold__done { opacity: 0; filter: blur(2px); }
-  .splash-hold[data-phase='done'] .splash-hold__idle { opacity: 0; filter: blur(2px); }
-  .splash-hold[data-phase='done'] .splash-hold__done { opacity: 1; filter: blur(0); }
+  .splash-hold__done { opacity: 0; }
+  .splash-hold[data-phase='done'] .splash-hold__idle { opacity: 0; }
+  .splash-hold[data-phase='done'] .splash-hold__done { opacity: 1; }
 
   .splash-hold__clip {
     position: absolute; inset: 0; z-index: 3;
@@ -1135,20 +1119,6 @@
     background: var(--hb-fill); color: var(--hb-fill-text);
     clip-path: inset(0 calc((1 - var(--hb-p)) * (100% + 0.75 * var(--hb-wave)) - var(--hb-p) * 0.25 * var(--hb-wave)) 0 0);
   }
-  .splash-hold__crest {
-    position: absolute; inset: 0;
-    display: grid; place-items: center;
-    background: var(--hb-fill); color: var(--hb-fill-text);
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
-    -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
-    -webkit-mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
-    mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
-    -webkit-mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
-    mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
-    -webkit-mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
-    mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
-  }
   .splash-hold__label--fill { z-index: auto; }
 
   .splash-hold__sr {
@@ -1159,11 +1129,6 @@
     text-align: center; margin: 10px 0 0;
     font-size: 11px; font-weight: 500; letter-spacing: .1em;
     color: var(--muted);
-    animation: hintPulse 2.8s ease-in-out infinite;
-  }
-  @keyframes hintPulse {
-    0%, 100% { opacity: .45; }
-    50% { opacity: .95; }
   }
   @media (prefers-reduced-motion: reduce) {
     .splash-hold { transition: background-color 160ms ease, box-shadow var(--hb-release) ease; transform: none !important; }
@@ -1213,21 +1178,14 @@
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
     <button type="button" class="splash-hold" id="splash-hold"
-            data-phase="idle" data-direction="right" data-glow="true"
+            data-phase="idle" data-direction="right"
             aria-describedby="splash-hold-sr">
-      <span class="splash-hold__pulse"></span>
       <span class="splash-hold__label">
         <span class="splash-hold__idle">长按进入主站</span>
         <span class="splash-hold__done">已进入</span>
       </span>
       <span class="splash-hold__clip">
         <span class="splash-hold__fill">
-          <span class="splash-hold__label splash-hold__label--fill">
-            <span class="splash-hold__idle">长按进入主站</span>
-            <span class="splash-hold__done">已进入</span>
-          </span>
-        </span>
-        <span class="splash-hold__crest">
           <span class="splash-hold__label splash-hold__label--fill">
             <span class="splash-hold__idle">长按进入主站</span>
             <span class="splash-hold__done">已进入</span>
@@ -1354,7 +1312,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=143"></script>
+<script src="apps.js?v=144"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2120,18 +2078,18 @@
     // 参数（按用户给的配置）
     var cfg = {
       cardSize: 260,
-      spread: 130,
-      rotation: 12,
-      arc: 80,
+      spread: 140,
+      rotation: 0,
+      arc: 0,
       animationDelay: 0.4,
       animationStagger: 0.06,
-      bounciness: 0.6,
+      bounciness: 0,
       enableHover: true,
-      pushDistance: 160,
-      hoverScale: 1.06,
-      borderWidth: 5,
-      borderColor: "#ffffff",
-      radius: 25,
+      pushDistance: 0,
+      hoverScale: 1,
+      borderWidth: 1,
+      borderColor: "var(--line)",
+      radius: 10,
       shadow: true
     };
     var cardSize = cfg.cardSize;
