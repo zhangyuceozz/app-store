@@ -876,7 +876,7 @@
   .bounce-cards {
     position: relative;
     width: 100%;
-    height: 220px;
+    height: 300px;
     touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
     flex-shrink: 0;
@@ -885,30 +885,61 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: var(--bounce-cards-size, 150px);
+    width: var(--bounce-cards-size, 200px);
     aspect-ratio: 1;
     overflow: hidden;
-    border: var(--bounce-cards-border, 4px) solid var(--bounce-cards-border-color, #fff);
-    border-radius: var(--bounce-cards-radius, 18px);
-    background: var(--bounce-cards-border-color, #fff);
+    border: var(--bounce-cards-border, 5px) solid var(--bounce-cards-border-color, #fff);
+    border-radius: var(--bounce-cards-radius, 25px);
+    background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
     box-shadow: var(--bounce-cards-shadow, 0 1px 2px rgba(0,0,0,.12), 0 10px 28px -6px rgba(0,0,0,.32));
     transform: translate(-50%, -50%) scale(0);
     transition: box-shadow 0.3s ease;
     will-change: transform;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 16px; gap: 10px;
+    box-sizing: border-box;
   }
   @media (prefers-color-scheme: dark) {
-    .bounce-cards__card { --bounce-cards-border-color: var(--card); }
+    .bounce-cards__card {
+      background: linear-gradient(135deg, #2a2a30 0%, #1a1a20 100%);
+      --bounce-cards-border-color: var(--card);
+    }
   }
   .bounce-cards__card[data-active] {
     box-shadow: var(--bounce-cards-shadow-active, 0 2px 4px rgba(0,0,0,.14), 0 22px 44px -10px rgba(0,0,0,.42));
   }
-  .bounce-cards__card img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .bounce-cards__card .bc-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(245,73,31,.10) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .bounce-cards__card .bc-icon {
+    width: 72px; height: 72px; border-radius: 16px;
+    object-fit: cover; flex-shrink: 0;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 4px 14px -4px rgba(0,0,0,.18);
+    z-index: 1;
     pointer-events: none;
     user-select: none;
+  }
+  .bounce-cards__card .bc-avatar {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 600; color: var(--accent);
+    background: linear-gradient(135deg, #fff 0%, #f0f0f5 100%);
+  }
+  .bounce-cards__card .bc-text {
+    text-align: center; z-index: 1; pointer-events: none;
+  }
+  .bounce-cards__card .bc-name {
+    font-size: 15px; font-weight: 600; color: var(--ink);
+    line-height: 1.2;
+    max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .bounce-cards__card .bc-cat {
+    font-size: 11px; font-weight: 500; color: var(--muted);
+    margin-top: 3px; letter-spacing: .02em;
   }
 
   .preloader {
@@ -1281,7 +1312,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=117"></script>
+<script src="apps.js?v=118"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2043,20 +2074,17 @@
     var root = document.getElementById("bounce-cards");
     if (!root) return;
 
-    var images = [
-      "https://images.unsplash.com/photo-1724152312974-d4d48b8b36fd?w=480&h=480&fit=crop",
-      "https://images.unsplash.com/photo-1762846818262-33c197852fa8?w=480&h=480&fit=crop",
-      "https://images.unsplash.com/photo-1721407964262-f9864b562453?w=480&h=480&fit=crop",
-      "https://images.unsplash.com/photo-1776394254711-4a0d7345269a?w=480&h=480&fit=crop",
-      "https://images.unsplash.com/photo-1763440519433-5467759054fc?w=480&h=480&fit=crop"
-    ];
+    // 从 APPS 取最新 5 个应用（按日期降序）
+    var sorted = APPS.slice().sort(function (a, b) {
+      return (b.date || "").localeCompare(a.date || "");
+    });
+    var top5 = sorted.slice(0, 5);
 
     var PATTERN = [1, 0.5, -0.3, -1, 0.2, 0.75, -0.6, 0.35, -0.85, 0.1];
-    var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
 
-    // 参数（按用户要求）
+    // 参数（按用户给的配置）
     var cfg = {
-      cardSize: 130,
+      cardSize: 200,
       spread: 85,
       rotation: 10,
       arc: 0,
@@ -2066,18 +2094,18 @@
       enableHover: true,
       pushDistance: 160,
       hoverScale: 1.06,
-      borderWidth: 4,
+      borderWidth: 5,
       borderColor: "#ffffff",
-      radius: 18,
+      radius: 25,
       shadow: true
     };
     var cardSize = cfg.cardSize;
-    var count = images.length;
+    var count = top5.length;
     var middle = (count - 1) / 2;
     var reach = Math.max(1, middle);
 
     // 计算每个 card 的目标 slot
-    var slots = images.map(function (_, i) {
+    var slots = top5.map(function (_, i) {
       var offset = i - middle;
       return {
         x: offset * cfg.spread,
@@ -2086,7 +2114,7 @@
       };
     });
 
-    // 生成 DOM
+    // 生成 DOM（卡上叠加应用图标 + 名字 + 分类）
     root.style.setProperty("--bounce-cards-size", cardSize + "px");
     root.style.setProperty("--bounce-cards-border", cfg.borderWidth + "px");
     root.style.setProperty("--bounce-cards-border-color", cfg.borderColor);
@@ -2095,11 +2123,21 @@
     root.style.setProperty("--bounce-cards-shadow-active", cfg.shadow ? "0 2px 4px rgba(0,0,0,.14), 0 22px 44px -10px rgba(0,0,0,.42)" : "none");
 
     var cardRefs = [];
-    images.forEach(function (src, i) {
+    top5.forEach(function (app, i) {
       var el = document.createElement("div");
       el.className = "bounce-cards__card";
       el.style.zIndex = String(i + 1);
-      el.innerHTML = '<img src="' + src + '" alt="" draggable="false" loading="lazy">';
+      // 应用图标 + 渐变底 + 应用名 + 分类 叠加
+      var iconHtml = app.icon
+        ? '<img class="bc-icon" src="' + esc(app.icon) + '" alt="" loading="lazy">'
+        : '<div class="bc-icon bc-avatar">' + esc((app.name || "?").charAt(0)) + "</div>";
+      el.innerHTML =
+        '<div class="bc-bg"></div>' +
+        iconHtml +
+        '<div class="bc-text">' +
+          '<div class="bc-name">' + esc(app.name) + '</div>' +
+          '<div class="bc-cat">' + esc(app.category || "") + '</div>' +
+        '</div>';
       root.appendChild(el);
       cardRefs.push(el);
     });
