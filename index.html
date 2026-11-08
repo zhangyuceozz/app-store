@@ -382,12 +382,12 @@
 
   /* ===== React Bits BranchedMenu — 完整 CSS（按源码 1:1） ===== */
   .branched-menu {
-    --bm-w: 180px;
+    --bm-w: 130px;
     --bm-ink: var(--ink);
     --bm-accent: #2563eb;
     --bm-line: var(--bm-line, #d4d4d8);
     --bm-font: 13px;
-    --bm-row: 32px;
+    --bm-row: 42px;
     --bm-indent: 32px;
     --bm-line-w: 1.5;
     --bm-draw: 400ms;
@@ -1366,7 +1366,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=137"></script>
+<script src="apps.js?v=138"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1500,7 +1500,7 @@
   // ===== React Bits BranchedMenu — 原生 JS 完整移植（1:1 源码） =====
   var BM_PAD = 6;
   var BM_MARK = 14;
-  var BM_ROW = 32;
+  var BM_ROW = 42;
   var BM_INDENT = 32;
   var BM_TRUNK = 12;
   var BM_RADIUS = 9;
@@ -1598,7 +1598,6 @@
           var count = catCounts[kid.value] || 0;
           html += '<button type="button" class="branched-menu__item' + (kid.value === bmActive ? '" data-active=""' : '"') + '" data-value="' + esc(kid.value) + '" aria-current="' + (kid.value === bmActive ? "true" : "false") + '">';
           html += '<span class="branched-menu__label">' + esc(kid.label) + '</span>';
-          if (count > 0) html += '<span style="margin-left:auto;font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:var(--soft);color:var(--muted);font-variant-numeric:tabular-nums;">' + count + '</span>';
           html += '</button>';
         });
         html += '</div></div></div>';
