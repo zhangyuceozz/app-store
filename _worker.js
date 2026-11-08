@@ -71,6 +71,10 @@ const MAP = {
   "Zed-aarch64.exe": "/zed-industries/zed/releases/download/v1.27.0/Zed-aarch64.exe",
   "Zed-x86_64.dmg": "/zed-industries/zed/releases/download/v1.27.0/Zed-x86_64.dmg",
   "Zed-aarch64.dmg": "/zed-industries/zed/releases/download/v1.27.0/Zed-aarch64.dmg",
+  // Craft Anything v0.5.0（storytold，逆向工程+创作工作台，Rust）
+  "craft-anything-0.5.0-windows-x64.msi": "/storytold/craft-anything/releases/download/v0.5.0/craft-anything-0.5.0-windows-x64.msi",
+  "craft-anything-0.5.0-windows-arm64.msi": "/storytold/craft-anything/releases/download/v0.5.0/craft-anything-0.5.0-windows-arm64.msi",
+  "craft-anything-0.5.0-macos-universal.dmg": "/storytold/craft-anything/releases/download/v0.5.0/craft-anything-0.5.0-macos-universal.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {

@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -621,6 +621,30 @@ const APPS = [
       "内置 AI Agent 面板（Cmd+Shift+O / Ctrl+Shift+O），可以并行发多个 agent 任务。",
       "多人协作：右上角 Share Project → 生成分享链接 → 邀请他人实时编辑。",
       "设置里开启 Vim 模式、Relative Line Numbers、Lazy Git 等常见偏好。",
+    ],
+  },
+  {
+    id: "craft-anything",
+    name: "Craft Anything",
+    category: "开发工具",
+    date: "2026-11-08",
+    tagline: "逆向+创作，看懂任何软件然后自己做",
+    description: "Craft Anything 由 storytold（PdfCraft/ArtCraft 作者）开源，Rust 写的桌面工作台。核心想法：给它任意软件（二进制、源码、网页），它先帮你看透内部原理，再引导你做出自己的版本。底层用 LLVM、Ghidra、Tree-sitter 等工具链做静态分析，结合 AI 模型生成可读的解释文档和代码脚手架。适合想学习软件内部原理、或者想复刻某个工具的开发者。v0.5.0 刚发布，20.4k⭐。",
+    icon: "apps/craft-anything/icon.svg",
+    preview: "apps/craft-anything/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)",         file: "/dl/apps/craft-anything/download/craft-anything-0.5.0-windows-x64.msi",          size: "57 MB" },
+      { platform: "Windows (ARM64)",       file: "/dl/apps/craft-anything/download/craft-anything-0.5.0-windows-arm64.msi",         size: "54 MB" },
+      { platform: "macOS (Intel / Apple Silicon)", file: "/dl/apps/craft-anything/download/craft-anything-0.5.0-macos-universal.dmg",  size: "133 MB" },
+    ],
+    install: [
+      "Windows：双击 .msi 安装，安装后开始菜单找 Craft Anything。",
+      "macOS：双击 .dmg 把 Craft Anything 拖进「应用程序」。",
+    ],
+    usage: [
+      "首页点「Load Target」导入想研究的二进制或源码目录。",
+      "左侧会显示反编译结构，右侧 AI 面板可以问问题、让它生成复刻脚手架。",
+      "底层依赖 Ghidra（反汇编）和 Tree-sitter（代码解析），首次启动会自动拉取。",
     ],
   },
 ];
