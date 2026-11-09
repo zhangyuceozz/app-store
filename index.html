@@ -377,7 +377,7 @@
   @keyframes auroraWave { 0% { transform: translateY(-100%) translateX(-50%); } 100% { transform: translateY(-100%) translateX(50%); } }
 
   main.wrap { padding: 0 0 140px; display: flex; gap: 32px; align-items: flex-start; }
-  main.wrap section { flex: 1; min-width: 0; padding-top: 24px; }
+  main.wrap section { flex: 1; min-width: 0; padding-top: 16px; }
   .side {
     width: 130px; flex-shrink: 0;
     position: sticky; top: 76px;
@@ -527,7 +527,7 @@
     .side { width: 100%; position: static; }
   }
 
-  .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 52px 0 20px; display: flex; align-items: center; gap: 8px; }
+  .group-title { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: 0; margin: 28px 0 16px; display: flex; align-items: center; gap: 8px; }
   .group-title:first-child { margin-top: 0; }
   .group-title .gt-count { font-family: var(--mono); font-size: 11.5px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; display: inline-block; transition: transform .2s ease; }
   .group-title::after { content: "\203A"; color: var(--muted); font-size: 22px; font-weight: 400; margin-left: 4px; line-height: 1; }
@@ -849,7 +849,7 @@
   .bounce-cards {
     position: relative;
     width: 100%;
-    height: 360px;
+    height: 300px;
     touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
     flex-shrink: 0;
@@ -935,10 +935,9 @@
   }
   .splash-inner {
     display: flex; flex-direction: column;
-    gap: 0; padding: 36px 44px 32px;
-    width: 100%; max-width: 640px;
-    animation: splashIn .4s ease;
-    height: min(76vh, 720px);
+    gap: 18px; padding: 36px 44px 30px;
+    width: 100%; max-width: 560px;
+    height: min(70vh, 640px);
     justify-content: space-between;
   }
   @keyframes splashIn {
@@ -948,22 +947,13 @@
   .splash-title {
     font-family: var(--display); font-size: 11px; font-weight: 600;
     letter-spacing: .22em; text-transform: uppercase;
-    color: var(--muted); flex-shrink: 0; margin-top: 8px;
-  }
-
-  /* 顶部标题 */
-  .splash-head {
-    font-size: 20px; font-weight: 600; color: var(--ink);
-    letter-spacing: .01em;
-    margin-bottom: 4px;
-    flex-shrink: 0;
+    color: var(--muted); flex-shrink: 0;
   }
 
   /* 公告页更新日志 — 竖向条列（纯文本，无边框） */
   .splash-log {
     display: flex; flex-direction: column; gap: 9px;
     flex: 1; min-height: 0;
-    margin: 10px 0;
   }
   .splash-log::-webkit-scrollbar { width: 5px; }
   .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
@@ -1074,7 +1064,7 @@
     overflow: hidden; clip-path: inset(50%); white-space: nowrap;
   }
   .splash-hint {
-    text-align: center; margin: 10px 0 0;
+    text-align: center;
     font-size: 11px; font-weight: 500; letter-spacing: .1em;
     color: var(--muted);
   }
@@ -1120,8 +1110,6 @@
 
 <div class="preloader" id="preloader">
   <div class="splash-inner">
-    <!-- 顶部标题 -->
-    <div class="splash-head">新增软件</div>
     <!-- React Bits BounceCards 组件（公告页顶部 fan 堆叠卡片） -->
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
@@ -1260,7 +1248,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=154"></script>
+<script src="apps.js?v=155"></script>
 <script>
 (function () {
   var esc = function (s) {
