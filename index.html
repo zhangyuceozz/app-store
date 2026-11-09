@@ -922,23 +922,7 @@
     letter-spacing: .03em;
     align-self: flex-start;
   }
-  /* 新上架徽章 — 顶在卡片外上方 */
-  .bounce-cards__card .bc-badge {
-    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-    z-index: 4;
-    font-size: 10px; font-weight: 600;
-    padding: 4px 11px;
-    border-radius: 999px; line-height: 1;
-    letter-spacing: .03em;
-    white-space: nowrap;
-    color: #fff;
-    background: var(--accent);
-    box-shadow: 0 2px 8px rgba(0,0,0,.25);
-  }
-  .bounce-cards__card .bc-badge--soft {
-    background: #3b82f6;
-  }
-
+  /* Preloader — 遮罩层 */
   .preloader {
     position: fixed; inset: 0; z-index: 9999;
     display: flex; align-items: center; justify-content: center;
@@ -965,6 +949,14 @@
     font-family: var(--display); font-size: 11px; font-weight: 600;
     letter-spacing: .22em; text-transform: uppercase;
     color: var(--muted); flex-shrink: 0; margin-top: 8px;
+  }
+
+  /* 顶部标题 */
+  .splash-head {
+    font-size: 20px; font-weight: 600; color: var(--ink);
+    letter-spacing: .01em;
+    margin-bottom: 4px;
+    flex-shrink: 0;
   }
 
   /* 公告页更新日志 — 竖向条列（纯文本，无边框） */
@@ -1128,6 +1120,8 @@
 
 <div class="preloader" id="preloader">
   <div class="splash-inner">
+    <!-- 顶部标题 -->
+    <div class="splash-head">新增软件</div>
     <!-- React Bits BounceCards 组件（公告页顶部 fan 堆叠卡片） -->
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
@@ -1266,7 +1260,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=153"></script>
+<script src="apps.js?v=154"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2073,15 +2067,8 @@
       var avatar = !app.icon
         ? '<div class="bc-avatar">' + esc((app.name || "?").charAt(0)) + '</div>'
         : "";
-      // 新鲜度徽章（顶在卡片外上方，不在卡片内）
-      var freshBadge = "";
-      try {
-        var fresh = classifyFresh(app.date);
-        if (fresh === "brand-new") freshBadge = '<span class="bc-badge">新上架</span>';
-        else if (fresh === "coral") freshBadge = '<span class="bc-badge bc-badge--soft">新上架</span>';
-      } catch (e) {}
+      // 图标直接铺满卡面（无额外徽章）
       el.innerHTML =
-        freshBadge +
         iconBg + avatar +
         '<div class="bc-overlay"></div>' +
         '<div class="bc-caption">' +
