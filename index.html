@@ -1004,13 +1004,14 @@
     --hb-hold: 2000ms;
     --hb-release: 200ms;
     --hb-press: 0.97;
-    --hb-wave: 0px;
+    --hb-wave: 6px;
     --hb-w: 0px;
     --hb-h: 0px;
     --hb-cycles: 1.82;
     --hb-p: 0;
-    --hb-ease-out: ease;
+    --hb-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --hb-shadow: 0 1px 2px rgba(0,0,0,.04);
+    --hb-glow: 0 0 0 var(--hb-glow-p, 0px) color-mix(in srgb, var(--hb-fill) 30%, transparent);
 
     position: relative; isolation: isolate;
     display: grid; place-items: center;
@@ -1032,8 +1033,23 @@
       box-shadow var(--hb-release) ease;
     flex-shrink: 0;
   }
+  .splash-hold[data-glow="true"]::before {
+    content: ""; position: absolute; inset: -2px;
+    border-radius: calc(var(--hb-radius) + 2px);
+    background: radial-gradient(circle at center, color-mix(in srgb, var(--hb-fill) 25%, transparent) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 200ms ease;
+    z-index: -1; pointer-events: none;
+  }
+  .splash-hold[data-phase='holding'][data-glow="true"]::before { opacity: 1; }
+  .splash-hold[data-phase='done'][data-glow="true"]::before { opacity: 1; animation: holdGlowPulse 800ms ease-out; }
+  @keyframes holdGlowPulse {
+    0%   { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.15); }
+  }
+
   .splash-hold:hover:not(:disabled) { background: var(--soft); }
-  .splash-hold[data-phase='holding'][data-input='pointer'] { transform: scale(var(--hb-press)); }
+  .splash-hold[data-phase='holding'][data-input='pointer'] { transform: scale(var(--hb-press)); box-shadow: var(--hb-shadow), 0 0 0 1px color-mix(in srgb, var(--hb-fill) 40%, transparent); }
   .splash-hold:focus-visible { outline: 2px solid var(--hb-fill); outline-offset: 3px; }
 
   .splash-hold__label { position: relative; z-index: 2; display: grid; place-items: center; }
@@ -1057,6 +1073,21 @@
     background: var(--hb-fill); color: var(--hb-fill-text);
     clip-path: inset(0 calc((1 - var(--hb-p)) * (100% + 0.75 * var(--hb-wave)) - var(--hb-p) * 0.25 * var(--hb-wave)) 0 0);
   }
+  .splash-hold__crest {
+    position: absolute; top: 0; bottom: 0;
+    width: calc(var(--hb-wave) * 1.6);
+    left: calc((1 - var(--hb-p)) * (100% + 0.75 * var(--hb-wave)) - var(--hb-p) * 0.25 * var(--hb-wave) - var(--hb-wave) * 1.6 + var(--hb-wave));
+    pointer-events: none; z-index: 2;
+  }
+  .splash-hold__crest svg { width: 100%; height: 100%; display: block; }
+  .splash-hold__pulse {
+    position: absolute; inset: 0; border-radius: var(--hb-radius);
+    background: radial-gradient(circle at var(--hb-p) 50%, color-mix(in srgb, var(--hb-fill) 35%, transparent) 0%, transparent 50%);
+    opacity: 0;
+    pointer-events: none; z-index: 1;
+    transition: opacity 200ms ease;
+  }
+  .splash-hold[data-phase='holding'] .splash-hold__pulse { opacity: 0.6; }
   .splash-hold__label--fill { z-index: auto; }
 
   .splash-hold__sr {
@@ -1115,14 +1146,20 @@
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
     <button type="button" class="splash-hold" id="splash-hold"
-            data-phase="idle" data-direction="right"
+            data-phase="idle" data-direction="right" data-glow="true"
             aria-describedby="splash-hold-sr">
+      <span class="splash-hold__pulse"></span>
       <span class="splash-hold__label">
         <span class="splash-hold__idle">长按进入主站</span>
         <span class="splash-hold__done">已进入</span>
       </span>
       <span class="splash-hold__clip">
         <span class="splash-hold__fill">
+          <span class="splash-hold__crest" aria-hidden="true">
+            <svg viewBox="0 0 40 100" preserveAspectRatio="none">
+              <path d="M 0 0 Q 5 -10 10 0 Q 15 10 20 0 Q 25 -10 30 0 Q 35 10 40 0 L 40 100 Q 35 90 30 100 Q 25 110 20 100 Q 15 90 10 100 Q 5 110 0 100 Z" fill="currentColor"/>
+            </svg>
+          </span>
           <span class="splash-hold__label splash-hold__label--fill">
             <span class="splash-hold__idle">长按进入主站</span>
             <span class="splash-hold__done">已进入</span>
@@ -1248,7 +1285,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=155"></script>
+<script src="apps.js?v=156"></script>
 <script>
 (function () {
   var esc = function (s) {
