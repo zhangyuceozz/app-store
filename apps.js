@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -645,6 +645,30 @@ const APPS = [
       "首页点「Load Target」导入想研究的二进制或源码目录。",
       "左侧会显示反编译结构，右侧 AI 面板可以问问题、让它生成复刻脚手架。",
       "底层依赖 Ghidra（反汇编）和 Tree-sitter（代码解析），首次启动会自动拉取。",
+    ],
+  },
+  {
+    id: "prism",
+    name: "Prism",
+    category: "实用工具",
+    date: "2026-11-09",
+    tagline: "分块加速下载管理器，内置 yt-dlp 和 BT",
+    description: "Prism 是 FortoGraphy（PrismDL）开源的下载管理器，Rust + Tauri 写的，主打替代 IDM。32 连接分块加速下载，断点续传（进度落盘后校验 ETag/Last-Modified 不拼接损坏文件），内置 yt-dlp 下 YouTube/8K 视频/MP3，内置 BitTorrent + Magnet，浏览器扩展（Chrome/Firefox）一键拦截下载链接，队列定时速度限制，剪贴板监控，sha256 校验。MIT 协议，v1.2.4 刚更新。",
+    icon: "apps/prism/icon.svg",
+    preview: "apps/prism/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)",         file: "/dl/apps/prism/download/Prism_1.2.4_x64-setup.exe",   size: "12 MB" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/prism/download/Prism_1.2.4_aarch64.dmg",     size: "17 MB" },
+      { platform: "macOS (Intel)",         file: "/dl/apps/prism/download/Prism_1.2.4_x64.dmg",         size: "18 MB" },
+    ],
+    install: [
+      "Windows：双击 .exe 安装，可选注册浏览器扩展（首次启动会提示）。",
+      "macOS：双击 .dmg 把 Prism 拖进「应用程序」，首次打开右键 → 打开。",
+    ],
+    usage: [
+      "拖 URL 进窗口或点 + 添加下载任务，支持批量、整站抓取、剪贴板监控。",
+      "YouTube 视频：浏览器扩展弹按钮 → 选质量（最高 8K）/MP3 → 自动用内置 yt-dlp 下载。",
+      "设置里开启「开机自启 + 后台静默下载」，队列里可以设速度限制和定时。",
     ],
   },
 ];

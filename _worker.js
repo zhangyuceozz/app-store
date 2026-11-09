@@ -75,6 +75,10 @@ const MAP = {
   "craft-anything-0.5.0-windows-x64.msi": "/storytold/craft-anything/releases/download/v0.5.0/craft-anything-0.5.0-windows-x64.msi",
   "craft-anything-0.5.0-windows-arm64.msi": "/storytold/craft-anything/releases/download/v0.5.0/craft-anything-0.5.0-windows-arm64.msi",
   "craft-anything-0.5.0-macos-universal.dmg": "/storytold/craft-anything/releases/download/v0.5.0/craft-anything-0.5.0-macos-universal.dmg",
+  // Prism v1.2.4（FortoGraphy，下载管理器，Rust+Tauri，2026-11-09）
+  "Prism_1.2.4_x64-setup.exe": "/FortoGraphy/prism-download-manager/releases/download/v1.2.4/Prism_1.2.4_x64-setup.exe",
+  "Prism_1.2.4_aarch64.dmg": "/FortoGraphy/prism-download-manager/releases/download/v1.2.4/Prism_1.2.4_aarch64.dmg",
+  "Prism_1.2.4_x64.dmg": "/FortoGraphy/prism-download-manager/releases/download/v1.2.4/Prism_1.2.4_x64.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {
