@@ -922,32 +922,21 @@
     letter-spacing: .03em;
     align-self: flex-start;
   }
-  /* 顶部独立徽章 — 显示最新上架软件的名字 + 标签 */
-  .bounce-cards .bc-hero-badge {
-    position: absolute;
-    top: -6px; left: 50%;
-    transform: translateX(-50%);
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 14px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    box-shadow: 0 4px 14px rgba(0,0,0,.14);
-    font-size: 12px; font-weight: 500;
-    z-index: 10;
+  /* 新上架徽章 — 顶在卡片外上方 */
+  .bounce-cards__card .bc-badge {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    z-index: 4;
+    font-size: 10px; font-weight: 600;
+    padding: 4px 11px;
+    border-radius: 999px; line-height: 1;
+    letter-spacing: .03em;
     white-space: nowrap;
-    pointer-events: none;
+    color: #fff;
+    background: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
   }
-  .bounce-cards .bc-hero-badge .bc-hb-text {
-    color: var(--ink);
-    max-width: 140px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .bounce-cards .bc-hero-badge .bc-hb-label {
-    color: #fff; font-size: 10px; font-weight: 600;
-    padding: 2px 8px; border-radius: 999px;
-    background: var(--hb-color, var(--accent));
-    letter-spacing: .03em; flex-shrink: 0;
+  .bounce-cards__card .bc-badge--soft {
+    background: #3b82f6;
   }
 
   .preloader {
@@ -1278,7 +1267,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=151"></script>
+<script src="apps.js?v=152"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2084,8 +2073,15 @@
       var avatar = !app.icon
         ? '<div class="bc-avatar">' + esc((app.name || "?").charAt(0)) + '</div>'
         : "";
-      // 新鲜度徽章（独立显示在 fan 上方，不在卡片里）
+      // 新鲜度徽章（顶在卡片外上方，不在卡片内）
+      var freshBadge = "";
+      try {
+        var fresh = classifyFresh(app.date);
+        if (fresh === "brand-new") freshBadge = '<span class="bc-badge">新上架</span>';
+        else if (fresh === "coral") freshBadge = '<span class="bc-badge bc-badge--soft">新上架</span>';
+      } catch (e) {}
       el.innerHTML =
+        freshBadge +
         iconBg + avatar +
         '<div class="bc-overlay"></div>' +
         '<div class="bc-caption">' +
@@ -2095,25 +2091,6 @@
       root.appendChild(el);
       cardRefs.push(el);
     });
-
-    // 顶部独立徽章：取 APPS 最新的（brand-new > coral > 其他）
-    (function renderTopBadge() {
-      var newest = null, bestScore = 999999999;
-      APPS.forEach(function (a) {
-        var d = new Date(a.date).getTime();
-        if (d && d < bestScore) { bestScore = d; newest = a; }
-      });
-      if (!newest) return;
-      var fresh = classifyFresh(newest.date);
-      var label = (fresh === "brand-new") ? "新上架" : "新上架";
-      var color = (fresh === "brand-new") ? "var(--accent)" : "#3b82f6";
-      var badge = document.createElement("div");
-      badge.className = "bc-hero-badge";
-      badge.innerHTML = '<span class="bc-hb-text">' + esc(newest.name) + '</span>' +
-        '<span class="bc-hb-label">' + label + '</span>';
-      badge.style.setProperty("--hb-color", color);
-      root.appendChild(badge);
-    })();
 
     // 弹簧物理系统（1:1 移植 React 源码）
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
