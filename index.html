@@ -533,7 +533,7 @@
   .group-title::after { content: "\203A"; color: var(--muted); font-size: 22px; font-weight: 400; margin-left: 4px; line-height: 1; }
 
   /* 卡片网格 */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; overflow: visible; align-items: stretch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; overflow: visible; align-items: stretch; }
 
   /* Sentinel + loading dots */
   .sentinel { display: flex; justify-content: center; align-items: center; padding: 28px 0 16px; min-height: 40px; }
@@ -542,9 +542,9 @@
 
   .card {
     position: relative; z-index: 1;
-    display: flex; flex-direction: column; gap: 10px;
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    padding: 18px; cursor: pointer; overflow: hidden;
+    display: flex; flex-direction: column; gap: 12px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 22px; cursor: pointer; overflow: hidden;
     min-height: 0;
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     box-shadow: var(--s-1);
@@ -567,7 +567,7 @@
   /* 默认内容：hover 时模糊淡出 */
   .card .c-row { display: flex; align-items: center; gap: 10px; transition: opacity .2s ease; }
   .card:hover .c-row { opacity: .28; }
-  .card .c-icon { width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0; border: 1px solid var(--line); }
+  .card .c-icon { width: 56px; height: 56px; border-radius: 12px; flex-shrink: 0; border: 1px solid var(--line); }
   .card .c-icon.avatar { background: var(--soft); border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; font-size: 18px; font-weight: 600; }
   .card .c-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .card .c-name { font-family: var(--display); font-size: 15px; font-weight: 600; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1293,7 +1293,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=161"></script>
+<script src="apps.js?v=162"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2007,12 +2007,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
-    { type: "change", text: "左侧分类导航重做", date: "2026-11-07" },
-    { type: "fix",    text: "卡片时间不显示", date: "2026-11-07" },
     { type: "change", text: "HoldButton 液态填充+crest+辉光恢复", date: "2026-11-09" },
-    { type: "change", text: "更新日志改条列+序号+无边框", date: "2026-11-09" },
-    { type: "change", text: "主站侧栏砍数量徽章+收紧间距", date: "2026-11-09" },
-    { type: "change", text: "砍主站 Modal/Lightbox 入场动画和 backdrop-filter", date: "2026-11-09" },
+    { type: "change", text: "砍主站 Modal/Lightbox 入场动画", date: "2026-11-09" },
+    { type: "change", text: "左侧分类导航重做（BranchedMenu 1:1）", date: "2026-11-07" },
+    { type: "fix",    text: "卡片时间不显示", date: "2026-11-07" },
+    { type: "change", text: "公告页 BounceCards fan 堆叠", date: "2026-11-06" },
   ];
 
   (function renderSplashLog() {
