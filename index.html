@@ -935,10 +935,10 @@
   }
   .splash-inner {
     display: flex; flex-direction: column;
-    gap: 18px; padding: 36px 44px 30px;
+    gap: 16px; padding: 32px 44px 28px;
     width: 100%; max-width: 560px;
-    height: min(70vh, 640px);
-    justify-content: space-between;
+    height: min(78vh, 700px);
+    overflow: hidden;
   }
   @keyframes splashIn {
     from { opacity: 0; transform: translateY(16px); }
@@ -950,10 +950,12 @@
     color: var(--muted); flex-shrink: 0;
   }
 
-  /* 公告页更新日志 — 竖向条列（纯文本，无边框） */
+  /* 公告页更新日志 — 竖向条列（纯文本，无边框，可滚） */
   .splash-log {
     display: flex; flex-direction: column; gap: 9px;
     flex: 1; min-height: 0;
+    overflow-y: auto;
+    max-height: 260px;
   }
   .splash-log::-webkit-scrollbar { width: 5px; }
   .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
@@ -1285,7 +1287,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=156"></script>
+<script src="apps.js?v=157"></script>
 <script>
 (function () {
   var esc = function (s) {
