@@ -922,12 +922,14 @@
     letter-spacing: .03em;
     align-self: flex-start;
   }
-  /* 新鲜度徽章 */
+  /* 新鲜度徽章 — 卡片顶部左上角 */
   .bounce-cards__card .bc-badge {
+    position: absolute; top: 10px; left: 10px; z-index: 3;
     font-size: 10px; font-weight: 600;
-    padding: 2px 7px; flex-shrink: 0;
+    padding: 3px 9px;
     border-radius: 999px; line-height: 1;
-    letter-spacing: .02em;
+    letter-spacing: .03em;
+    box-shadow: 0 1px 3px rgba(0,0,0,.25);
   }
   .bounce-cards__card .bc-badge--hot {
     color: #fff;
@@ -992,18 +994,8 @@
   .log-group:hover { background: var(--soft); border-color: var(--line); transform: translateY(-1px); }
 
   .log-group .log-dot { display: none; }
-
   .log-group .log-body { display: contents; }
   .log-group .log-head { display: contents; }
-
-  .log-tag {
-    font-size: 11px; font-weight: 600; letter-spacing: .04em;
-    padding: 2px 7px; border-radius: 6px;
-    flex-shrink: 0;
-  }
-  .log-group[data-type="fix"]    .log-tag { background: rgba(34,197,94,.14); color: #16a34a; }
-  .log-group[data-type="change"] .log-tag { background: rgba(96,165,250,.16); color: #2563eb; }
-  .log-group[data-type="new"]    .log-tag { background: var(--soft); color: var(--accent); }
 
   .log-group .log-text {
     font-size: 12.5px; color: var(--ink); line-height: 1;
@@ -1276,7 +1268,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=149"></script>
+<script src="apps.js?v=150"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2005,16 +1997,9 @@
     var html = "";
     SPLASH_LOG.forEach(function (item) {
       var fresh = classifyFresh(item.date);
-      var typeLabel = { new: "新增", change: "改动", fix: "修复" }[item.type] || "改动";
-      html += '<div class="log-group" data-type="' + item.type + '">' +
-        '<span class="log-dot"></span>' +
-        '<div class="log-body">' +
-          '<div class="log-head">' +
-            '<span class="log-tag">' + typeLabel + '</span>' +
-            '<span class="log-date" data-fresh="' + fresh + '">' + timeAgo(item.date) + '</span>' +
-          '</div>' +
-          '<div class="log-text">' + esc(item.text) + '</div>' +
-        '</div>' +
+      html += '<div class="log-group">' +
+        '<span class="log-text">' + esc(item.text) + '</span>' +
+        '<span class="log-date" data-fresh="' + fresh + '">' + timeAgo(item.date) + '</span>' +
       '</div>';
     });
     box.innerHTML = html;
@@ -2093,14 +2078,15 @@
       var freshBadge = "";
       try {
         var fresh = classifyFresh(app.date);
-        if (fresh === "brand-new") freshBadge = '<span class="bc-badge bc-badge--hot">🔥 新增</span>';
+        if (fresh === "brand-new") freshBadge = '<span class="bc-badge bc-badge--hot">新上架</span>';
         else if (fresh === "coral") freshBadge = '<span class="bc-badge bc-badge--new">新上架</span>';
       } catch (e) {}
       el.innerHTML =
         iconBg + avatar +
         '<div class="bc-overlay"></div>' +
+        freshBadge +
         '<div class="bc-caption">' +
-          '<div class="bc-name">' + esc(app.name) + freshBadge + '</div>' +
+          '<div class="bc-name">' + esc(app.name) + '</div>' +
           '<div class="bc-cat">' + esc(app.category || "") + '</div>' +
         '</div>';
       root.appendChild(el);
