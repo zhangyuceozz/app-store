@@ -1257,7 +1257,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=165"></script>
+<script src="apps.js?v=166"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1889,12 +1889,39 @@
     })();
   }, { once: true });
 
-  // ======== 公告页 HoldButton — 长按 2 秒进入 ========
+  // ======== 公告页 HoldButton — 和 brand 头像同款状态机 ========
   (function () {
-    var HOLD_TIME = 2000;
     var btn = document.getElementById("splash-hold");
     if (!btn) return;
-    var timer = 0, phase = "idle", pointerId = null;
+
+    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
+    var HB = {
+      phase: "idle", raf: 0,
+      p: 0, from: 0, to: 0, start: 0,
+      completeTimer: 0, resetTimer: 0,
+      input: null,
+      clear: function () { clearTimeout(this.completeTimer); clearTimeout(this.resetTimer); },
+      go: function (ph, input) {
+        this.phase = ph; this.input = input || null;
+        btn.setAttribute("data-phase", ph);
+        if (input) btn.setAttribute("data-input", input);
+        else btn.removeAttribute("data-input");
+      },
+      drive: function (to, duration, ease) {
+        var self = this;
+        cancelAnimationFrame(this.raf);
+        this.from = this.p; this.to = to; this.start = performance.now();
+        function step(now) {
+          var t = duration > 0 ? Math.min(1, (now - self.start) / duration) : 1;
+          self.p = self.from + (self.to - self.from) * ease(t);
+          btn.style.setProperty("--hb-p", self.p.toFixed(4));
+          if (t < 1) { self.raf = requestAnimationFrame(step); return; }
+          self.raf = 0;
+          if (to === 1) complete();
+        }
+        this.raf = requestAnimationFrame(step);
+      }
+    };
 
     function dismiss() {
       var splash = document.getElementById("preloader");
@@ -1902,70 +1929,52 @@
       splash.classList.add("hide");
       setTimeout(function () { splash.remove(); }, 600);
     }
-
-    function start() {
-      if (phase !== "idle") return;
-      phase = "holding";
-      btn.setAttribute("data-phase", "holding");
-      btn.style.setProperty("--hb-p", "0");
-      // 液态填充动画（简单 setTimeout 驱动，每 30ms 推进一次）
-      var fill = 0;
-      var fillTimer = setInterval(function () {
-        fill += 0.03 / (HOLD_TIME / 1000 / 30); // ~linear
-        if (fill > 1) fill = 1;
-        btn.style.setProperty("--hb-p", fill.toFixed(3));
-      }, 30);
-      timer = setTimeout(function () {
-        if (phase !== "holding") { clearInterval(fillTimer); return; }
-        clearInterval(fillTimer);
-        fill = 1;
-        btn.style.setProperty("--hb-p", "1");
-        phase = "done";
-        btn.setAttribute("data-phase", "done");
-        dismiss();
-        // resetAfter=1200ms：按钮恢复原状（虽然已经看不到了）
-        setTimeout(function () {
-          phase = "idle";
-          btn.setAttribute("data-phase", "idle");
-          btn.style.setProperty("--hb-p", "0");
-        }, 1200);
-      }, HOLD_TIME);
-      btn._fillTimer = fillTimer;
+    function complete() {
+      if (HB.phase !== "holding") return;
+      HB.clear();
+      HB.go("done");
+      dismiss();
+      HB.resetTimer = setTimeout(function () {
+        HB.go("idle");
+        HB.drive(0, 200, EASE_OUT);
+      }, 1100);
     }
-    function cancel() {
-      if (phase !== "holding") return;
-      phase = "idle";
-      btn.setAttribute("data-phase", "idle");
-      clearTimeout(timer); timer = 0;
-      if (btn._fillTimer) { clearInterval(btn._fillTimer); btn._fillTimer = 0; }
-      btn.style.setProperty("--hb-p", "0");
+    function begin(kind) {
+      if (HB.phase !== "idle") return false;
+      HB.clear();
+      HB.go("holding", kind);
+      HB.drive(1, 1500, function (t) { return t; });
+      HB.completeTimer = setTimeout(complete, 1600);
+      return true;
+    }
+    function release() {
+      if (HB.phase !== "holding") return;
+      HB.clear();
+      HB.go("idle");
+      HB.drive(0, 200, EASE_OUT);
     }
 
     btn.addEventListener("pointerdown", function (e) {
       if (e.button !== 0 || !e.isPrimary) return;
-      pointerId = e.pointerId;
-      try { btn.setPointerCapture(e.pointerId); } catch (_) {}
-      start();
+      begin("pointer");
       e.preventDefault();
     });
-    btn.addEventListener("pointerup", function (e) {
-      if (e.pointerId === pointerId) { cancel(); pointerId = null; }
-    });
-    btn.addEventListener("pointercancel", function () { cancel(); pointerId = null; });
-    btn.addEventListener("pointerleave", function () { if (pointerId === null) cancel(); });
+    btn.addEventListener("pointerup", release);
+    btn.addEventListener("pointercancel", release);
+    btn.addEventListener("pointerleave", function () { if (HB.phase === "holding") release(); });
 
     document.addEventListener("keydown", function (e) {
       if (e.key !== " " && e.key !== "Enter") return;
       if (e.repeat) return;
       e.preventDefault();
-      start();
+      begin("keyboard");
     });
     document.addEventListener("keyup", function (e) {
       if (e.key !== " " && e.key !== "Enter") return;
-      cancel();
+      release();
     });
-    window.addEventListener("blur", cancel);
-    document.addEventListener("visibilitychange", function () { if (document.hidden) cancel(); });
+    window.addEventListener("blur", release);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) release(); });
   })();
 
   // ======== 公告页：更新日志渲染 ========
