@@ -998,35 +998,57 @@
     white-space: nowrap; flex-shrink: 0;
   }
 
-  /* 公告页按钮：直接复用 brand 的 HoldButton CSS，只覆盖尺寸/布局 */
+  /* 公告页 HoldButton：FuseButton 风格 — 轮廓保险丝 + 长按触发 */
   .splash-hold {
-    --hb-radius: 14px;
-    --hb-bg: var(--card);
-    --hb-fill: var(--accent);
-    --hb-text: var(--ink);
-    --hb-fill-text: #fff;
-    --hb-hold: 1500ms;
-    --hb-release: 200ms;
-    --hb-press: 0.96;
-    --hb-wave: 5px;
-    --hb-p: 0;
+    --sh-bg: var(--card);
+    --sh-ink: var(--ink);
+    --sh-fuse: var(--accent);
+    --sh-fuse-h: 2px;
+    --sh-radius: 14px;
+    --sh-press: 0.96;
+    --sh-fade: 160ms;
 
     width: 100%; height: 52px;
-    margin: 0; padding: 0;
-    border: 1px solid var(--line);
-    border-radius: var(--hb-radius);
-    background: var(--hb-bg);
-    font-size: 15px;
+    margin: 0; padding: 0; border: 0;
+    border-radius: var(--sh-radius);
+    background: var(--sh-bg);
+    color: var(--sh-ink);
+    font-size: 15px; font-weight: 500; letter-spacing: 0.01em;
+    position: relative; isolation: isolate; overflow: hidden;
+    cursor: pointer; user-select: none;
+    -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
   }
-  .splash-hold .brand-idle { display: grid; place-items: center; width: 100%; }
-  .splash-hold .brand-fill { display: grid; place-items: center; }
-  .splash-hold .brand-idle img,
-  .splash-hold .brand-name { display: none; }
-  .splash-hold .brand-idle::after { content: "长按进入主站"; }
-  .splash-hold .brand-fill .brand-idle::after { content: "已进入"; color: #fff; }
-  .splash-hold .brand-crest {
-    -webkit-mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * 100%);
-    mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * 100%);
+  .splash-hold[data-pressed] { transform: scale(var(--sh-press)); }
+
+  .sh-face {
+    position: absolute; inset: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    opacity: 0; filter: blur(2px); visibility: hidden;
+    transition: opacity var(--sh-fade) ease, filter var(--sh-fade) ease, visibility 0s linear var(--sh-fade);
+  }
+  .splash-hold[data-phase='idle']   .sh-idle   { opacity: 1; filter: blur(0); visibility: visible; transition-delay: 0s; }
+  .splash-hold[data-phase='armed']  .sh-armed  { opacity: 1; filter: blur(0); visibility: visible; transition-delay: 0s; }
+
+  .sh-rim {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    overflow: visible; pointer-events: none; opacity: 0;
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--sh-fuse) 60%, transparent));
+    transition: opacity var(--sh-fade) ease;
+  }
+  .splash-hold[data-phase='armed'] .sh-rim { opacity: 1; }
+  .sh-rim rect {
+    x: calc(var(--sh-fuse-h) / 2);
+    y: calc(var(--sh-fuse-h) / 2);
+    width: calc(100% - var(--sh-fuse-h));
+    height: calc(100% - var(--sh-fuse-h));
+    rx: max(0px, calc(var(--sh-radius) - var(--sh-fuse-h) / 2));
+    fill: none;
+    stroke: var(--sh-fuse);
+    stroke-width: var(--sh-fuse-h);
+    stroke-linecap: round;
+    stroke-dasharray: 1;
   }
   .splash-hint {
     text-align: center;
@@ -1034,11 +1056,8 @@
     color: var(--muted);
   }
   @media (prefers-reduced-motion: reduce) {
-    .splash-hold { transition: background-color 160ms ease, box-shadow var(--hb-release) ease; transform: none !important; }
-    .splash-hold__fill { clip-path: inset(0); opacity: 0; transition: opacity var(--hb-release) ease; }
-    .splash-hold__crest { display: none; }
-    .splash-hold[data-phase='holding'] .splash-hold__fill,
-    .splash-hold[data-phase='done'] .splash-hold__fill { opacity: 1; transition: opacity var(--hb-hold) linear; }
+    .splash-hold { transform: none !important; }
+    .splash-hold .sh-face { filter: none; transition: opacity var(--sh-fade) ease, visibility 0s linear var(--sh-fade); }
   }
 
   /* 公告页日志样式已在上方定义 */
@@ -1078,15 +1097,11 @@
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <button type="button" class="brand splash-hold" id="splash-hold"
+    <button type="button" class="splash-hold" id="splash-hold"
             data-phase="idle" aria-describedby="splash-hold-sr">
-      <span class="brand-idle"></span>
-      <span class="brand-clip" aria-hidden="true">
-        <span class="brand-fill">
-          <span class="brand-idle"></span>
-        </span>
-        <span class="brand-crest" aria-hidden="true"></span>
-      </span>
+      <span class="sh-face sh-idle">长按进入主站</span>
+      <span class="sh-face sh-armed">松开取消</span>
+      <svg class="sh-rim" aria-hidden="true"><rect pathLength="1" /></svg>
     </button>
     <p class="splash-hint">往里进往里进</p>
   </div>
@@ -1205,7 +1220,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=170"></script>
+<script src="apps.js?v=171"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1837,92 +1852,79 @@
     })();
   }, { once: true });
 
-  // ======== 公告页 HoldButton — 和 brand 头像同款状态机 ========
+  // ======== 公告页 HoldButton — FuseButton 风格（轮廓保险丝 + 长按触发） ========
   (function () {
     var btn = document.getElementById("splash-hold");
     if (!btn) return;
 
-    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
-    var HB = {
-      phase: "idle", raf: 0,
-      p: 0, from: 0, to: 0, start: 0,
-      completeTimer: 0, resetTimer: 0,
-      input: null,
-      clear: function () { clearTimeout(this.completeTimer); clearTimeout(this.resetTimer); },
-      go: function (ph, input) {
-        this.phase = ph; this.input = input || null;
-        btn.setAttribute("data-phase", ph);
-        if (input) btn.setAttribute("data-input", input);
-        else btn.removeAttribute("data-input");
-      },
-      drive: function (to, duration, ease) {
-        var self = this;
-        cancelAnimationFrame(this.raf);
-        this.from = this.p; this.to = to; this.start = performance.now();
-        function step(now) {
-          var t = duration > 0 ? Math.min(1, (now - self.start) / duration) : 1;
-          self.p = self.from + (self.to - self.from) * ease(t);
-          btn.style.setProperty("--hb-p", self.p.toFixed(4));
-          if (t < 1) { self.raf = requestAnimationFrame(step); return; }
-          self.raf = 0;
-          if (to === 1) complete();
-        }
-        this.raf = requestAnimationFrame(step);
-      }
-    };
+    var rim = btn.querySelector(".sh-rim rect");
+    var anim = null;
+    var phase = "idle";
 
+    function setPhase(ph) {
+      phase = ph;
+      btn.setAttribute("data-phase", ph);
+    }
     function dismiss() {
       var splash = document.getElementById("preloader");
       if (!splash || splash.classList.contains("hide")) return;
       splash.classList.add("hide");
       setTimeout(function () { splash.remove(); }, 600);
     }
-    function complete() {
-      if (HB.phase !== "holding") return;
-      HB.clear();
-      HB.go("done");
-      dismiss();
-      HB.resetTimer = setTimeout(function () {
-        HB.go("idle");
-        HB.drive(0, 200, EASE_OUT);
-      }, 1100);
+    function arm() {
+      if (phase !== "idle") return;
+      setPhase("armed");
+      anim = rim.animate(
+        [{ strokeDashoffset: 0 }, { strokeDashoffset: -1 }],
+        { duration: 1500, easing: "linear", fill: "forwards" }
+      );
+      anim.onfinish = function () {
+        if (phase !== "armed") return;
+        dismiss();
+        // 烧完后重置（让 splash-hold 下次进入时又是 idle）
+        anim = null;
+        setPhase("idle");
+      };
     }
-    function begin(kind) {
-      if (HB.phase !== "idle") return false;
-      HB.clear();
-      HB.go("holding", kind);
-      HB.drive(1, 1500, function (t) { return t; });
-      HB.completeTimer = setTimeout(complete, 1600);
-      return true;
-    }
-    function release() {
-      if (HB.phase !== "holding") return;
-      HB.clear();
-      HB.go("idle");
-      HB.drive(0, 200, EASE_OUT);
+    function undo() {
+      if (phase !== "armed") return;
+      if (anim) { anim.cancel(); anim = null; }
+      setPhase("idle");
     }
 
     btn.addEventListener("pointerdown", function (e) {
       if (e.button !== 0 || !e.isPrimary) return;
-      begin("pointer");
+      arm();
+      btn.dataset.pressed = "";
       e.preventDefault();
     });
-    btn.addEventListener("pointerup", release);
-    btn.addEventListener("pointercancel", release);
-    btn.addEventListener("pointerleave", function () { if (HB.phase === "holding") release(); });
+    btn.addEventListener("pointerup", function () {
+      undo();
+      delete btn.dataset.pressed;
+    });
+    btn.addEventListener("pointercancel", function () {
+      undo();
+      delete btn.dataset.pressed;
+    });
+    btn.addEventListener("pointerleave", function () {
+      undo();
+      delete btn.dataset.pressed;
+    });
+    window.addEventListener("blur", function () { undo(); });
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) undo();
+    });
 
     document.addEventListener("keydown", function (e) {
       if (e.key !== " " && e.key !== "Enter") return;
       if (e.repeat) return;
       e.preventDefault();
-      begin("keyboard");
+      arm();
     });
     document.addEventListener("keyup", function (e) {
       if (e.key !== " " && e.key !== "Enter") return;
-      release();
+      undo();
     });
-    window.addEventListener("blur", release);
-    document.addEventListener("visibilitychange", function () { if (document.hidden) release(); });
   })();
 
   // ======== 公告页：更新日志渲染 ========
