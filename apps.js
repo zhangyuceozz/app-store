@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -669,6 +669,33 @@ const APPS = [
       "拖 URL 进窗口或点 + 添加下载任务，支持批量、整站抓取、剪贴板监控。",
       "YouTube 视频：浏览器扩展弹按钮 → 选质量（最高 8K）/MP3 → 自动用内置 yt-dlp 下载。",
       "设置里开启「开机自启 + 后台静默下载」，队列里可以设速度限制和定时。",
+    ],
+  },
+  {
+    id: "misterdownloadmanager",
+    name: "Mister Download Manager",
+    category: "实用工具",
+    date: "2026-11-11",
+    tagline: "纯 Rust 写的跨平台下载管理器",
+    description: "Mister Download Manager 是 anefzaoui 开源的纯 Rust 下载管理器——clean-room 从零写的，不用 Chromium、不用 Electron，打开就是个小窗口。多连接分块加速、断点续传、队列管理、速度限制、BT + Magnet、浏览器扩展（Chrome/Firefox）一键抓链、剪贴板监控、下载完成校验。v0.5.2 昨天刚发，Trending #5，+2.2k⭐。GPL-3.0，跨 Win/Mac/Linux 三平台。",
+    icon: "apps/misterdownloadmanager/icon.png",
+    preview: "apps/misterdownloadmanager/preview.webp",
+    downloads: [
+      { platform: "Windows (x64)",         file: "/dl/apps/misterdownloadmanager/download/MisterDownloadManager-0.5.2-setup.exe", size: "16 MB" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/misterdownloadmanager/download/MisterDownloadManager-0.5.2-macos-arm64-experimental.dmg", size: "15 MB" },
+      { platform: "macOS (Intel)",         file: "/dl/apps/misterdownloadmanager/download/MisterDownloadManager-0.5.2-macos-x86_64-experimental.dmg", size: "17 MB" },
+    ],
+    install: [
+      "Windows：双击 MisterDownloadManager-0.5.2-setup.exe 安装。",
+      "macOS：双击 .dmg 把 Mister Download Manager 拖进「应用程序」。首次打开如提示 Gatekeeper，右键 → 打开。",
+      "浏览器扩展：首次启动会提示装 Chrome / Firefox 扩展，点确认就行。",
+    ],
+    usage: [
+      "主窗口点 + 或拖 URL 进去就能加下载任务，支持批量、队列、速度限制。",
+      "浏览器里点下载链接，扩展会自动弹选项拦截到 MDM。",
+      "设置里开启剪贴板监控，复制 URL 自动加任务。",
+      "BT / Magnet：直接把磁力链接拖进窗口。",
+      "断点续传：中断的任务点继续就行，MDM 会校验已下载块的 hash 再续传。",
     ],
   },
 ];

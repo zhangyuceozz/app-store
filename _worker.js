@@ -79,6 +79,10 @@ const MAP = {
   "Prism_1.2.4_x64-setup.exe": "/FortoGraphy/prism-download-manager/releases/download/v1.2.4/Prism_1.2.4_x64-setup.exe",
   "Prism_1.2.4_aarch64.dmg": "/FortoGraphy/prism-download-manager/releases/download/v1.2.4/Prism_1.2.4_aarch64.dmg",
   "Prism_1.2.4_x64.dmg": "/FortoGraphy/prism-download-manager/releases/download/v1.2.4/Prism_1.2.4_x64.dmg",
+  // MisterDownloadManager v0.5.2（anefzaoui，纯 Rust 下载管理器，2026-11-11）
+  "MisterDownloadManager-0.5.2-setup.exe": "/anefzaoui/misterdownloadmanager/releases/download/v0.5.2/MisterDownloadManager-0.5.2-setup.exe",
+  "MisterDownloadManager-0.5.2-macos-arm64-experimental.dmg": "/anefzaoui/misterdownloadmanager/releases/download/v0.5.2/MisterDownloadManager-0.5.2-macos-arm64-experimental.dmg",
+  "MisterDownloadManager-0.5.2-macos-x86_64-experimental.dmg": "/anefzaoui/misterdownloadmanager/releases/download/v0.5.2/MisterDownloadManager-0.5.2-macos-x86_64-experimental.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {
