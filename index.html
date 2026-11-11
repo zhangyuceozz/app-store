@@ -1220,7 +1220,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=171"></script>
+<script src="apps.js?v=172"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1931,17 +1931,17 @@
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
     { type: "new",    text: "Mister Download Manager", date: "2026-11-11" },
+    { type: "change", text: "公告页按钮改成 FuseButton 轮廓保险丝", date: "2026-11-11" },
+    { type: "fix",    text: "brand 头像长按彩蛋事件绑错元素", date: "2026-11-11" },
     { type: "change", text: "HoldButton 液态填充+crest+辉光恢复", date: "2026-11-09" },
     { type: "change", text: "砍主站 Modal/Lightbox 入场动画", date: "2026-11-09" },
-    { type: "change", text: "左侧分类导航重做（BranchedMenu 1:1）", date: "2026-11-07" },
-    { type: "fix",    text: "卡片时间不显示", date: "2026-11-07" },
   ];
 
   (function renderSplashLog() {
     var box = document.getElementById("splash-log");
     if (!box) return;
     var html = "";
-    SPLASH_LOG.filter(function (i) { return i.type !== "new"; }).forEach(function (item, i) {
+    SPLASH_LOG.forEach(function (item, i) {
       var fresh = classifyFresh(item.date);
       html += '<div class="log-group">' +
         '<span class="log-num">' + (i + 1) + '.</span>' +
