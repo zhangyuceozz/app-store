@@ -111,9 +111,9 @@
     --hb-wave: 5px;
     --hb-p: 0;
 
-    display: inline-flex; align-items: center; gap: 8px;
+    display: inline-flex; align-items: center; gap: 10px;
     flex-shrink: 0; cursor: pointer; user-select: none;
-    padding: 6px 10px; border-radius: var(--hb-radius);
+    padding: 8px 14px; border-radius: var(--hb-radius);
     position: relative; isolation: isolate;
     touch-action: manipulation; -webkit-tap-highlight-color: transparent;
     transition: transform 160ms ease, box-shadow var(--hb-release) ease;
@@ -143,8 +143,8 @@
     opacity: 0.9;
   }
 
-  .brand-logo { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; display: block; border: 1px solid var(--line); }
-  .brand-name { font-family: var(--display); font-size: 13px; font-weight: 600; letter-spacing: 0; white-space: nowrap; color: var(--ink); }
+  .brand-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; display: block; border: 1px solid var(--line); }
+  .brand-name { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: 0; white-space: nowrap; color: var(--ink); }
 
   /* ---------- 平台选择：拟物拨杆（Uiverse by Yaya12085 · 左下角固定） ---------- */
   .plat-wrap {
@@ -1205,7 +1205,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=168"></script>
+<script src="apps.js?v=169"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2334,12 +2334,11 @@
       if (HB.phase === "holding") release();
     }
 
-    brand.addEventListener("mousedown", startHold);
-    brand.addEventListener("mouseup", cancelHold);
-    brand.addEventListener("mouseleave", cancelHold);
-    brand.addEventListener("touchstart", startHold, { passive: false });
-    brand.addEventListener("touchend", cancelHold);
-    brand.addEventListener("touchcancel", cancelHold);
+    brand.addEventListener("pointerdown", startHold);
+    brand.addEventListener("pointerup", cancelHold);
+    brand.addEventListener("pointercancel", cancelHold);
+    brand.addEventListener("pointerleave", cancelHold);
+    brand.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
     window.addEventListener("blur", function () { cancelHold(); });
     document.addEventListener("visibilitychange", function () {
