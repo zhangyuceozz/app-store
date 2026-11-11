@@ -998,11 +998,7 @@
     white-space: nowrap; flex-shrink: 0;
   }
 
-  /* HoldButton — 1:1 from React Bits (HoldButton.jsx + HoldButton.css)
-     custom size: height=52px (fill preloader width), radius=14, holdTime=2000, fillDirection=right,
-     waveAmplitude=6, pressScale=0.97, glow=true, releaseTime=200, resetAfter=1200
-     backgroundColor=var(--card) fillColor=var(--accent) textColor=var(--ink) fillTextColor=#fff
-  */
+  /* 公告页按钮：直接复用 brand 的 HoldButton CSS，只覆盖尺寸/布局 */
   .splash-hold {
     --hb-radius: 14px;
     --hb-bg: var(--card);
@@ -1015,62 +1011,22 @@
     --hb-wave: 5px;
     --hb-p: 0;
 
-    position: relative; isolation: isolate;
-    display: grid; place-items: center;
     width: 100%; height: 52px;
-    margin: 0; border: 1px solid var(--line);
+    margin: 0; padding: 0;
+    border: 1px solid var(--line);
     border-radius: var(--hb-radius);
     background: var(--hb-bg);
-    color: var(--hb-text);
-    font-family: var(--display); font-weight: 600; font-size: 15px;
-    letter-spacing: 0.01em; line-height: 1;
-    cursor: pointer; outline: none;
-    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    transition: transform 160ms ease, box-shadow var(--hb-release) ease;
-    flex-shrink: 0;
+    font-size: 15px;
   }
-  .splash-hold[data-phase='holding'][data-input='pointer'] { transform: scale(var(--hb-press)); }
-  .splash-hold[data-phase='done'] { transform: scale(1); }
-
-  .splash-hold__label { position: relative; z-index: 2; display: grid; place-items: center; }
-  .splash-hold__label > span {
-    grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 8px;
-    white-space: nowrap;
-    transition: opacity 200ms ease, filter 200ms ease;
-  }
-  .splash-hold__done { opacity: 0; }
-  .splash-hold[data-phase='done'] .splash-hold__idle { opacity: 0; filter: blur(2px); transition: opacity 180ms, filter 180ms; }
-  .splash-hold[data-phase='done'] .splash-hold__done { opacity: 1; }
-  .splash-hold__label--fill { z-index: auto; }
-
-  .splash-hold__clip {
-    position: absolute; inset: 0; z-index: 3;
-    clip-path: inset(0 round var(--hb-radius));
-    pointer-events: none;
-  }
-  .splash-hold__fill {
-    position: absolute; inset: 0;
-    display: grid; place-items: center;
-    background: var(--hb-fill); color: var(--hb-fill-text);
-    clip-path: inset(0 calc((1 - var(--hb-p)) * (100% + 0.75 * var(--hb-wave)) - var(--hb-p) * 0.25 * var(--hb-wave)) 0 0);
-  }
-  .splash-hold__crest {
-    position: absolute; inset: 0;
-    background: var(--hb-fill);
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
-    -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
-    -webkit-mask-size: var(--hb-wave) 40px; mask-size: var(--hb-wave) 40px;
+  .splash-hold .brand-idle { display: grid; place-items: center; width: 100%; }
+  .splash-hold .brand-fill { display: grid; place-items: center; }
+  .splash-hold .brand-idle img,
+  .splash-hold .brand-name { display: none; }
+  .splash-hold .brand-idle::after { content: "长按进入主站"; }
+  .splash-hold .brand-fill .brand-idle::after { content: "已进入"; color: #fff; }
+  .splash-hold .brand-crest {
     -webkit-mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * 100%);
     mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * 100%);
-    opacity: 0.9;
-  }
-
-  .splash-hold__sr {
-    position: absolute; width: 1px; height: 1px;
-    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
   }
   .splash-hint {
     text-align: center;
@@ -1122,23 +1078,15 @@
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <button type="button" class="splash-hold" id="splash-hold"
-            data-phase="idle" data-direction="right"
-            aria-describedby="splash-hold-sr">
-      <span class="splash-hold__label">
-        <span class="splash-hold__idle">长按进入主站</span>
-        <span class="splash-hold__done">已进入</span>
-      </span>
-      <span class="splash-hold__clip">
-        <span class="splash-hold__fill">
-          <span class="splash-hold__label splash-hold__label--fill">
-            <span class="splash-hold__idle">长按进入主站</span>
-            <span class="splash-hold__done">已进入</span>
-          </span>
+    <button type="button" class="brand splash-hold" id="splash-hold"
+            data-phase="idle" aria-describedby="splash-hold-sr">
+      <span class="brand-idle"></span>
+      <span class="brand-clip" aria-hidden="true">
+        <span class="brand-fill">
+          <span class="brand-idle"></span>
         </span>
-        <span class="splash-hold__crest" aria-hidden="true"></span>
+        <span class="brand-crest" aria-hidden="true"></span>
       </span>
-      <span id="splash-hold-sr" class="splash-hold__sr">按住 2 秒进入主站</span>
     </button>
     <p class="splash-hint">往里进往里进</p>
   </div>
@@ -1257,7 +1205,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=167"></script>
+<script src="apps.js?v=168"></script>
 <script>
 (function () {
   var esc = function (s) {
