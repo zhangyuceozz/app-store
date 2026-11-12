@@ -1287,7 +1287,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=216"></script>
+<script src="apps.js?v=218"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1813,6 +1813,8 @@
       inst +
       usage;
     document.getElementById("modal").classList.add("open");
+    // Bind TC to any new elements (dl-btn etc.) — MutationObserver unreliable here
+    setTimeout(function () { if (window.__tcRefresh) window.__tcRefresh(); }, 0);
   }
 
   function closeModal() {
@@ -1955,12 +1957,15 @@
     }
 
     function refresh() {
-      document.querySelectorAll(".card[data-tc]").forEach(bindOne);
+      document.querySelectorAll("[data-tc]").forEach(bindOne);
     }
     refresh();
     var obs = new MutationObserver(refresh);
     obs.observe(document.body, { childList: true, subtree: true });
-    console.log("[TC] bound:", document.querySelectorAll(".card[data-tc]").length);
+    console.log("[TC] bound:", document.querySelectorAll("[data-tc]").length);
+    // Expose for openApp / renderList to call directly
+    window.__tcBind = bindOne;
+    window.__tcRefresh = refresh;
   })();
 
   // ======== 后台预加载全部 preview.jpg ========
@@ -2084,11 +2089,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
+    { type: "fix",    text: "openApp 结尾手动 __tcRefresh + refresh selector 改成 [data-tc]", date: "2026-11-13" },
     { type: "change", text: "详情页下载按钮也加 data-tc 3D 倾斜", date: "2026-11-13" },
     { type: "fix",    text: "TiltedCard 最简重写：直接绑监听器 + perspective + transform transition", date: "2026-11-13" },
     { type: "fix",    text: "TiltedCard IIFE 移到 renderList(true) 之后", date: "2026-11-13" },
-    { type: "fix",    text: "审计修复：loadMore 每次插卡后 TC 绑定", date: "2026-11-12" },
-    { type: "fix",    text: "splash 关闭立即 display:none 修复文字泄漏", date: "2026-11-12" },
+    { type: "fix",    text: "审计修复 + splash display:none + 下载按钮蓝色", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {
