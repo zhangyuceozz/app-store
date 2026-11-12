@@ -1045,7 +1045,7 @@
     --hb-radius: 14px;
     --hb-bg: var(--ink);
     --hb-fill: #3b82f6;
-    --hb-text: #fafafa;
+    --hb-text: #3b82f6;
     --hb-fill-text: #ffffff;
     --hb-hold: 1500ms;
     --hb-release: 200ms;
@@ -1165,14 +1165,14 @@
       <span class="splash-hold__pulse" aria-hidden="true"></span>
       <span class="splash-hold__label">
         <span class="splash-hold__idle">长按进入主站</span>
-        <span class="splash-hold__done">✓ 正在进入...</span>
+        <span class="splash-hold__done">正在进入...</span>
       </span>
       <span class="splash-hold__clip" aria-hidden="true">
         <span class="splash-hold__fill">
-          <span class="splash-hold__label"><span class="splash-hold__idle">长按进入主站</span><span class="splash-hold__done">✓ 正在进入...</span></span>
+          <span class="splash-hold__label"><span class="splash-hold__idle">长按进入主站</span><span class="splash-hold__done">正在进入...</span></span>
         </span>
         <span class="splash-hold__crest" aria-hidden="true">
-          <span class="splash-hold__label"><span class="splash-hold__idle">长按进入主站</span><span class="splash-hold__done">✓ 正在进入...</span></span>
+          <span class="splash-hold__label"><span class="splash-hold__idle">长按进入主站</span><span class="splash-hold__done">正在进入...</span></span>
         </span>
       </span>
       <span id="splash-hold-sr" class="hold-sr">长按 1.5 秒进入主站</span>
@@ -1288,7 +1288,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=194"></script>
+<script src="apps.js?v=196"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2126,11 +2126,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
-    { type: "fix",    text: "下载卡无特效：每卡独立 rAF 循环 + last 时间戳（之前全局共享导致只动一张）", date: "2026-11-12" },
+    { type: "change", text: "HoldButton 去掉对勾，字体改蓝色", date: "2026-11-12" },
+    { type: "fix",    text: "下载卡无特效：每卡独立 rAF 循环 + last 时间戳", date: "2026-11-12" },
     { type: "fix",    text: "Agent Desktop icon.ico 转 .png，修复 fan 卡片图标加载失败", date: "2026-11-12" },
     { type: "change", text: "下载卡换回 TiltedCard 3D 倾斜 + spring + glare + rim + edge", date: "2026-11-12" },
     { type: "fix",    text: "公告页 HoldButton 重复 id 导致长按失效", date: "2026-11-12" },
-    { type: "change", text: "彩蛋改成拖拽不算，pointerup + 距离判定", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {
