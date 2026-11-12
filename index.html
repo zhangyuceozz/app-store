@@ -1287,7 +1287,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=206"></script>
+<script src="apps.js?v=208"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1741,6 +1741,17 @@
     fillDates(grid);
     pageIndex++;
 
+    // TiltedCard 绑定（每次 loadMore 后必须调用，MutationObserver 可能丢事件）
+    setTimeout(function () {
+      document.querySelectorAll(".card[data-tc]").forEach(function (el) {
+        if (el._tc) return;
+        try {
+          var sh = el.querySelector(".card__shadow");
+          el._tc = { rx:0, vrx:0, ry:0, vry:0, lift:0, vlift:0, press:0, vpress:0, nx:0, ny:0, inside:false, mouse:false, _shadow:sh, _reduced: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches };
+        } catch (e) {}
+      });
+    }, 0);
+
     if (!reset) checkScroll();
 
     var sentinel = document.getElementById("scroll-sentinel");
@@ -2040,6 +2051,21 @@
 
   buildBranchedMenu();
   renderList(true); // 首次加载跳过淡入淡出
+  // TiltedCard 必须在 renderList 之后显式 refresh（MutationObserver 在 grid 重建时可能丢事件）
+  setTimeout(function () {
+    try {
+      document.querySelectorAll(".card[data-tc]").forEach(function (el) {
+        try {
+          if (!el._tc) {
+            var sh = el.querySelector(".card__shadow");
+            var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            el._tc = { rx:0, vrx:0, ry:0, vry:0, lift:0, vlift:0, press:0, vpress:0, nx:0, ny:0, inside:false, mouse:false, _shadow:sh, _reduced:reduced };
+          }
+        } catch (e) {}
+      });
+      console.log("[TC bound]", document.querySelectorAll(".card[data-tc]").length, "cards");
+    } catch (e) {}
+  }, 50);
 
   // ======== 后台预加载全部 preview.jpg ========
   // 页面加载完成后逐个预加载（每 150ms 一张，避免阻塞首屏）
@@ -2162,10 +2188,10 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
-    { type: "fix",    text: "代码审计加固：refresh try/catch + window load 二次兜底", date: "2026-11-12" },
+    { type: "fix",    text: "审计修复：loadMore 每次插卡后 setTimeout TC 绑定，绕过 MutationObserver", date: "2026-11-12" },
+    { type: "fix",    text: "refresh try/catch + load 二次兜底", date: "2026-11-12" },
     { type: "fix",    text: "splash 关闭立即 display:none 修复文字泄漏", date: "2026-11-12" },
     { type: "fix",    text: "详情页下载按钮 + 动画橙色全换成中性蓝", date: "2026-11-12" },
-    { type: "fix",    text: "TiltedCard 彻底重写：全局事件委托 + body subtree 观察", date: "2026-11-12" },
     { type: "fix",    text: "彩蛋入口收窄：只响应系统切换 + 主题切换", date: "2026-11-12" },
   ];
 
