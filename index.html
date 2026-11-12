@@ -804,14 +804,14 @@
 
   /* ---------- 下载按钮（下载→安装中→已安装） ---------- */
   .dl-btn {
-    background: var(--soft); border: 2px solid var(--accent);
+    background: var(--soft); border: 2px solid #3b82f6;
     display: flex; align-items: center; gap: 14px;
     border-radius: 50px; width: 100%; cursor: pointer;
     transition: all .4s ease; padding: 5px; position: relative; box-sizing: border-box;
   }
   .dl-btn::before {
     content: ""; position: absolute; top: 0; bottom: 0; left: 0; right: 0;
-    background: var(--accent); width: 8px; height: 8px;
+    background: #3b82f6; width: 8px; height: 8px;
     transition: all .4s ease; border-radius: 100%; margin: auto;
     opacity: 0; visibility: hidden;
   }
@@ -831,7 +831,7 @@
     opacity: 0; visibility: hidden; transition: all .4s ease;
   }
   .dl-btn .dl-circle {
-    height: 42px; width: 42px; border-radius: 50%; background: var(--accent);
+    height: 42px; width: 42px; border-radius: 50%; background: #3b82f6;
     display: flex; justify-content: center; align-items: center;
     transition: all .4s ease; position: relative; flex-shrink: 0;
     box-shadow: 0 0 0 0 rgba(255,255,255,0.7); overflow: hidden;
@@ -846,7 +846,7 @@
     transform: translate(-50%, -50%); transition: all .4s ease;
   }
   .dl-btn .dl-circle::before {
-    content: ""; position: absolute; left: 0; top: 0; background: var(--accent-deep);
+    content: ""; position: absolute; left: 0; top: 0; background: #2563eb;
     width: 100%; height: 0; transition: all .4s ease;
   }
 
@@ -863,9 +863,9 @@
   .dl-btn .dl-input:checked ~ .dl-installed { animation: showInstalledMessage .4s ease 3.5s forwards; }
 
   @keyframes pulse {
-    0% { scale: .95; box-shadow: 0 0 0 0 rgba(245,73,31,0.6); }
-    70% { scale: 1; box-shadow: 0 0 0 16px rgba(245,73,31,0); }
-    100% { scale: .95; box-shadow: 0 0 0 0 rgba(245,73,31,0); }
+    0% { scale: .95; box-shadow: 0 0 0 0 rgba(59,130,246,0.6); }
+    70% { scale: 1; box-shadow: 0 0 0 16px rgba(59,130,246,0); }
+    100% { scale: .95; box-shadow: 0 0 0 0 rgba(59,130,246,0); }
   }
   @keyframes installing { from { height: 0; } to { height: 100%; } }
   @keyframes rotate {
@@ -1288,7 +1288,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=200"></script>
+<script src="apps.js?v=202"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2157,11 +2157,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
-    { type: "fix",    text: "TiltedCard 彻底重写：全局事件委托 + body subtree 观察，解决 grid 重建后 obs 失效", date: "2026-11-12" },
+    { type: "fix",    text: "详情页下载按钮 + 动画橙色全换成中性蓝，品牌橙禁区", date: "2026-11-12" },
+    { type: "fix",    text: "TiltedCard 彻底重写：全局事件委托 + body subtree 观察", date: "2026-11-12" },
     { type: "fix",    text: "彩蛋入口收窄：只响应系统切换 + 主题切换", date: "2026-11-12" },
     { type: "change", text: "HoldButton 去掉对勾，字体改蓝色", date: "2026-11-12" },
-    { type: "fix",    text: "下载卡无特效：每卡独立 rAF 循环 + last 时间戳", date: "2026-11-12" },
-    { type: "fix",    text: "Agent Desktop icon.ico 转 .png，修复 fan 卡片图标加载失败", date: "2026-11-12" },
+    { type: "fix",    text: "下载卡无特效：每卡独立 rAF 循环", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {
