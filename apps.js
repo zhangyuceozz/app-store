@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -696,6 +696,31 @@ const APPS = [
       "设置里开启剪贴板监控，复制 URL 自动加任务。",
       "BT / Magnet：直接把磁力链接拖进窗口。",
       "断点续传：中断的任务点继续就行，MDM 会校验已下载块的 hash 再续传。",
+    ],
+  },
+  {
+    id: "dsh-our-free-model",
+    name: "Our Free Model",
+    category: "效率办公",
+    date: "2026-11-12",
+    tagline: "免 API Key 免登录的免费 AI 桌面客户端",
+    description: "Our Free Model（dsh-our-free-model）是 Ebony-Vinyl 开源的 AI 桌面客户端——不用登录、不用注册、不用填 API Key，装上就能用 DeepSeek V4.1 Flash、Kimi K3 等前沿模型，完全免费不限量。70k⭐，Trending #4，v2.8.3 刚更新（修复 Claude TUI 交互模式 45 秒互等问题）。JavaScript 写的，跨 Win/Mac 桌面端。",
+    icon: "apps/dsh-our-free-model/icon.svg",
+    preview: "apps/dsh-our-free-model/preview.svg",
+    downloads: [
+      { platform: "Windows (x64)",         file: "/dl/apps/dsh-our-free-model/download/Our.Free.Model_2.8.3_x64-setup.exe", size: "25 MB" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/dsh-our-free-model/download/Our.Free.Model_2.8.3_aarch64.dmg", size: "—" },
+    ],
+    install: [
+      "Windows：双击 Our.Free.Model_2.8.3_x64-setup.exe 安装。",
+      "macOS：双击 .dmg 把 Our Free Model 拖进「应用程序」。首次打开右键 → 打开。",
+      "**无需配置 API Key、无需登录账号——打开即用。**",
+    ],
+    usage: [
+      "打开应用直接和 AI 对话，不需要任何配置。",
+      "支持 Claude TUI 交互模式（v2.8.3 刚修复了 45 秒互等 bug）。",
+      "内置 DeepSeek V4.1 Flash、Kimi K3 等多个前沿模型，可在设置里切换。",
+      "适合日常问答、代码生成、文档写作、翻译等场景。",
     ],
   },
 ];

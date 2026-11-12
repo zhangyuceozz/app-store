@@ -83,6 +83,9 @@ const MAP = {
   "MisterDownloadManager-0.5.2-setup.exe": "/anefzaoui/misterdownloadmanager/releases/download/v0.5.2/MisterDownloadManager-0.5.2-setup.exe",
   "MisterDownloadManager-0.5.2-macos-arm64-experimental.dmg": "/anefzaoui/misterdownloadmanager/releases/download/v0.5.2/MisterDownloadManager-0.5.2-macos-arm64-experimental.dmg",
   "MisterDownloadManager-0.5.2-macos-x86_64-experimental.dmg": "/anefzaoui/misterdownloadmanager/releases/download/v0.5.2/MisterDownloadManager-0.5.2-macos-x86_64-experimental.dmg",
+  // dsh-our-free-model v2.8.3（Ebony-Vinyl，免费 AI 模型桌面客户端，2026-11-12）
+  "Our.Free.Model_2.8.3_x64-setup.exe": "/Ebony-Vinyl/dsh-our-free-model/releases/download/v2.8.3/Our.Free.Model_2.8.3_x64-setup.exe",
+  "Our.Free.Model_2.8.3_aarch64.dmg": "/Ebony-Vinyl/dsh-our-free-model/releases/download/v2.8.3/Our.Free.Model_2.8.3_aarch64.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {
