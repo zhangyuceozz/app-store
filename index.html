@@ -1288,7 +1288,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=196"></script>
+<script src="apps.js?v=198"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2126,11 +2126,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
+    { type: "fix",    text: "彩蛋入口收窄：只响应系统切换 + 主题切换，排除搜索框/卡片等", date: "2026-11-12" },
     { type: "change", text: "HoldButton 去掉对勾，字体改蓝色", date: "2026-11-12" },
     { type: "fix",    text: "下载卡无特效：每卡独立 rAF 循环 + last 时间戳", date: "2026-11-12" },
     { type: "fix",    text: "Agent Desktop icon.ico 转 .png，修复 fan 卡片图标加载失败", date: "2026-11-12" },
     { type: "change", text: "下载卡换回 TiltedCard 3D 倾斜 + spring + glare + rim + edge", date: "2026-11-12" },
-    { type: "fix",    text: "公告页 HoldButton 重复 id 导致长按失效", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {
@@ -2470,32 +2470,55 @@
   ];
   var _lastEggIdx = -1;
 
-  // 彩蛋入口：全局任意地方连点 5 下触发
+  // 彩蛋入口：只有系统切换 + 主题切换 5 下触发
   (function () {
-    var taps = 0;
-    var tapTimer = null;
-    var _hint = null;
+    var taps = 0, tapTimer = null, _hint = null;
+    var downX = 0, downY = 0, targetEl = null;
+    var MOVE_THRESHOLD = 5;
+    var EGG_TARGETS = ["plat-toggle", "plat-toggle + .label", ".theme-switch__checkbox"];
 
-    function showHint(text) {
+    function isEggTarget(el) {
+      if (!el) return false;
+      if (el.id === "plat-toggle") return true;
+      if (el.classList && el.classList.contains("theme-switch__checkbox")) return true;
+      // label wrapping the checkbox
+      if (el.tagName === "LABEL" && el.getAttribute("for") === "plat-toggle") return true;
+      // parent traversal for theme-switch wrapper clicks
+      var p = el;
+      for (var i = 0; i < 3 && p; i++) {
+        if (p.classList && p.classList.contains("theme-switch")) return true;
+        p = p.parentElement;
+      }
+      return false;
+    }
+
+    function showHint(txt) {
       if (!_hint) {
         _hint = document.createElement("div");
         _hint.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;z-index:99999;pointer-events:none;opacity:0;transition:opacity .2s ease;letter-spacing:.02em;";
         document.body.appendChild(_hint);
       }
-      _hint.textContent = text;
-      _hint.style.opacity = "1";
+      _hint.textContent = txt; _hint.style.opacity = "1";
       clearTimeout(_hint._hide);
       _hint._hide = setTimeout(function () { _hint.style.opacity = "0"; }, 700);
     }
 
-    document.addEventListener("pointerdown", function () {
+    document.addEventListener("pointerdown", function (e) {
+      if (!isEggTarget(e.target)) return;
+      downX = e.clientX; downY = e.clientY; targetEl = e.target;
+    });
+    document.addEventListener("pointerup", function (e) {
+      if (!targetEl) return;
+      if (!isEggTarget(targetEl)) { targetEl = null; return; }
+      var dx = e.clientX - downX, dy = e.clientY - downY;
+      targetEl = null;
+      if (Math.hypot(dx, dy) > MOVE_THRESHOLD) return;  // 拖拽不算
       taps++;
       clearTimeout(tapTimer);
       tapTimer = setTimeout(function () { taps = 0; if (_hint) _hint.style.opacity = "0"; }, 1500);
       if (taps >= 3 && taps < 5) showHint("还差 " + (5 - taps) + " 下 🎯");
       if (taps >= 5) {
-        taps = 0;
-        if (_hint) _hint.style.opacity = "0";
+        taps = 0; if (_hint) _hint.style.opacity = "0";
         var idx = Math.floor(Math.random() * EASTER_EGGS.length);
         if (idx === _lastEggIdx) idx = (idx + 1) % EASTER_EGGS.length;
         _lastEggIdx = idx;
