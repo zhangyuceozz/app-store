@@ -1007,76 +1007,90 @@
   }
 
   /* 公告页 SlideCommit —— 滑块确认进入主站（React Bits 风格，原生 JS+CSS 移植） */
+  /* 公告页 HoldButton —— 液态填充 + crest 波浪 + glow（React Bits 风格，原生 JS+CSS） */
   .splash-hold {
-    --sc-track: var(--ink);
-    --sc-ink: #fafafa;
-    --sc-ok: #3b82f6;
-    --sc-no: #e5484d;
-    --sc-on-ink: #111;
-    --sc-on-ok: #fff;
-    --sc-radius: 14px;
-    --sc-grip-r: 11px;
-    --sc-grip-h: 44px;
-    --sc-pad: 4px;
-    --sc-font: 14px;
-    width: 100%; height: 52px;
-    position: relative; display: inline-block;
-    font-family: inherit;
+    --hb-radius: 14px;
+    --hb-bg: var(--ink);
+    --hb-fill: #3b82f6;
+    --hb-text: #fafafa;
+    --hb-fill-text: #ffffff;
+    --hb-hold: 1500ms;
+    --hb-release: 200ms;
+    --hb-press: 0.97;
+    --hb-wave: 6px;
+    --hb-w: 0px; --hb-h: 0px;
+    --hb-p: 0;
+    --hb-cycles: 1.36;
+    --hb-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    --hb-glow: inset 0 1px 0 rgba(255,255,255,.06), 0 10px 32px -6px color-mix(in srgb, var(--hb-fill) 70%, transparent);
+    position: relative;
+    display: inline-grid; place-items: center; isolation: isolate;
+    margin: 0; border: 0; border-radius: var(--hb-radius);
+    background: var(--hb-bg); color: var(--hb-text);
+    font-family: inherit; font-weight: 500; letter-spacing: .01em; line-height: 1;
+    box-shadow: var(--hb-shadow); cursor: pointer; outline: none;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 160ms ease, box-shadow var(--hb-release) cubic-bezier(.23,1,.32,1);
+    width: 100%; height: 52px; padding: 0 28px; font-size: 15px;
   }
-  .splash-hold__track {
-    position: absolute; inset: 0;
-    border-radius: var(--sc-radius);
-    background: var(--sc-track);
-    cursor: grab; touch-action: none; user-select: none;
-    -webkit-user-select: none; -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
+  .splash-hold[data-phase="holding"] { transform: scale(var(--hb-press)); }
+  .splash-hold[data-phase="holding"], .splash-hold[data-phase="done"] {
+    box-shadow: var(--hb-glow);
+    transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 160ms ease, box-shadow var(--hb-hold) linear;
   }
-  .splash-hold[data-held] .splash-hold__track { cursor: grabbing; }
-  .splash-hold[data-phase="done"] .splash-hold__track { cursor: default; }
-
+  .splash-hold__pulse { position: absolute; inset: 0; z-index: 0; border-radius: var(--hb-radius); pointer-events: none; opacity: 0; }
+  .splash-hold[data-phase="done"] .splash-hold__pulse {
+    animation: hb-pulse 600ms cubic-bezier(.23,1,.32,1) forwards;
+  }
+  @keyframes hb-pulse {
+    from { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--hb-fill) 55%, transparent); }
+    to   { opacity: 0; box-shadow: 0 0 0 14px color-mix(in srgb, var(--hb-fill) 0%, transparent); }
+  }
   .splash-hold__label {
-    position: absolute; inset: 0;
-    display: grid; place-items: center; pointer-events: none;
-    font-size: var(--sc-font); font-weight: 500; letter-spacing: -0.006em;
-    white-space: nowrap;
-    color: color-mix(in srgb, var(--sc-ink) 55%, transparent);
+    position: relative; z-index: 2; display: grid; place-items: center;
+  }
+  .splash-hold__label > span {
+    grid-area: 1/1; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
     transition: opacity 200ms ease, filter 200ms ease;
   }
-
-  .splash-hold__capsule {
-    position: absolute; top: var(--sc-pad); left: var(--sc-pad);
-    width: calc(var(--sc-grip-h, 44px));
-    height: calc(100% - var(--sc-pad) * 2);
-    border-radius: var(--sc-grip-r);
-    background: var(--sc-ink); color: var(--sc-on-ink);
-    transform: translate3d(var(--sc-x, 0px), 0, 0);
-    will-change: transform; transition: transform 120ms cubic-bezier(.22,1,.36,1);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  .splash-hold__done { opacity: 0; filter: blur(2px); }
+  .splash-hold[data-phase="done"] .splash-hold__idle { opacity: 0; filter: blur(2px); }
+  .splash-hold[data-phase="done"] .splash-hold__done { opacity: 1; filter: blur(0); }
+  .splash-hold__clip {
+    position: absolute; inset: 0; z-index: 3;
+    clip-path: inset(0 round var(--hb-radius)); pointer-events: none;
   }
-  .splash-hold[data-dragging] .splash-hold__capsule { transition: none; }
-  .splash-hold[data-phase="done"] .splash-hold__capsule { background: var(--sc-ok); color: var(--sc-on-ok); }
-  .splash-hold[data-phase="done"] .splash-hold__label { opacity: 0; filter: blur(2px); }
-
-  .splash-hold__content {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-size: var(--sc-font); font-weight: 600; letter-spacing: -0.006em; white-space: nowrap;
+  .splash-hold__fill {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    background: var(--hb-fill); color: var(--hb-fill-text);
+    clip-path: inset(0 calc((1 - var(--hb-p)) * (100% + 0.75 * var(--hb-wave)) - var(--hb-p) * 0.25 * var(--hb-wave)) 0 0);
   }
-  .splash-hold__arrow { transition: opacity 180ms ease; }
-  .splash-hold__done {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    gap: 8px; font-size: var(--sc-font); font-weight: 600;
-    opacity: 0; transform: scale(0.95);
-    transition: opacity 200ms ease, transform 200ms cubic-bezier(.22,1,.36,1);
+  .splash-hold__crest {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    background: var(--hb-fill); color: var(--hb-fill-text);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2720%27 height=%27200%27 viewBox=%270 0 20 200%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z%27/%3E%3C/svg%3E");
+    -webkit-mask-repeat: repeat-y;
+    -webkit-mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
+    -webkit-mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
+    -webkit-mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2720%27 height=%27200%27 viewBox=%270 0 20 200%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z%27/%3E%3C/svg%3E");
+    mask-repeat: repeat-y;
+    mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
+    mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
+    mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
   }
-  .splash-hold[data-phase="done"] .splash-hold__arrow { opacity: 0; }
-  .splash-hold[data-phase="done"] .splash-hold__done { opacity: 1; transform: scale(1); }
-
-  .splash-hint {
-    text-align: center; font-size: 11px; font-weight: 500; letter-spacing: .1em; color: var(--muted);
+  .splash-hint { text-align: center; font-size: 11px; font-weight: 500; letter-spacing: .1em; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) {
+    .splash-hold { transform: none !important; transition: background-color 160ms ease, box-shadow var(--hb-release) ease; }
+    .splash-hold__fill { clip-path: inset(0); opacity: 0; transition: opacity var(--hb-release) ease; }
+    .splash-hold__crest { display: none; }
+    .splash-hold[data-phase="holding"] .splash-hold__fill, .splash-hold[data-phase="done"] .splash-hold__fill { opacity: 1; transition: opacity var(--hb-hold) linear; }
+    .splash-hold__pulse { animation: none !important; }
+    .splash-hold__label > span { filter: none !important; }
   }
-  @media (prefers-reduced-motion: reduce) { .splash-hold__capsule { transition: none !important; } }
+  @media (max-width: 720px) { .splash-hold { height: 46px; font-size: 13px; padding: 0 22px; } }
 
-  /* 公告页日志样式已在上方定义 */
 
   @media (max-width: 720px) {
     .splash-inner { padding: 24px 22px 20px; max-width: 100%; height: min(85vh, 680px); gap: 0; }
@@ -1114,14 +1128,23 @@
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
     <div class="splash-hold" id="splash-hold" data-phase="idle" role="slider" tabindex="0" aria-label="往右拖进入主站" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-      <div class="splash-hold__track">
-        <span class="splash-hold__label">往右拖进入主站</span>
-        <span class="splash-hold__capsule">
-          <span class="splash-hold__content">
-            <span class="splash-hold__arrow">→</span>
-            <span class="splash-hold__done">✓ 正在进入...</span>
-          </span>
+    <button type="button" class="splash-hold" id="splash-hold"
+            data-phase="idle" aria-describedby="splash-hold-sr">
+      <span class="splash-hold__pulse" aria-hidden="true"></span>
+      <span class="splash-hold__label">
+        <span class="splash-hold__idle">长按进入主站</span>
+        <span class="splash-hold__done">✓ 正在进入...</span>
+      </span>
+      <span class="splash-hold__clip" aria-hidden="true">
+        <span class="splash-hold__fill">
+          <span class="splash-hold__label"><span class="splash-hold__idle">长按进入主站</span><span class="splash-hold__done">✓ 正在进入...</span></span>
         </span>
+        <span class="splash-hold__crest" aria-hidden="true">
+          <span class="splash-hold__label"><span class="splash-hold__idle">长按进入主站</span><span class="splash-hold__done">✓ 正在进入...</span></span>
+        </span>
+      </span>
+      <span id="splash-hold-sr" class="hold-sr">长按 1.5 秒进入主站</span>
+    </button>
       </div>
     </div>
     <p class="splash-hint">往里进往里进</p>
@@ -1233,7 +1256,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=186"></script>
+<script src="apps.js?v=188"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2003,124 +2026,120 @@
   }, { once: true });
 
   // ======== 公告页 SlideCommit —— 滑块确认进入主站（原生 JS+CSS） ========
+  // ======== 公告页 HoldButton —— 液态填充 + crest 波浪 + glow ========
   (function () {
-    var root = document.getElementById("splash-hold");
-    if (!root) return;
-    var track = root.querySelector(".splash-hold__track");
-    var cap = root.querySelector(".splash-hold__capsule");
-    if (!track || !cap) return;
+    var btn = document.getElementById("splash-hold");
+    if (!btn) return;
+    var holdMs = 1500, releaseMs = 200, resetMs = 0;
+    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
+    var phase = "idle", inputKind = null;
+    var gesture = { pointerId: null, start: 0 };
+    var timers = { complete: 0, reset: 0 };
+    var motion = { raf: 0, p: 0, from: 0, to: 0, start: 0 };
 
-    var PAD = 4;
-    var state = { x: 0, vx: 0, grabbing: false, startGrab: 0 };
-    var phase = "idle";
-    var K = 520, MASS = 0.9;
-    var CRIT = 2 * Math.sqrt(K * MASS);
-    var HOME_DAMP = CRIT * 0.62;
-    var doneTimer = 0;
+    btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
+    btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
+    var ro = new ResizeObserver(function () {
+      btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
+      btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
+    });
+    ro.observe(btn);
 
-    function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
-    function setPhase(ph) { phase = ph; root.setAttribute("data-phase", ph); }
-
-    function getTravel() {
-      var w = track.clientWidth, h = track.clientHeight;
-      var grip = h - PAD * 2, inner = w - PAD * 2;
-      // Set CSS variable so capsule width matches in JS
-      cap.style.setProperty("--sc-grip-h", grip + "px");
-      return Math.max(1, inner - grip);
+    function setPhase(ph, kind) {
+      phase = ph; inputKind = kind || inputKind;
+      btn.setAttribute("data-phase", ph);
     }
-
-    function apply() {
-      cap.style.setProperty("--sc-x", state.x.toFixed(2) + "px");
-      var t = getTravel();
-      root.setAttribute("aria-valuenow", Math.round(clamp(state.x / t, 0, 1) * 100));
+    function clearTimers() {
+      clearTimeout(timers.complete); clearTimeout(timers.reset);
     }
-
-    var raf = 0, lastT = 0;
-    function tick(now) {
-      var dt = Math.min(0.032, lastT ? (now - lastT) / 1000 : 0);
-      lastT = now;
-      if (dt > 0) {
-        var target = phase === "done" ? getTravel() : 0;
-        var f = -K * (state.x - target) - HOME_DAMP * state.vx;
-        state.vx += f / MASS * dt;
-        state.x += state.vx * dt;
-        if (!state.grabbing) state.x = clamp(state.x, 0, getTravel());
-        apply();
-        if (Math.abs(state.x - target) < 0.5 && Math.abs(state.vx) < 1.5 && !state.grabbing) {
-          state.x = target; state.vx = 0; apply();
-          if (phase !== "done") { raf = 0; return; }
-        }
+    function drive(to, dur, ease) {
+      cancelAnimationFrame(motion.raf);
+      motion.from = motion.p; motion.to = to; motion.start = performance.now();
+      function step(now) {
+        var t = dur > 0 ? Math.min(1, (now - motion.start) / dur) : 1;
+        motion.p = motion.from + (motion.to - motion.from) * ease(t);
+        btn.style.setProperty("--hb-p", motion.p.toFixed(4));
+        if (t < 1) { motion.raf = requestAnimationFrame(step); return; }
+        motion.raf = 0;
+        if (motion.to === 1) complete();
       }
-      raf = requestAnimationFrame(tick);
+      motion.raf = requestAnimationFrame(step);
     }
-
-    function startRaf() { if (!raf) { lastT = 0; raf = requestAnimationFrame(tick); } }
-
-    function dismiss() {
-      var splash = document.getElementById("preloader");
-      if (!splash || splash.classList.contains("hide")) return;
-      splash.classList.add("hide");
-      setTimeout(function () { splash.remove(); }, 600);
-    }
-
-    function commit() {
-      if (phase === "done") return;
+    function complete() {
+      if (phase !== "holding") return;
+      clearTimers();
       setPhase("done");
-      startRaf();
-      clearTimeout(doneTimer);
-      doneTimer = setTimeout(function () {
-        dismiss();
-        setTimeout(function () { setPhase("idle"); state.x = 0; state.vx = 0; apply(); }, 200);
-      }, 900);
+      var splash = document.getElementById("preloader");
+      if (splash) {
+        setTimeout(function () {
+          splash.classList.add("hide");
+          setTimeout(function () { splash.remove(); }, 600);
+        }, 600);
+      }
+      if (resetMs > 0) {
+        timers.reset = setTimeout(function () {
+          setPhase("idle");
+          drive(0, releaseMs, EASE_OUT);
+        }, resetMs);
+      }
+    }
+    function begin(kind) {
+      if (phase !== "idle") return false;
+      gesture.start = performance.now();
+      setPhase("holding", kind);
+      drive(1, holdMs, function (t) { return t; });
+      timers.complete = setTimeout(complete, holdMs + 100);
+      return true;
+    }
+    function release() {
+      if (phase !== "holding") return;
+      clearTimers();
+      setPhase("idle");
+      drive(0, releaseMs, EASE_OUT);
     }
 
-    function down(e) {
-      if (phase !== "idle") return;
+    function endPointer() {
+      if (gesture.pointerId === null) return;
+      gesture.pointerId = null;
+      release();
+    }
+    btn.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0 || !e.isPrimary || gesture.pointerId !== null) return;
+      if (!begin("pointer")) return;
+      gesture.pointerId = e.pointerId;
+      try { btn.setPointerCapture(e.pointerId); } catch {}
       e.preventDefault();
-      state.grabbing = true;
-      state.startGrab = e.clientX - state.x;
-      root.setAttribute("data-held", ""); root.setAttribute("data-dragging", "");
-      try { track.setPointerCapture(e.pointerId); } catch {}
-      startRaf();
-      document.addEventListener("pointermove", move);
-      document.addEventListener("pointerup", up);
-      document.addEventListener("pointercancel", up);
-    }
-    function move(e) {
-      if (!state.grabbing) return;
-      state.x = clamp(e.clientX - state.startGrab, 0, getTravel());
-      state.vx = 0; apply();
-    }
-    function up() {
-      if (!state.grabbing) return;
-      state.grabbing = false;
-      delete root.dataset.held; delete root.dataset.dragging;
-      document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerup", up);
-      document.removeEventListener("pointercancel", up);
-      if (state.x >= getTravel() - 4) { commit(); }
-    }
+    });
+    btn.addEventListener("pointerup", endPointer);
+    btn.addEventListener("pointercancel", endPointer);
+    btn.addEventListener("lostpointercapture", endPointer);
+    btn.addEventListener("pointerleave", function (e) {
+      if (e.pointerType !== "touch") endPointer();
+    });
+    btn.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && inputKind === "key") release();
+      if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); begin("key"); }
+    });
+    btn.addEventListener("keyup", function (e) {
+      if ((e.key === " " || e.key === "Enter") && inputKind === "key") { e.preventDefault(); release(); }
+    });
+    btn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
-    track.addEventListener("pointerdown", down);
-    window.addEventListener("blur", up);
-    document.addEventListener("visibilitychange", function () { if (document.hidden) up(); });
-
-    document.addEventListener("keydown", function (e) {
-      if (phase !== "idle") return;
-      if (e.key === "End" || (e.key === "Enter" && !e.repeat)) { e.preventDefault(); commit(); }
+    window.addEventListener("blur", function () { if (phase === "holding") release(); });
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden && phase === "holding") release();
     });
 
-    apply();
+    btn.style.setProperty("--hb-p", "0");
   })();
-
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
+    { type: "change", text: "公告页按钮换回 HoldButton 液态填充 + crest 波浪", date: "2026-11-12" },
     { type: "change", text: "下载卡换成 SpotlightCard 光标跟随光斑", date: "2026-11-12" },
     { type: "change", text: "彩蛋改成拖拽不算，pointerup + 距离判定", date: "2026-11-12" },
-    { type: "change", text: "公告页按钮换成 SlideCommit 滑块确认", date: "2026-11-12" },
-    { type: "change", text: "brand 头像加透镜光晕跟随光标", date: "2026-11-12" },
     { type: "fix",    text: "SlideCommit 滑块宽度 bug：满盖轨道看不到手柄", date: "2026-11-12" },
+    { type: "change", text: "deploy.ps1 自动校验 + 线上验证", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {
