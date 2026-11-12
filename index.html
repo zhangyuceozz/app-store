@@ -1287,7 +1287,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=208"></script>
+<script src="apps.js?v=210"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1741,16 +1741,14 @@
     fillDates(grid);
     pageIndex++;
 
-    // TiltedCard 绑定（每次 loadMore 后必须调用，MutationObserver 可能丢事件）
-    setTimeout(function () {
-      document.querySelectorAll(".card[data-tc]").forEach(function (el) {
-        if (el._tc) return;
-        try {
-          var sh = el.querySelector(".card__shadow");
-          el._tc = { rx:0, vrx:0, ry:0, vry:0, lift:0, vlift:0, press:0, vpress:0, nx:0, ny:0, inside:false, mouse:false, _shadow:sh, _reduced: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches };
-        } catch (e) {}
-      });
-    }, 0);
+    // TiltedCard 同步绑定（必须在 insertAdjacentHTML 后立即执行）
+    grid.querySelectorAll(".card[data-tc]").forEach(function (el) {
+      if (el._tc) return;
+      try {
+        var sh = el.querySelector(".card__shadow");
+        el._tc = { rx:0, vrx:0, ry:0, vry:0, lift:0, vlift:0, press:0, vpress:0, nx:0, ny:0, inside:false, mouse:false, _shadow:sh, _reduced: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches };
+      } catch (e) {}
+    });
 
     if (!reset) checkScroll();
 
