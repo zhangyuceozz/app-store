@@ -541,26 +541,59 @@
     transform-style: preserve-3d;
     perspective: 800;
   }
-  /* SpotlightCard inner layers */
-  .card__spotlight {
-    position: absolute; inset: 0; z-index: 1;
+  /* TiltedCard layers (React Bits style) */
+  .card__shadow {
+    position: absolute; inset: 0; margin: auto;
+    max-width: 100%; max-height: 100%;
+    background: rgba(0,0,0,.55);
+    filter: blur(20px); opacity: 0; pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .card__glare {
+    position: absolute; inset: 0; z-index: 5; pointer-events: none;
+    background: radial-gradient(
+      farthest-corner circle at var(--tc-gx,50%) var(--tc-gy,50%),
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.34)) 0%,
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.202)) 27%,
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.003)) 54%,
+      rgba(255,255,255,0) 60%);
+    mix-blend-mode: screen;
+  }
+  .card__rim {
+    position: absolute; inset: 0; z-index: 6;
     border-radius: inherit; pointer-events: none;
-    background: none; opacity: 0; transition: opacity .15s ease;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), inset 0 1px 0 rgba(255,255,255,.12);
   }
   .card__edge {
-    position: absolute; inset: 0; z-index: 3;
-    border-radius: inherit; pointer-events: none;
-    opacity: 0; transition: opacity .15s ease;
+    position: absolute; inset: 0; z-index: 7;
+    box-sizing: border-box; padding: 1px; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(
+      farthest-side circle at var(--tc-gx,50%) var(--tc-gy,50%),
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.85)) 0%,
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.43)) 36%,
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.02)) 72%,
+      rgba(255,255,255,0) 85%);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-    padding: 1px;
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
   }
-  .card__grain {
-    position: absolute; inset: 0; z-index: 2;
-    border-radius: inherit; pointer-events: none;
-    opacity: 0; mix-blend-mode: overlay; background-size: 160px 160px;
+  .card[data-tc] { isolation: isolate; overflow: visible; }
+  .card[data-tc] .c-preview img,
+  .card[data-tc] .c-icon,
+  .card[data-tc] .c-name,
+  .card[data-tc] .c-meta,
+  .card[data-tc] .c-date,
+  .card[data-tc] .c-dl-btn {
+    transform: translate3d(
+      calc(var(--tc-px,0) * var(--tc-depth,0) * 1px),
+      calc(var(--tc-py,0) * var(--tc-depth,0) * 1px), 0);
   }
-  .card[data-spotlight] { isolation: isolate; overflow: hidden; }
+  .card[data-tc] .c-preview { --tc-depth: -24; }
+  .card[data-tc] .c-icon    { --tc-depth: 6; }
+  .card[data-tc] .c-name    { --tc-depth: 4; }
+  .card[data-tc] .c-meta    { --tc-depth: 3; }
+  .card[data-tc] .c-dl-btn  { --tc-depth: 12; }
+
 
 
   /* 预览图骨架 */
@@ -1127,7 +1160,6 @@
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <div class="splash-hold" id="splash-hold" data-phase="idle" role="slider" tabindex="0" aria-label="往右拖进入主站" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
     <button type="button" class="splash-hold" id="splash-hold"
             data-phase="idle" aria-describedby="splash-hold-sr">
       <span class="splash-hold__pulse" aria-hidden="true"></span>
@@ -1256,7 +1288,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=188"></script>
+<script src="apps.js?v=190"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1556,7 +1588,7 @@
     var meta = a.category || "";
     var preview = a.preview || "";
     return (
-      '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '" data-spotlight>' +
+      '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '" data-tc>' +
         (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="eager" decoding="async" fetchpriority="auto" onload="this.classList.add(\'loaded\');this.closest(\'.c-preview\')?.classList.add(\'loaded\')"><div class="c-preview-hint"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M21 21l-4.3-4.3"/></svg>点击预览</div></div>' : "") +
         '<div class="c-row">' +
           iconHtml(a, "c-icon") +
@@ -1569,7 +1601,7 @@
           "</div>" +
         "</div>" +
         (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
-        '<span class="card__spotlight" aria-hidden="true"></span><span class="card__edge" aria-hidden="true"></span><span class="card__grain" aria-hidden="true"></span>' +
+        '<div class="card__shadow" aria-hidden="true"></div><span class="card__glare" aria-hidden="true"></span><span class="card__rim" aria-hidden="true"></span><span class="card__edge" aria-hidden="true"></span>' +
       "</div>"
     );
   }
@@ -1727,123 +1759,96 @@
     if (!reset) checkScroll();
   }
 
-  // ======== SpotlightCard：光标跟随径向光斑 + 边缘辉光 ========
+  // ======== TiltedCard — 3D 倾斜 + glare + rim + edge + shadow（React Bits 移植） ========
   (function () {
-    var cards = [];
-    var pointer = { x: -9999, y: -9999, active: false };
+    var AMPLITUDE = 12, SCALE_HOVER = 1.05, SMOOTHNESS = 0.6, GLARE = 0.5, SHADOW = 0.5, PARALLAX = 1;
+    var CARDS = [], raf = 0, last = 0;
 
-    function falloff(color, softness) {
-      var s = Math.max(0, Math.min(1, softness));
-      var core = Math.pow(1 - s, 1.5) * 0.85;
-      var stops = ["color-mix(in srgb, " + color + " 100%, transparent) 0%"];
-      for (var i = 0; i <= 14; i++) {
-        var t = core + ((1 - core) * i) / 14;
-        var g = (t - core) / (1 - core);
-        var smooth = 1 - g * g * (3 - 2 * g);
-        var glow = Math.exp(-4.6 * g * g) * (1 - Math.pow(g, 6));
-        var a = smooth + (glow - smooth) * s;
-        stops.push("color-mix(in srgb, " + color + " " + (a * 100).toFixed(2) + "%, transparent) " + (t * 100).toFixed(2) + "%");
+    function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, v)); }
+    function smoother(t) { var x = clamp(t, 0, 1); return x*x*x*(x*(x*6-15)+10); }
+
+    function step(st, key, target, omega, zeta, dt) {
+      var vk = "v" + key;
+      var steps = Math.max(1, Math.ceil(dt / (1/240)));
+      var h = dt / steps;
+      for (var i = 0; i < steps; i++) {
+        st[vk] += (omega*omega*(target - st[key]) - 2*zeta*omega*st[vk]) * h;
+        st[key] += st[vk] * h;
       }
-      return stops.join(", ");
+      return !(Math.abs(target - st[key]) < 0.001 && Math.abs(st[vk]) < 0.01);
     }
 
-    var raf = 0, last = 0;
-    function tick(now) {
-      raf = 0;
-      var dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
-      last = now;
-      var needsMore = false;
+    function bind(card) {
+      var body = card, shadow = card.querySelector(".card__shadow");
+      var state = { rx:0, vrx:0, ry:0, vry:0, lift:0, vlift:0, press:0, vpress:0 };
+      var pointer = { nx:0, ny:0, inside:false, mouse:false };
+      var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      cards.forEach(function (c) {
-        var s = c.settings, st = c.state;
-        var rect = c.root.getBoundingClientRect();
-        var target = 0;
-        if (pointer.active) {
-          var px = pointer.x - rect.left, py = pointer.y - rect.top;
-          var gap = Math.hypot(Math.max(0, -px, px - rect.width), Math.max(0, -py, py - rect.height));
-          target = gap === 0 ? 1 : (s.proximity > 0 ? Math.max(0, 1 - gap / s.proximity) ** 2 : 0);
-        }
-        var follow = 1 - Math.exp(-dt / (0.015 + s.smoothing * 0.22));
-        st.x += ((pointer.x - rect.left) - st.x) * follow;
-        st.y += ((pointer.y - rect.top) - st.y) * follow;
-        var fade = 1 - Math.exp(-dt / (target > st.presence ? 0.1 : 0.32));
-        st.presence += (target - st.presence) * fade;
-        var press = st.pressed ? 1 : 0;
-        st.flare += (press - st.flare) * (1 - Math.exp(-dt / (press ? 0.05 : 0.28)));
-
-        var size = s.size * (1 + 0.2 * st.flare);
-        var boost = 1 + 0.7 * st.flare;
-        var fullP = Math.min(1, st.presence * s.intensity * boost);
-        var edgeP = Math.min(1, st.presence * s.borderGlow * boost);
-
-        if (st.presence > 0.003 || st.flare > 0.003) {
-          var grad = "radial-gradient(circle " + size + "px at " + st.x.toFixed(1) + "px " + st.y.toFixed(1) + "px, " + s.fill + ")";
-          c.light.style.background = grad;
-          c.light.style.opacity = fullP;
-          var egrad = "radial-gradient(circle " + (size * 0.6).toFixed(1) + "px at " + st.x.toFixed(1) + "px " + st.y.toFixed(1) + "px, " + s.edge + ")";
-          c.edge.style.background = egrad;
-          c.edge.style.opacity = edgeP;
-          if (fullP > 0) needsMore = true;
-        }
-        if (Math.abs(target - st.presence) > 0.002 || (st.presence > 0 && (Math.abs(px - st.x) > 0.1 || Math.abs(py - st.y) > 0.1))) needsMore = true;
-      });
-
-      if (needsMore) raf = requestAnimationFrame(tick);
-    }
-    function wake() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } }
-
-    var THEMES = {
-      dark:  { light: "rgba(255,255,255,0.9)",  intensity: 0.18, borderGlow: 0.55 },
-      light: { light: "rgba(24,24,27,0.15)",   intensity: 0.15, borderGlow: 0.5 }
-    };
-
-    function themeKey() {
-      var t = document.documentElement.getAttribute("data-theme");
-      if (t === "auto") {
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      function track(e) {
+        var rect = body.getBoundingClientRect();
+        pointer.nx = clamp(((e.clientX - rect.left) - rect.width/2) / (rect.width/2), -1, 1);
+        pointer.ny = clamp(((e.clientY - rect.top) - rect.height/2) / (rect.height/2), -1, 1);
       }
-      return t === "dark" ? "dark" : "light";
+
+      card.addEventListener("pointerenter", function (e) { pointer.inside = true; pointer.mouse = e.pointerType === "mouse" || e.pointerType === "pen"; track(e); wake(); });
+      card.addEventListener("pointermove", function (e) { pointer.mouse = e.pointerType === "mouse" || e.pointerType === "pen"; if (!pointer.inside) pointer.inside = true; track(e); wake(); });
+      card.addEventListener("pointerleave", function () { pointer.inside = false; });
+      card.addEventListener("pointerdown", function () { state.press = 1; wake(); });
+      card.addEventListener("pointerup", function () { state.press = 0; wake(); });
+
+      function frame(now) {
+        var s = raf = 0;
+        var dt = clamp((now - last)/1000 || 0, 0, 0.05); last = now;
+        var amp = AMPLITUDE * (reduced ? 0.3 : 1);
+        var hovering = pointer.inside && pointer.mouse;
+        var inputX = hovering ? pointer.nx : 0;
+        var inputY = hovering ? pointer.ny : 0;
+        var omega = 20 * Math.pow(0.2, SMOOTHNESS);
+        var zeta = 1 - 0.3 * SMOOTHNESS;
+        var lifted = hovering ? 1 : 0;
+
+        var busy = false;
+        busy = step(state, "rx", -inputY * amp, omega, zeta, dt) || busy;
+        busy = step(state, "ry", inputX * amp, omega, zeta, dt) || busy;
+        busy = step(state, "lift", lifted, omega, Math.max(zeta, 0.85), dt) || busy;
+        busy = step(state, "press", state.press ? 1 : 0, 26, 0.8, dt) || busy;
+
+        body.setAttribute("data-active", (lifted || state.lift > 0.01) ? "" : null);
+        var scale = 1 + (SCALE_HOVER - 1) * state.lift - 0.02 * state.press;
+        var rx = state.rx, ry = state.ry;
+        body.style.transform = "translate3d(0,0,0) rotateX(" + rx.toFixed(3) + "deg) rotateY(" + (ry).toFixed(3) + "deg) scale(" + scale.toFixed(4) + ")";
+        body.style.setProperty("--tc-px", (Math.sin((ry*Math.PI)/180) * PARALLAX).toFixed(4));
+        body.style.setProperty("--tc-py", (-Math.sin((rx*Math.PI)/180) * PARALLAX).toFixed(4));
+        var reach = Math.max(amp, 1);
+        body.style.setProperty("--tc-gx", (50 + (ry/reach)*46).toFixed(2) + "%");
+        body.style.setProperty("--tc-gy", (50 - (rx/reach)*46).toFixed(2) + "%");
+        var energy = Math.min(1, Math.hypot(rx, ry)/reach);
+        body.style.setProperty("--tc-glare", (GLARE * Math.max(state.lift, energy)).toFixed(3));
+
+        if (shadow) {
+          var radX = (rx*Math.PI)/180, radY = (ry*Math.PI)/180;
+          var offX = -Math.sin(radY)*22, offY = 12 + 16*state.lift + Math.sin(radX)*18;
+          var spread = scale * (0.86 + 0.04*state.lift);
+          shadow.style.transform = "translate3d(" + offX.toFixed(2) + "px," + offY.toFixed(2) + "px,0) scale(" + (spread*0.2+0.8*spread).toFixed(4) + "," + spread.toFixed(4) + ")";
+          shadow.style.opacity = (SHADOW * (0.6 + 0.4*state.lift)).toFixed(3);
+        }
+
+        if (busy) raf = requestAnimationFrame(frame);
+      }
+      var self = { wake: function () { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } } };
+      CARDS.push(self);
+      return self;
     }
 
-    function makeCard(root) {
-      var light = root.querySelector(".card__spotlight");
-      var edge = root.querySelector(".card__edge");
-      if (!light || !edge) return null;
-      var theme = THEMES[themeKey()];
-      return {
-        root: root, light: light, edge: edge,
-        state: { x: 0, y: 0, presence: 0, flare: 0, pressed: false },
-        settings: {
-          fill: falloff(theme.light, 0.7),
-          edge: falloff(theme.light, 1),
-          size: 240, intensity: theme.intensity, borderGlow: theme.borderGlow,
-          proximity: 80, smoothing: 0.3
-        }
-      };
-    }
+    function wake() { for (var i = 0; i < CARDS.length; i++) CARDS[i].wake(); }
 
     function refresh() {
-      cards = cards.filter(function (c) { return document.body.contains(c.root); });
-      document.querySelectorAll(".card[data-spotlight]").forEach(function (el) {
-        if (!cards.some(function (c) { return c.root === el; })) {
-          var nc = makeCard(el);
-          if (nc) {
-            nc.root.addEventListener("pointerdown", function () { nc.state.pressed = true; wake(); });
-            nc.root.addEventListener("pointerup", function () { nc.state.pressed = false; wake(); });
-            nc.root.addEventListener("pointerleave", function () { nc.state.pressed = false; });
-            cards.push(nc);
-          }
-        }
+      CARDS = CARDS.filter(function (c) { return document.body.contains(document.querySelector(".card[data-tc]")); });
+      document.querySelectorAll(".card[data-tc]").forEach(function (el) {
+        if (!el._tc) { el._tc = bind(el); }
       });
       wake();
     }
-
-    document.addEventListener("pointermove", function (e) {
-      pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; wake();
-    });
-    document.addEventListener("pointerout", function (e) {
-      if (!e.relatedTarget) pointer.active = false;
-    });
 
     refresh();
     var obs = new MutationObserver(refresh);
@@ -1852,15 +1857,6 @@
     else setTimeout(function () {
       var g = document.querySelector(".grid"); if (g) obs.observe(g, { childList: true, subtree: false });
     }, 300);
-
-    new MutationObserver(function () {
-      cards.forEach(function (c) {
-        var t = THEMES[themeKey()];
-        c.settings.fill = falloff(t.light, 0.7);
-        c.settings.edge = falloff(t.light, 1);
-        c.settings.intensity = t.intensity; c.settings.borderGlow = t.borderGlow;
-      });
-    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   })();
 
   var qTimer = null;
@@ -2135,10 +2131,10 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
+    { type: "change", text: "下载卡换回 TiltedCard 3D 倾斜 + spring + glare + rim + edge", date: "2026-11-12" },
+    { type: "fix",    text: "公告页 HoldButton 重复 id 导致长按失效", date: "2026-11-12" },
     { type: "change", text: "公告页按钮换回 HoldButton 液态填充 + crest 波浪", date: "2026-11-12" },
-    { type: "change", text: "下载卡换成 SpotlightCard 光标跟随光斑", date: "2026-11-12" },
     { type: "change", text: "彩蛋改成拖拽不算，pointerup + 距离判定", date: "2026-11-12" },
-    { type: "fix",    text: "SlideCommit 滑块宽度 bug：满盖轨道看不到手柄", date: "2026-11-12" },
     { type: "change", text: "deploy.ps1 自动校验 + 线上验证", date: "2026-11-12" },
   ];
 
