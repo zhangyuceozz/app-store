@@ -1287,7 +1287,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=218"></script>
+<script src="apps.js?v=220"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1957,8 +1957,12 @@
     }
 
     function refresh() {
-      document.querySelectorAll("[data-tc]").forEach(bindOne);
+      var els = document.querySelectorAll("[data-tc]");
+      console.log("[TC refresh] finding [data-tc]", els.length, "elements");
+      els.forEach(bindOne);
+      console.log("[TC refresh] done, bound:", Array.from(els).filter(function(e){return e._tcBound}).length);
     }
+    console.log("[TC] IIFE STARTING...");
     refresh();
     var obs = new MutationObserver(refresh);
     obs.observe(document.body, { childList: true, subtree: true });
