@@ -1034,67 +1034,72 @@
     white-space: nowrap; flex-shrink: 0;
   }
 
-  /* 公告页 HoldButton：FuseButton 风格 — 轮廓保险丝 + 长按触发 */
+  /* 公告页 SlideCommit —— 滑块确认进入主站（React Bits 风格，原生 JS+CSS 移植） */
   .splash-hold {
-    --sh-bg: var(--card);
-    --sh-ink: var(--ink);
-    --sh-fuse: var(--accent);
-    --sh-fuse-h: 2px;
-    --sh-radius: 14px;
-    --sh-press: 0.96;
-    --sh-fade: 160ms;
-
+    --sc-track: var(--ink);
+    --sc-ink: #fafafa;
+    --sc-ok: #3b82f6;
+    --sc-no: #e5484d;
+    --sc-on-ink: #111;
+    --sc-on-ok: #fff;
+    --sc-radius: 14px;
+    --sc-grip-r: 11px;
+    --sc-pad: 4px;
+    --sc-font: 14px;
     width: 100%; height: 52px;
-    margin: 0; padding: 0; border: 0;
-    border-radius: var(--sh-radius);
-    background: var(--sh-bg);
-    color: var(--sh-ink);
-    font-size: 15px; font-weight: 500; letter-spacing: 0.01em;
-    position: relative; isolation: isolate; overflow: hidden;
-    cursor: pointer; user-select: none;
-    -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative; display: inline-block;
+    font-family: inherit;
   }
-  .splash-hold[data-pressed] { transform: scale(var(--sh-press)); }
-
-  .sh-face {
+  .splash-hold__track {
     position: absolute; inset: 0;
-    display: inline-flex; align-items: center; justify-content: center;
-    opacity: 0; filter: blur(2px); visibility: hidden;
-    transition: opacity var(--sh-fade) ease, filter var(--sh-fade) ease, visibility 0s linear var(--sh-fade);
+    border-radius: var(--sc-radius);
+    background: var(--sc-track);
+    cursor: grab; touch-action: none; user-select: none;
+    -webkit-user-select: none; -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
   }
-  .splash-hold[data-phase='idle']   .sh-idle   { opacity: 1; filter: blur(0); visibility: visible; transition-delay: 0s; }
-  .splash-hold[data-phase='armed']  .sh-armed  { opacity: 1; filter: blur(0); visibility: visible; transition-delay: 0s; }
+  .splash-hold[data-held] .splash-hold__track { cursor: grabbing; }
+  .splash-hold[data-phase="done"] .splash-hold__track { cursor: default; }
 
-  .sh-rim {
-    position: absolute; inset: 0; width: 100%; height: 100%;
-    overflow: visible; pointer-events: none; opacity: 0;
-    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--sh-fuse) 60%, transparent));
-    transition: opacity var(--sh-fade) ease;
+  .splash-hold__label {
+    position: absolute; inset: 0;
+    display: grid; place-items: center; pointer-events: none;
+    font-size: var(--sc-font); font-weight: 500; letter-spacing: -0.006em;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--sc-ink) 55%, transparent);
+    transition: opacity 200ms ease, filter 200ms ease;
   }
-  .splash-hold[data-phase='armed'] .sh-rim { opacity: 1; }
-  .sh-rim rect {
-    x: calc(var(--sh-fuse-h) / 2);
-    y: calc(var(--sh-fuse-h) / 2);
-    width: calc(100% - var(--sh-fuse-h));
-    height: calc(100% - var(--sh-fuse-h));
-    rx: max(0px, calc(var(--sh-radius) - var(--sh-fuse-h) / 2));
-    fill: none;
-    stroke: var(--sh-fuse);
-    stroke-width: var(--sh-fuse-h);
-    stroke-linecap: round;
-    stroke-dasharray: 1;
+
+  .splash-hold__capsule {
+    position: absolute; top: var(--sc-pad); left: var(--sc-pad);
+    width: calc(100% - var(--sc-pad) * 2); height: calc(100% - var(--sc-pad) * 2);
+    border-radius: var(--sc-grip-r);
+    background: var(--sc-ink); color: var(--sc-on-ink);
+    transform: translate3d(var(--sc-x, 0px), 0, 0);
+    will-change: transform; transition: transform 120ms cubic-bezier(.22,1,.36,1);
   }
+  .splash-hold[data-dragging] .splash-hold__capsule { transition: none; }
+  .splash-hold[data-phase="done"] .splash-hold__capsule { background: var(--sc-ok); color: var(--sc-on-ok); }
+  .splash-hold[data-phase="done"] .splash-hold__label { opacity: 0; filter: blur(2px); }
+
+  .splash-hold__content {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: var(--sc-font); font-weight: 600; letter-spacing: -0.006em; white-space: nowrap;
+  }
+  .splash-hold__arrow { transition: opacity 180ms ease; }
+  .splash-hold__done {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    gap: 8px; font-size: var(--sc-font); font-weight: 600;
+    opacity: 0; transform: scale(0.95);
+    transition: opacity 200ms ease, transform 200ms cubic-bezier(.22,1,.36,1);
+  }
+  .splash-hold[data-phase="done"] .splash-hold__arrow { opacity: 0; }
+  .splash-hold[data-phase="done"] .splash-hold__done { opacity: 1; transform: scale(1); }
+
   .splash-hint {
-    text-align: center;
-    font-size: 11px; font-weight: 500; letter-spacing: .1em;
-    color: var(--muted);
+    text-align: center; font-size: 11px; font-weight: 500; letter-spacing: .1em; color: var(--muted);
   }
-  @media (prefers-reduced-motion: reduce) {
-    .splash-hold { transform: none !important; }
-    .splash-hold .sh-face { filter: none; transition: opacity var(--sh-fade) ease, visibility 0s linear var(--sh-fade); }
-  }
+  @media (prefers-reduced-motion: reduce) { .splash-hold__capsule { transition: none !important; } }
 
   /* 公告页日志样式已在上方定义 */
 
@@ -1133,12 +1138,17 @@
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <button type="button" class="splash-hold" id="splash-hold"
-            data-phase="idle" aria-describedby="splash-hold-sr">
-      <span class="sh-face sh-idle">长按进入主站</span>
-      <span class="sh-face sh-armed">松开取消</span>
-      <svg class="sh-rim" aria-hidden="true"><rect pathLength="1" /></svg>
-    </button>
+    <div class="splash-hold" id="splash-hold" data-phase="idle" role="slider" tabindex="0" aria-label="往右拖进入主站" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="splash-hold__track">
+        <span class="splash-hold__label">往右拖进入主站</span>
+        <span class="splash-hold__capsule">
+          <span class="splash-hold__content">
+            <span class="splash-hold__arrow">→</span>
+            <span class="splash-hold__done">✓ 正在进入...</span>
+          </span>
+        </span>
+      </div>
+    </div>
     <p class="splash-hint">往里进往里进</p>
   </div>
 </div>
@@ -1248,7 +1258,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=179"></script>
+<script src="apps.js?v=180"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2024,79 +2034,113 @@
     })();
   }, { once: true });
 
-  // ======== 公告页 HoldButton — FuseButton 风格（轮廓保险丝 + 长按触发） ========
+  // ======== 公告页 SlideCommit —— 滑块确认进入主站（原生 JS+CSS） ========
   (function () {
-    var btn = document.getElementById("splash-hold");
-    if (!btn) return;
+    var root = document.getElementById("splash-hold");
+    if (!root) return;
+    var track = root.querySelector(".splash-hold__track");
+    var cap = root.querySelector(".splash-hold__capsule");
+    if (!track || !cap) return;
 
-    var rim = btn.querySelector(".sh-rim rect");
-    var anim = null;
+    var PAD = 4;
+    var state = { x: 0, vx: 0, grabbing: false, startGrab: 0 };
     var phase = "idle";
+    var K = 520, MASS = 0.9;
+    var CRIT = 2 * Math.sqrt(K * MASS);
+    var HOME_DAMP = CRIT * 0.62;
+    var doneTimer = 0;
 
-    function setPhase(ph) {
-      phase = ph;
-      btn.setAttribute("data-phase", ph);
+    function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+    function setPhase(ph) { phase = ph; root.setAttribute("data-phase", ph); }
+
+    function getTravel() {
+      var w = track.clientWidth, h = track.clientHeight;
+      var grip = h - PAD * 2, inner = w - PAD * 2;
+      return Math.max(1, inner - grip);
     }
+
+    function apply() {
+      cap.style.setProperty("--sc-x", state.x.toFixed(2) + "px");
+      var t = getTravel();
+      root.setAttribute("aria-valuenow", Math.round(clamp(state.x / t, 0, 1) * 100));
+    }
+
+    var raf = 0, lastT = 0;
+    function tick(now) {
+      var dt = Math.min(0.032, lastT ? (now - lastT) / 1000 : 0);
+      lastT = now;
+      if (dt > 0) {
+        var target = phase === "done" ? getTravel() : 0;
+        var f = -K * (state.x - target) - HOME_DAMP * state.vx;
+        state.vx += f / MASS * dt;
+        state.x += state.vx * dt;
+        if (!state.grabbing) state.x = clamp(state.x, 0, getTravel());
+        apply();
+        if (Math.abs(state.x - target) < 0.5 && Math.abs(state.vx) < 1.5 && !state.grabbing) {
+          state.x = target; state.vx = 0; apply();
+          if (phase !== "done") { raf = 0; return; }
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    function startRaf() { if (!raf) { lastT = 0; raf = requestAnimationFrame(tick); } }
+
     function dismiss() {
       var splash = document.getElementById("preloader");
       if (!splash || splash.classList.contains("hide")) return;
       splash.classList.add("hide");
       setTimeout(function () { splash.remove(); }, 600);
     }
-    function arm() {
-      if (phase !== "idle") return;
-      setPhase("armed");
-      anim = rim.animate(
-        [{ strokeDashoffset: 0 }, { strokeDashoffset: -1 }],
-        { duration: 1500, easing: "linear", fill: "forwards" }
-      );
-      anim.onfinish = function () {
-        if (phase !== "armed") return;
+
+    function commit() {
+      if (phase === "done") return;
+      setPhase("done");
+      startRaf();
+      clearTimeout(doneTimer);
+      doneTimer = setTimeout(function () {
         dismiss();
-        // 烧完后重置（让 splash-hold 下次进入时又是 idle）
-        anim = null;
-        setPhase("idle");
-      };
-    }
-    function undo() {
-      if (phase !== "armed") return;
-      if (anim) { anim.cancel(); anim = null; }
-      setPhase("idle");
+        setTimeout(function () { setPhase("idle"); state.x = 0; state.vx = 0; apply(); }, 200);
+      }, 900);
     }
 
-    btn.addEventListener("pointerdown", function (e) {
-      if (e.button !== 0 || !e.isPrimary) return;
-      arm();
-      btn.dataset.pressed = "";
+    function down(e) {
+      if (phase !== "idle") return;
       e.preventDefault();
-    });
-    btn.addEventListener("pointerup", function () {
-      undo();
-      delete btn.dataset.pressed;
-    });
-    btn.addEventListener("pointercancel", function () {
-      undo();
-      delete btn.dataset.pressed;
-    });
-    btn.addEventListener("pointerleave", function () {
-      undo();
-      delete btn.dataset.pressed;
-    });
-    window.addEventListener("blur", function () { undo(); });
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) undo();
-    });
+      state.grabbing = true;
+      state.startGrab = e.clientX - state.x;
+      root.setAttribute("data-held", ""); root.setAttribute("data-dragging", "");
+      try { track.setPointerCapture(e.pointerId); } catch {}
+      startRaf();
+      document.addEventListener("pointermove", move);
+      document.addEventListener("pointerup", up);
+      document.addEventListener("pointercancel", up);
+    }
+    function move(e) {
+      if (!state.grabbing) return;
+      state.x = clamp(e.clientX - state.startGrab, 0, getTravel());
+      state.vx = 0; apply();
+    }
+    function up() {
+      if (!state.grabbing) return;
+      state.grabbing = false;
+      delete root.dataset.held; delete root.dataset.dragging;
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", up);
+      document.removeEventListener("pointercancel", up);
+      if (state.x >= getTravel() - 4) { commit(); }
+    }
+
+    track.addEventListener("pointerdown", down);
+    window.addEventListener("blur", up);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) up(); });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key !== " " && e.key !== "Enter") return;
-      if (e.repeat) return;
-      e.preventDefault();
-      arm();
+      if (phase !== "idle") return;
+      if (e.key === "End" || (e.key === "Enter" && !e.repeat)) { e.preventDefault(); commit(); }
     });
-    document.addEventListener("keyup", function (e) {
-      if (e.key !== " " && e.key !== "Enter") return;
-      undo();
-    });
+
+    apply();
   })();
 
   // ======== 公告页：更新日志渲染 ========
