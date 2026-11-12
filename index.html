@@ -1261,7 +1261,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=182"></script>
+<script src="apps.js?v=183"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1310,7 +1310,7 @@
 
   // 控制台彩蛋：页面一加载就打
   console.log("%c👋 欢迎来到 Chovy Store", "font-size:20px;color:#f5491f;font-weight:bold;");
-  console.log("%c想看点有意思的？长按左上角 logo 试试。", "font-size:13px;color:#888;");
+  console.log("%c想看点有意思的？连点屏幕任意位置 5 下试试。", "font-size:13px;color:#888;");
   console.log("%c或者你就是个喜欢看控制台的人，那我们是同类。", "font-size:12px;color:#aaa;font-style:italic;");
 
   var bmEl = document.getElementById("branched-menu");
@@ -2152,10 +2152,10 @@
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
     { type: "change", text: "公告页按钮换成 SlideCommit 滑块确认", date: "2026-11-12" },
+    { type: "change", text: "彩蛋改成全局连点 5 下触发", date: "2026-11-12" },
     { type: "change", text: "brand 头像加透镜光晕跟随光标", date: "2026-11-12" },
     { type: "change", text: "下载卡加 TiltedCard 3D 倾斜特效", date: "2026-11-12" },
-    { type: "fix",    text: "彩蛋入口改成连点主题切换 5 下", date: "2026-11-12" },
-    { type: "fix",    text: "brand 头像彩蛋事件绑错元素导致没反应", date: "2026-11-11" },
+    { type: "fix",    text: "SlideCommit 滑块宽度 bug：满盖轨道看不到手柄", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {
@@ -2495,26 +2495,38 @@
   ];
   var _lastEggIdx = -1;
 
-  // 彩蛋入口：连点 5 下主题切换按钮
+  // 彩蛋入口：全局任意地方连点 5 下触发
   (function () {
-    var themeSwitch = document.querySelector(".theme-switch");
-    if (!themeSwitch) return;
-
     var taps = 0;
     var tapTimer = null;
-    themeSwitch.addEventListener("click", function () {
+    var _hint = null;
+
+    function showHint(text) {
+      if (!_hint) {
+        _hint = document.createElement("div");
+        _hint.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;z-index:99999;pointer-events:none;opacity:0;transition:opacity .2s ease;letter-spacing:.02em;";
+        document.body.appendChild(_hint);
+      }
+      _hint.textContent = text;
+      _hint.style.opacity = "1";
+      clearTimeout(_hint._hide);
+      _hint._hide = setTimeout(function () { _hint.style.opacity = "0"; }, 700);
+    }
+
+    document.addEventListener("pointerdown", function () {
       taps++;
       clearTimeout(tapTimer);
-      tapTimer = setTimeout(function () { taps = 0; }, 1500);
+      tapTimer = setTimeout(function () { taps = 0; if (_hint) _hint.style.opacity = "0"; }, 1500);
+      if (taps >= 3 && taps < 5) showHint("还差 " + (5 - taps) + " 下 🎯");
       if (taps >= 5) {
         taps = 0;
+        if (_hint) _hint.style.opacity = "0";
         var idx = Math.floor(Math.random() * EASTER_EGGS.length);
         if (idx === _lastEggIdx) idx = (idx + 1) % EASTER_EGGS.length;
         _lastEggIdx = idx;
         document.getElementById("egg-body").innerHTML = EASTER_EGGS[idx];
         document.getElementById("egg").classList.add("open");
         console.log("%c🎂 你发现了彩蛋！", "font-size:28px;color:#f5491f;font-weight:bold;");
-        console.log("%c连点主题切换 5 下再触发一次~", "font-size:14px;color:#666;");
       }
     });
 
