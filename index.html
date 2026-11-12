@@ -98,40 +98,13 @@
 
   .top { display: flex; align-items: center; height: 76px; gap: 24px; }
 
-  /* HoldButton: 长按 favicon 彩蛋触发（液态填充+波浪+辉光） */
   .brand {
-    --hb-radius: 12px;
-    --hb-bg: transparent;
-    --hb-fill: var(--accent);
-    --hb-text: var(--ink);
-    --hb-fill-text: #fff;
-    --hb-hold: 1500ms;
-    --hb-release: 200ms;
-    --hb-press: 0.96;
-    --hb-wave: 5px;
-    --hb-p: 0;
-
     display: inline-flex; align-items: center; gap: 10px;
-    flex-shrink: 0; cursor: pointer; user-select: none;
-    padding: 8px 14px; border-radius: var(--hb-radius);
-    position: relative; isolation: isolate;
-    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-    transition: transform 160ms ease, box-shadow var(--hb-release) ease;
+    flex-shrink: 0; user-select: none;
+    padding: 8px 14px; border-radius: 12px;
+    position: relative;
+    cursor: pointer;
   }
-  .brand[data-phase='holding'][data-input='pointer'] { transform: scale(var(--hb-press)); }
-  .brand[data-phase='done'] { transform: scale(1); }
-
-  .brand-idle { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 8px; }
-  .brand[data-phase='done'] .brand-idle { opacity: 0; filter: blur(2px); transition: opacity 180ms, filter 180ms; }
-
-  .brand-clip { position: absolute; inset: 0; z-index: 3; clip-path: inset(0 round var(--hb-radius)); pointer-events: none; }
-  .brand-fill {
-    position: absolute; inset: 0;
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--hb-fill); color: var(--hb-fill-text);
-    clip-path: inset(0 calc((1 - var(--hb-p)) * 100%) 0 0);
-  }
-
   .brand-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; display: block; border: 1px solid var(--line); }
   .brand-name { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: 0; white-space: nowrap; color: var(--ink); }
 
@@ -1099,15 +1072,8 @@
 <header>
   <div class="wrap top">
     <div class="brand" id="brand">
-      <span class="brand-idle">
-        <img class="brand-logo" src="favicon.ico" alt="">
-        <span class="brand-name" id="brand-name"></span>
-      </span>
-      <span class="brand-clip" aria-hidden="true">
-        <span class="brand-fill">
-          <span class="brand-idle"><img class="brand-logo" src="favicon.ico" alt=""><span class="brand-name" id="brand-name2"></span></span>
-        </span>
-      </span>
+      <img class="brand-logo" src="favicon.ico" alt="">
+      <span class="brand-name" id="brand-name">Chovy Store</span>
     </div>
     <div class="search">
       <input id="q" type="search" required autocomplete="off">
@@ -2250,105 +2216,29 @@
     "<p>谢谢你读到这里。<br>不管你是谁、在哪、现在在干嘛。<br><span style='color:#f5491f'>愿你今天也有点开心的事。</span></p>",
   ];
   var _lastEggIdx = -1;
-  if (brand) {
-    // 同步两个 brand-name 元素
-    var syncName = document.getElementById("brand-name");
-    var syncName2 = document.getElementById("brand-name2");
-    if (syncName && syncName2) {
-      var observer = new MutationObserver(function () { syncName2.textContent = syncName.textContent; });
-      observer.observe(syncName, { childList: true });
-    }
 
-    // HoldButton 核心状态机
-    var HB = {
-      phase: "idle",
-      raf: 0,
-      p: 0, from: 0, to: 0, start: 0,
-      completeTimer: 0,
-      resetTimer: 0,
-      input: null,
-      clear: function () { clearTimeout(this.completeTimer); clearTimeout(this.resetTimer); },
-      go: function (ph, input) {
-        this.phase = ph; this.input = input || null;
-        brand.setAttribute("data-phase", ph);
-        if (input) brand.setAttribute("data-input", input);
-        else brand.removeAttribute("data-input");
-      },
-      drive: function (to, duration, ease) {
-        var self = this;
-        cancelAnimationFrame(this.raf);
-        this.from = this.p; this.to = to; this.start = performance.now();
-        function step(now) {
-          var t = duration > 0 ? Math.min(1, (now - self.start) / duration) : 1;
-          self.p = self.from + (self.to - self.from) * ease(t);
-          brand.style.setProperty("--hb-p", self.p.toFixed(4));
-          if (t < 1) { self.raf = requestAnimationFrame(step); return; }
-          self.raf = 0;
-          if (to === 1) complete();
-        }
-        this.raf = requestAnimationFrame(step);
+  // 彩蛋入口：连点 5 下主题切换按钮
+  (function () {
+    var themeSwitch = document.querySelector(".theme-switch");
+    if (!themeSwitch) return;
+
+    var taps = 0;
+    var tapTimer = null;
+    themeSwitch.addEventListener("click", function () {
+      taps++;
+      clearTimeout(tapTimer);
+      tapTimer = setTimeout(function () { taps = 0; }, 1500);
+      if (taps >= 5) {
+        taps = 0;
+        var idx = Math.floor(Math.random() * EASTER_EGGS.length);
+        if (idx === _lastEggIdx) idx = (idx + 1) % EASTER_EGGS.length;
+        _lastEggIdx = idx;
+        document.getElementById("egg-body").innerHTML = EASTER_EGGS[idx];
+        document.getElementById("egg").classList.add("open");
+        console.log("%c🎂 你发现了彩蛋！", "font-size:28px;color:#f5491f;font-weight:bold;");
+        console.log("%c连点主题切换 5 下再触发一次~", "font-size:14px;color:#666;");
       }
-    };
-    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
-
-    function complete() {
-      if (HB.phase !== "holding") return;
-      HB.clear();
-      HB.go("done");
-      triggerEgg();
-      HB.resetTimer = setTimeout(function () {
-        HB.go("idle");
-        HB.drive(0, 200, EASE_OUT);
-      }, 1100);
-    }
-    function begin(kind) {
-      if (HB.phase !== "idle") return false;
-      HB.clear();
-      HB.go("holding", kind);
-      HB.drive(1, 1500, function (t) { return t; }); // LINEAR
-      HB.completeTimer = setTimeout(complete, 1600);
-      return true;
-    }
-    function release() {
-      if (HB.phase !== "holding") return;
-      HB.clear();
-      HB.go("idle");
-      HB.drive(0, 200, EASE_OUT);
-    }
-
-    function startHold(e) {
-      e.preventDefault();
-      begin(e.type.startsWith("touch") ? "touch" : "pointer");
-    }
-    function cancelHold() {
-      if (HB.phase === "holding") release();
-    }
-
-    brand.addEventListener("pointerdown", startHold);
-    brand.addEventListener("pointerup", cancelHold);
-    brand.addEventListener("pointercancel", cancelHold);
-    brand.addEventListener("pointerleave", cancelHold);
-    brand.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-
-    window.addEventListener("blur", function () { cancelHold(); });
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) cancelHold();
     });
-
-    function triggerEgg() {
-      cancelHold();
-      // 随机一条，排除上次的，保证每次都不一样
-      var n = EASTER_EGGS.length;
-      var idx = Math.floor(Math.random() * n);
-      if (idx === _lastEggIdx) idx = (idx + 1) % n;
-      _lastEggIdx = idx;
-      var body = document.getElementById("egg-body");
-      body.innerHTML = EASTER_EGGS[idx];
-      document.getElementById("egg").classList.add("open");
-      // 控制台彩蛋
-      console.log("%c🎂 你发现了彩蛋！", "font-size:28px;color:#f5491f;font-weight:bold;");
-      console.log("%c长按 logo 可以再触发一次~", "font-size:14px;color:#666;");
-    }
 
     document.getElementById("egg-close").addEventListener("click", function () {
       document.getElementById("egg").classList.remove("open");
@@ -2356,7 +2246,9 @@
     document.getElementById("egg").addEventListener("click", function (e) {
       if (e.target.id === "egg") document.getElementById("egg").classList.remove("open");
     });
-  }
+  })();
+
+
 
 })();
 </script>
