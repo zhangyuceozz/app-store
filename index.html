@@ -1288,7 +1288,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=192"></script>
+<script src="apps.js?v=194"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1759,13 +1759,11 @@
     if (!reset) checkScroll();
   }
 
-  // ======== TiltedCard — 3D 倾斜 + glare + rim + edge + shadow（React Bits 移植） ========
+  // ======== TiltedCard — 3D 倾斜 + spring + glare + rim + edge + shadow（React Bits 移植） ========
   (function () {
     var AMPLITUDE = 12, SCALE_HOVER = 1.05, SMOOTHNESS = 0.6, GLARE = 0.5, SHADOW = 0.5, PARALLAX = 1;
-    var CARDS = [], raf = 0, last = 0;
 
     function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, v)); }
-    function smoother(t) { var x = clamp(t, 0, 1); return x*x*x*(x*(x*6-15)+10); }
 
     function step(st, key, target, omega, zeta, dt) {
       var vk = "v" + key;
@@ -1779,10 +1777,11 @@
     }
 
     function bind(card) {
-      var body = card, shadow = card.querySelector(".card__shadow");
+      var body = card, shadowEl = card.querySelector(".card__shadow");
       var state = { rx:0, vrx:0, ry:0, vry:0, lift:0, vlift:0, press:0, vpress:0 };
       var pointer = { nx:0, ny:0, inside:false, mouse:false };
       var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var raf = 0, last = 0;
 
       function track(e) {
         var rect = body.getBoundingClientRect();
@@ -1790,14 +1789,8 @@
         pointer.ny = clamp(((e.clientY - rect.top) - rect.height/2) / (rect.height/2), -1, 1);
       }
 
-      card.addEventListener("pointerenter", function (e) { pointer.inside = true; pointer.mouse = e.pointerType === "mouse" || e.pointerType === "pen"; track(e); wake(); });
-      card.addEventListener("pointermove", function (e) { pointer.mouse = e.pointerType === "mouse" || e.pointerType === "pen"; if (!pointer.inside) pointer.inside = true; track(e); wake(); });
-      card.addEventListener("pointerleave", function () { pointer.inside = false; });
-      card.addEventListener("pointerdown", function () { state.press = 1; wake(); });
-      card.addEventListener("pointerup", function () { state.press = 0; wake(); });
-
       function frame(now) {
-        var s = raf = 0;
+        raf = 0;
         var dt = clamp((now - last)/1000 || 0, 0, 0.05); last = now;
         var amp = AMPLITUDE * (reduced ? 0.3 : 1);
         var hovering = pointer.inside && pointer.mouse;
@@ -1825,29 +1818,32 @@
         var energy = Math.min(1, Math.hypot(rx, ry)/reach);
         body.style.setProperty("--tc-glare", (GLARE * Math.max(state.lift, energy)).toFixed(3));
 
-        if (shadow) {
+        if (shadowEl) {
           var radX = (rx*Math.PI)/180, radY = (ry*Math.PI)/180;
           var offX = -Math.sin(radY)*22, offY = 12 + 16*state.lift + Math.sin(radX)*18;
           var spread = scale * (0.86 + 0.04*state.lift);
-          shadow.style.transform = "translate3d(" + offX.toFixed(2) + "px," + offY.toFixed(2) + "px,0) scale(" + (spread*0.2+0.8*spread).toFixed(4) + "," + spread.toFixed(4) + ")";
-          shadow.style.opacity = (SHADOW * (0.6 + 0.4*state.lift)).toFixed(3);
+          shadowEl.style.transform = "translate3d(" + offX.toFixed(2) + "px," + offY.toFixed(2) + "px,0) scale(" + (spread*0.2+0.8*spread).toFixed(4) + "," + spread.toFixed(4) + ")";
+          shadowEl.style.opacity = (SHADOW * (0.6 + 0.4*state.lift)).toFixed(3);
         }
 
-        if (busy) raf = requestAnimationFrame(frame);
+        if (busy) { raf = requestAnimationFrame(frame); }
       }
-      var self = { wake: function () { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } } };
-      CARDS.push(self);
-      return self;
+
+      function wake() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+
+      card.addEventListener("pointerenter", function (e) { pointer.inside = true; pointer.mouse = e.pointerType === "mouse" || e.pointerType === "pen"; track(e); wake(); });
+      card.addEventListener("pointermove", function (e) { pointer.mouse = e.pointerType === "mouse" || e.pointerType === "pen"; if (!pointer.inside) pointer.inside = true; track(e); wake(); });
+      card.addEventListener("pointerleave", function () { pointer.inside = false; });
+      card.addEventListener("pointerdown", function () { state.press = 1; wake(); });
+      card.addEventListener("pointerup", function () { state.press = 0; wake(); });
+
+      return { wake: wake };
     }
 
-    function wake() { for (var i = 0; i < CARDS.length; i++) CARDS[i].wake(); }
-
     function refresh() {
-      CARDS = CARDS.filter(function (c) { return document.body.contains(document.querySelector(".card[data-tc]")); });
       document.querySelectorAll(".card[data-tc]").forEach(function (el) {
         if (!el._tc) { el._tc = bind(el); }
       });
-      wake();
     }
 
     refresh();
@@ -1858,7 +1854,6 @@
       var g = document.querySelector(".grid"); if (g) obs.observe(g, { childList: true, subtree: false });
     }, 300);
   })();
-
   var qTimer = null;
   qEl.addEventListener("input", function () {
     clearTimeout(qTimer);
@@ -2131,10 +2126,10 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
+    { type: "fix",    text: "下载卡无特效：每卡独立 rAF 循环 + last 时间戳（之前全局共享导致只动一张）", date: "2026-11-12" },
     { type: "fix",    text: "Agent Desktop icon.ico 转 .png，修复 fan 卡片图标加载失败", date: "2026-11-12" },
     { type: "change", text: "下载卡换回 TiltedCard 3D 倾斜 + spring + glare + rim + edge", date: "2026-11-12" },
     { type: "fix",    text: "公告页 HoldButton 重复 id 导致长按失效", date: "2026-11-12" },
-    { type: "change", text: "公告页按钮换回 HoldButton 液态填充 + crest 波浪", date: "2026-11-12" },
     { type: "change", text: "彩蛋改成拖拽不算，pointerup + 距离判定", date: "2026-11-12" },
   ];
 
