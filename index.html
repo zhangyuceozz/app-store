@@ -523,7 +523,7 @@
   .group-title::after { content: "\203A"; color: var(--muted); font-size: 22px; font-weight: 400; margin-left: 4px; line-height: 1; }
 
   /* 卡片网格 */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; overflow: visible; align-items: stretch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; overflow: visible; align-items: stretch; perspective: 900px; }
 
   /* Sentinel + loading dots */
   .sentinel { display: flex; justify-content: center; align-items: center; padding: 28px 0 16px; min-height: 40px; }
@@ -536,10 +536,9 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    transition: box-shadow .18s ease, border-color .18s ease;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     box-shadow: var(--s-1);
     transform-style: preserve-3d;
-    perspective: 800;
   }
   /* TiltedCard layers (React Bits style) */
   .card__shadow {
@@ -1287,7 +1286,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=212"></script>
+<script src="apps.js?v=214"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1907,131 +1906,60 @@
   buildBranchedMenu();
   renderList(true); // 首次加载跳过淡入淡出
 
-  // ======== TiltedCard — 3D 倾斜 + spring + glare + rim + edge + shadow ========
-  // 必须在 renderList(true) 之后运行，确保 grid 已创建
+  // ======== TiltedCard — 3D 倾斜（最简直接版） ========
+  // 必须在 renderList(true) 之后运行
   (function () {
-    var AMPLITUDE = 12, SCALE_HOVER = 1.05, SMOOTHNESS = 0.6, GLARE = 0.5, SHADOW = 0.5, PARALLAX = 1;
+    function bindOne(card) {
+      if (card._tcBound) return;
+      card._tcBound = true;
 
-    function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, v)); }
+      var AMP = 10, GLARE = 0.4, SHADOW = 0.4, PARALLAX = 1;
 
-    function step(st, key, target, omega, zeta, dt) {
-      var vk = "v" + key;
-      var steps = Math.max(1, Math.ceil(dt / (1/240)));
-      var h = dt / steps;
-      for (var i = 0; i < steps; i++) {
-        st[vk] += (omega*omega*(target - st[key]) - 2*zeta*omega*st[vk]) * h;
-        st[key] += st[vk] * h;
+      function onMove(e) {
+        var rect = card.getBoundingClientRect();
+        var nx = ((e.clientX - rect.left) - rect.width/2) / (rect.width/2);
+        var ny = ((e.clientY - rect.top) - rect.height/2) / (rect.height/2);
+        nx = Math.max(-1, Math.min(1, nx));
+        ny = Math.max(-1, Math.min(1, ny));
+
+        var rx = (-ny * AMP).toFixed(3);
+        var ry = (nx * AMP).toFixed(3);
+        card.style.transform = "translate3d(0,0,0) rotateX(" + rx + "deg) rotateY(" + ry + "deg) scale(1.04)";
+        card.style.setProperty("--tc-gx", (50 + nx * 46).toFixed(1) + "%");
+        card.style.setProperty("--tc-gy", (50 - ny * 46).toFixed(1) + "%");
+        card.style.setProperty("--tc-glare", GLARE.toString());
+        card.setAttribute("data-active", "");
+
+        // shadow
+        var sh = card.querySelector(".card__shadow");
+        if (sh) {
+          sh.style.transform = "translate3d(" + (-nx * 18).toFixed(1) + "px," + (14 - ny * 10).toFixed(1) + "px,0) scale(1.03,1.04)";
+          sh.style.opacity = SHADOW.toString();
+        }
       }
-      return !(Math.abs(target - st[key]) < 0.001 && Math.abs(st[vk]) < 0.01);
-    }
 
-    function bindCard(card) {
-      if (card._tc) return;
-      card._tc = {
-        rx:0, vrx:0, ry:0, vry:0, lift:0, vlift:0, press:0, vpress:0,
-        nx:0, ny:0, inside:false, mouse:false,
-        _shadow: card.querySelector(".card__shadow"),
-        _reduced: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      };
-    }
-
-    function updateTransform(card) {
-      var st = card._tc;
-      var amp = AMPLITUDE * (st._reduced ? 0.3 : 1);
-      var hovering = st.inside && st.mouse;
-      var inputX = hovering ? st.nx : 0;
-      var inputY = hovering ? st.ny : 0;
-      var omega = 20 * Math.pow(0.2, SMOOTHNESS);
-      var zeta = 1 - 0.3 * SMOOTHNESS;
-      var lifted = hovering ? 1 : 0;
-
-      var busy = false;
-      busy = step(st, "rx", -inputY * amp, omega, zeta, 1/60) || busy;
-      busy = step(st, "ry", inputX * amp, omega, zeta, 1/60) || busy;
-      busy = step(st, "lift", lifted, omega, Math.max(zeta, 0.85), 1/60) || busy;
-      busy = step(st, "press", st.press ? 1 : 0, 26, 0.8, 1/60) || busy;
-
-      card.setAttribute("data-active", (lifted || st.lift > 0.01) ? "" : null);
-      var scale = 1 + (SCALE_HOVER - 1) * st.lift - 0.02 * st.press;
-      var rx = st.rx, ry = st.ry;
-      card.style.transform = "translate3d(0,0,0) rotateX(" + rx.toFixed(3) + "deg) rotateY(" + ry.toFixed(3) + "deg) scale(" + scale.toFixed(4) + ")";
-      card.style.setProperty("--tc-px", (Math.sin((ry*Math.PI)/180) * PARALLAX).toFixed(4));
-      card.style.setProperty("--tc-py", (-Math.sin((rx*Math.PI)/180) * PARALLAX).toFixed(4));
-      var reach = Math.max(amp, 1);
-      card.style.setProperty("--tc-gx", (50 + (ry/reach)*46).toFixed(2) + "%");
-      card.style.setProperty("--tc-gy", (50 - (rx/reach)*46).toFixed(2) + "%");
-      var energy = Math.min(1, Math.hypot(rx, ry)/reach);
-      card.style.setProperty("--tc-glare", (GLARE * Math.max(st.lift, energy)).toFixed(3));
-
-      if (st._shadow) {
-        var radX = (rx*Math.PI)/180, radY = (ry*Math.PI)/180;
-        var offX = -Math.sin(radY)*22, offY = 12 + 16*st.lift + Math.sin(radX)*18;
-        var spread = scale * (0.86 + 0.04*st.lift);
-        st._shadow.style.transform = "translate3d(" + offX.toFixed(2) + "px," + offY.toFixed(2) + "px,0) scale(" + (spread*0.2+0.8*spread).toFixed(4) + "," + spread.toFixed(4) + ")";
-        st._shadow.style.opacity = (SHADOW * (0.6 + 0.4*st.lift)).toFixed(3);
+      function onLeave() {
+        card.style.transform = "";
+        card.style.setProperty("--tc-glare", "0");
+        card.removeAttribute("data-active");
+        var sh = card.querySelector(".card__shadow");
+        if (sh) { sh.style.transform = ""; sh.style.opacity = ""; }
       }
-      return busy;
+
+      card.addEventListener("pointermove", onMove, { passive: true });
+      card.addEventListener("pointerleave", onLeave);
+      card.addEventListener("pointercancel", onLeave);
+      card.addEventListener("pointerdown", function () { card.style.transform = card.style.transform + " scale(0.98)"; });
+      card.addEventListener("pointerup", function () { /* let onMove restore */ });
     }
 
-    var activeCards = new Set();
-    function globalFrame() {
-      var keep = new Set();
-      activeCards.forEach(function (card) {
-        if (!document.body.contains(card)) return;
-        if (updateTransform(card)) keep.add(card);
-      });
-      activeCards = keep;
-      if (activeCards.size > 0) requestAnimationFrame(globalFrame);
-    }
-
-    function wake(card) {
-      if (!activeCards.size) requestAnimationFrame(globalFrame);
-      activeCards.add(card);
-    }
-
-    function findCard(el) { return el && el.closest ? el.closest(".card[data-tc]") : null; }
-
-    // ---- 事件委托 ----
-    document.addEventListener("pointermove", function (e) {
-      var card = findCard(e.target);
-      if (!card) return;
-      bindCard(card);
-      var st = card._tc;
-      st.mouse = e.pointerType === "mouse" || e.pointerType === "pen";
-      st.inside = true;
-      var rect = card.getBoundingClientRect();
-      st.nx = clamp(((e.clientX - rect.left) - rect.width/2) / (rect.width/2), -1, 1);
-      st.ny = clamp(((e.clientY - rect.top) - rect.height/2) / (rect.height/2), -1, 1);
-      wake(card);
-    }, true);
-    document.addEventListener("pointerleave", function (e) {
-      var card = findCard(e.target);
-      if (!card || !card._tc) return;
-      var rect = card.getBoundingClientRect();
-      var inside = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
-      if (!inside) { card._tc.inside = false; wake(card); }
-    }, true);
-    document.addEventListener("pointerdown", function (e) {
-      var card = findCard(e.target);
-      if (!card) return;
-      bindCard(card);
-      card._tc.press = 1; wake(card);
-    }, true);
-    document.addEventListener("pointerup", function (e) {
-      var card = findCard(e.target);
-      if (!card) return;
-      bindCard(card);
-      card._tc.press = 0; wake(card);
-    }, true);
-
-    // ---- 绑定：首次 + 后续 grid 重建 ----
     function refresh() {
-      document.querySelectorAll(".card[data-tc]").forEach(bindCard);
+      document.querySelectorAll(".card[data-tc]").forEach(bindOne);
     }
     refresh();
     var obs = new MutationObserver(refresh);
     obs.observe(document.body, { childList: true, subtree: true });
-    console.log("[TC] initialized, bound:", document.querySelectorAll(".card[data-tc]").length);
+    console.log("[TC] bound:", document.querySelectorAll(".card[data-tc]").length);
   })();
 
   // ======== 后台预加载全部 preview.jpg ========
@@ -2155,9 +2083,9 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
-    { type: "fix",    text: "TiltedCard IIFE 移到 renderList(true) 之后，确保 grid 已创建才绑定", date: "2026-11-13" },
+    { type: "fix",    text: "TiltedCard 最简重写：直接绑监听器 + .grid perspective + .card transition transform", date: "2026-11-13" },
+    { type: "fix",    text: "TiltedCard IIFE 移到 renderList(true) 之后", date: "2026-11-13" },
     { type: "fix",    text: "审计修复：loadMore 每次插卡后 TC 绑定", date: "2026-11-12" },
-    { type: "fix",    text: "refresh try/catch + load 二次兜底", date: "2026-11-12" },
     { type: "fix",    text: "splash 关闭立即 display:none 修复文字泄漏", date: "2026-11-12" },
     { type: "fix",    text: "详情页下载按钮 + 动画橙色全换成中性蓝", date: "2026-11-12" },
   ];
