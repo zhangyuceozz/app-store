@@ -972,8 +972,7 @@
     transition: transform .55s ease, opacity .4s ease, visibility .55s;
   }
   .preloader.hide {
-    transform: translateY(-100%);
-    opacity: 0; visibility: hidden; pointer-events: none;
+    display: none !important;
   }
   .splash-inner {
     display: flex; flex-direction: column;
@@ -1288,7 +1287,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=202"></script>
+<script src="apps.js?v=204"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2093,10 +2092,8 @@
       setPhase("done");
       var splash = document.getElementById("preloader");
       if (splash) {
-        setTimeout(function () {
-          splash.classList.add("hide");
-          setTimeout(function () { splash.remove(); }, 600);
-        }, 600);
+        splash.classList.add("hide");
+        setTimeout(function () { if (splash.parentNode) splash.remove(); }, 100);
       }
       if (resetMs > 0) {
         timers.reset = setTimeout(function () {
@@ -2157,11 +2154,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
-    { type: "fix",    text: "详情页下载按钮 + 动画橙色全换成中性蓝，品牌橙禁区", date: "2026-11-12" },
+    { type: "fix",    text: "splash 关闭立即 display:none 代替 transition+setTimeout 双重延迟，避免文字泄漏到主站", date: "2026-11-12" },
+    { type: "fix",    text: "详情页下载按钮 + 动画橙色全换成中性蓝", date: "2026-11-12" },
     { type: "fix",    text: "TiltedCard 彻底重写：全局事件委托 + body subtree 观察", date: "2026-11-12" },
     { type: "fix",    text: "彩蛋入口收窄：只响应系统切换 + 主题切换", date: "2026-11-12" },
     { type: "change", text: "HoldButton 去掉对勾，字体改蓝色", date: "2026-11-12" },
-    { type: "fix",    text: "下载卡无特效：每卡独立 rAF 循环", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {
