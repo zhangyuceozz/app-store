@@ -104,8 +104,36 @@
     padding: 8px 14px; border-radius: 12px;
     position: relative;
     cursor: pointer;
+    isolation: isolate;
+    overflow: hidden;
   }
-  .brand-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; display: block; border: 1px solid var(--line); }
+  .brand::before {
+    content: "";
+    position: absolute; inset: -40px; z-index: -1;
+    background: radial-gradient(80px 80px at var(--brand-x, 50%) var(--brand-y, 50%),
+      color-mix(in srgb, var(--ink) 12%, transparent) 0%,
+      transparent 60%);
+    opacity: 0; transition: opacity .25s ease;
+    pointer-events: none;
+  }
+  .brand:hover::before { opacity: 1; }
+  .brand::after {
+    content: "";
+    position: absolute; inset: 0; z-index: -2;
+    border-radius: inherit;
+    background: radial-gradient(120px 80px at var(--brand-x, 50%) var(--brand-y, 50%),
+      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+      transparent 55%);
+    opacity: 0; transition: opacity .3s ease;
+    pointer-events: none;
+  }
+  .brand:hover::after { opacity: 1; }
+  .brand-logo {
+    width: 40px; height: 40px; border-radius: 10px; object-fit: cover; display: block; border: 1px solid var(--line);
+    transition: transform .35s cubic-bezier(.22,1,.36,1);
+    will-change: transform;
+  }
+  .brand:hover .brand-logo { transform: scale(1.08); }
   .brand-name { font-family: var(--display); font-size: 15px; font-weight: 600; letter-spacing: 0; white-space: nowrap; color: var(--ink); }
 
   /* ---------- 平台选择：拟物拨杆（Uiverse by Yaya12085 · 左下角固定） ---------- */
@@ -1220,7 +1248,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=178"></script>
+<script src="apps.js?v=179"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2352,8 +2380,19 @@
 
   // ======== 自动进入已删除：只有长按 HoldButton 2s 或 Space/Enter 长按才触发 dismiss ========
 
-  // ============== 彩蛋：长按品牌 logo 1.5s ==============
+  // ============== brand 头像透镜光晕 ==============
   var brand = document.getElementById("brand");
+  if (brand) {
+    brand.addEventListener("pointermove", function (e) {
+      var r = brand.getBoundingClientRect();
+      brand.style.setProperty("--brand-x", (e.clientX - r.left) + "px");
+      brand.style.setProperty("--brand-y", (e.clientY - r.top) + "px");
+    });
+    brand.addEventListener("pointerleave", function () {
+      brand.style.setProperty("--brand-x", "50%");
+      brand.style.setProperty("--brand-y", "50%");
+    });
+  }
   var EASTER_EGGS = [
     "<p>这个站没有框架、没有构建，浏览器打开就能跑。<br><span style='color:#f5491f'>谢谢你愿意读到这里。</span></p>",
     "<p>hover 改了不知道多少版，现在终于丝滑了。<br>如果你也喜欢折腾，<span style='color:#f5491f'>开干吧，别等。</span></p>",
