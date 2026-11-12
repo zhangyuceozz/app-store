@@ -1287,7 +1287,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=204"></script>
+<script src="apps.js?v=206"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1879,10 +1879,18 @@
     }, true);
 
     // Initial bind + body subtree observer (survives any grid rebuild)
-    function refresh() { document.querySelectorAll(".card[data-tc]").forEach(cardState); }
+    function refresh() {
+      try {
+        document.querySelectorAll(".card[data-tc]").forEach(function (el) {
+          try { cardState(el); } catch (e) { console.warn("[TC bind]", e); }
+        });
+      } catch (e) { console.warn("[TC refresh]", e); }
+    }
     refresh();
-    var obs = new MutationObserver(refresh);
+    var obs = new MutationObserver(function () { try { refresh(); } catch (e) {} });
     obs.observe(document.body, { childList: true, subtree: true });
+    // Extra safety: also refresh 100ms after load (catches late grid rebuilds)
+    window.addEventListener("load", function () { setTimeout(refresh, 100); }, { once: true });
   })();
   var qTimer = null;
   qEl.addEventListener("input", function () {
@@ -2154,11 +2162,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
-    { type: "fix",    text: "splash 关闭立即 display:none 代替 transition+setTimeout 双重延迟，避免文字泄漏到主站", date: "2026-11-12" },
+    { type: "fix",    text: "代码审计加固：refresh try/catch + window load 二次兜底", date: "2026-11-12" },
+    { type: "fix",    text: "splash 关闭立即 display:none 修复文字泄漏", date: "2026-11-12" },
     { type: "fix",    text: "详情页下载按钮 + 动画橙色全换成中性蓝", date: "2026-11-12" },
     { type: "fix",    text: "TiltedCard 彻底重写：全局事件委托 + body subtree 观察", date: "2026-11-12" },
     { type: "fix",    text: "彩蛋入口收窄：只响应系统切换 + 主题切换", date: "2026-11-12" },
-    { type: "change", text: "HoldButton 去掉对勾，字体改蓝色", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {
