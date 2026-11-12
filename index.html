@@ -508,14 +508,60 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 14px; cursor: pointer; overflow: hidden;
     min-height: 0;
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    transition: box-shadow .18s ease, border-color .18s ease;
     box-shadow: var(--s-1);
+    transform-style: preserve-3d;
+    perspective: 800;
   }
-  .card:hover {
-    transform: translateY(-2px); z-index: 10;
-    box-shadow: var(--s-2);
-    border-color: var(--line);
+  .card__shadow {
+    position: absolute; inset: -2px; z-index: -1;
+    background: rgba(0,0,0,0.28); filter: blur(18px);
+    border-radius: inherit; pointer-events: none; opacity: 0;
+    transform-origin: center bottom;
+    will-change: transform, opacity;
   }
+  .card__glare {
+    position: absolute; inset: 0; z-index: 8;
+    border-radius: inherit; pointer-events: none;
+    background: radial-gradient(farthest-corner circle at var(--tc-gx,50%) var(--tc-gy,50%),
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.34)) 0%,
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.20)) 30%,
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.04)) 50%,
+      rgba(255,255,255,0) 70%);
+    mix-blend-mode: screen; opacity: 0;
+    transition: opacity .2s ease;
+  }
+  .card__edge {
+    position: absolute; inset: 0; z-index: 7;
+    border-radius: inherit; pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    background: radial-gradient(farthest-side circle at var(--tc-gx,50%) var(--tc-gy,50%),
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.35)) 0%,
+      rgba(255,255,255,calc(var(--tc-glare,0)*0.08)) 40%,
+      rgba(255,255,255,0) 65%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    padding: 1px;
+    opacity: 0; transition: opacity .2s ease;
+  }
+  .card:hover { border-color: var(--line); }
+  .card[data-tc] { transition: border-color .18s ease; }
+  .card[data-tc] .c-preview img,
+  .card[data-tc] .c-icon,
+  .card[data-tc] .c-name,
+  .card[data-tc] .c-meta,
+  .card[data-tc] .c-date,
+  .card[data-tc] .c-dl-btn,
+  .card[data-tc] .c-preview-hint {
+    transform: translate3d(
+      calc(var(--tc-px,0) * var(--tc-depth,0) * 1px),
+      calc(var(--tc-py,0) * var(--tc-depth,0) * 1px), 0);
+    will-change: transform;
+  }
+  .card[data-tc] .c-preview { --tc-depth: -8; }
+  .card[data-tc] .c-icon    { --tc-depth: 6; }
+  .card[data-tc] .c-body    { --tc-depth: 4; }
+  .card[data-tc] .c-dl-btn  { --tc-depth: 12; }
 
   /* 预览图骨架 */
   .card .c-preview { position: relative; width: 100%; aspect-ratio: 16/10; border-radius: 6px; overflow: hidden; background: var(--soft); margin-bottom: 4px; cursor: zoom-in; }
@@ -1174,7 +1220,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=174"></script>
+<script src="apps.js?v=176"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1474,7 +1520,8 @@
     var meta = a.category || "";
     var preview = a.preview || "";
     return (
-      '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '">' +
+      '<div class="card" role="button" tabindex="0" data-id="' + esc(a.id) + '" data-tc>' +
+        '<div class="card__shadow"></div>' +
         (preview ? '<div class="c-preview"><img src="' + esc(preview) + '" alt="" loading="eager" decoding="async" fetchpriority="auto" onload="this.classList.add(\'loaded\');this.closest(\'.c-preview\')?.classList.add(\'loaded\')"><div class="c-preview-hint"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M21 21l-4.3-4.3"/></svg>点击预览</div></div>' : "") +
         '<div class="c-row">' +
           iconHtml(a, "c-icon") +
@@ -1487,6 +1534,7 @@
           "</div>" +
         "</div>" +
         (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
+        '<div class="card__edge"></div><div class="card__glare"></div>' +
       "</div>"
     );
   }
@@ -1643,6 +1691,148 @@
     // reset=false 时需要 checkScroll 处理无限滚动新加载的卡
     if (!reset) checkScroll();
   }
+
+  // ======== TiltedCard：3D 倾斜 + glare + parallax（React Bits 风格，原生 JS 版） ========
+  (function () {
+    var AMPLITUDE = 10;
+    var PARALLAX = 1;
+    var GLARE = 0.4;
+    var SHADOW = 0.5;
+    var SCALE_HOVER = 1.04;
+    var OMEGA = 16;
+    var ZETA = 0.7;
+    var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
+
+    function makeState() {
+      return { rx: 0, vrx: 0, ry: 0, vry: 0, lift: 0, vlift: 0 };
+    }
+    function step(state, key, target, omega, zeta, dt) {
+      var vk = "v" + key;
+      var steps = Math.max(1, Math.ceil(dt / (1 / 240)));
+      var h = dt / steps;
+      for (var i = 0; i < steps; i++) {
+        state[vk] += (omega * omega * (target - state[key]) - 2 * zeta * omega * state[vk]) * h;
+        state[key] += state[vk] * h;
+      }
+      var settled = Math.abs(target - state[key]) < 0.001 && Math.abs(state[vk]) < 0.01;
+      if (settled) { state[key] = target; state[vk] = 0; }
+      return !settled;
+    }
+
+    var cards = [];
+    function bind(card) {
+      if (card._tc) return;
+      card._tc = {
+        state: makeState(),
+        nx: 0, ny: 0, inside: false,
+        raf: 0, last: 0
+      };
+      var tc = card._tc;
+
+      card.addEventListener("pointerenter", function (e) {
+        var r = card.getBoundingClientRect();
+        tc.nx = clamp((e.clientX - r.left - r.width / 2) / (r.width / 2), -1, 1);
+        tc.ny = clamp((e.clientY - r.top - r.height / 2) / (r.height / 2), -1, 1);
+        tc.inside = true;
+        wake(card);
+      });
+      card.addEventListener("pointermove", function (e) {
+        if (!tc.inside) return;
+        var r = card.getBoundingClientRect();
+        tc.nx = clamp((e.clientX - r.left - r.width / 2) / (r.width / 2), -1, 1);
+        tc.ny = clamp((e.clientY - r.top - r.height / 2) / (r.height / 2), -1, 1);
+        wake(card);
+      });
+      card.addEventListener("pointerleave", function () {
+        tc.inside = false;
+        wake(card);
+      });
+    }
+
+    function frame(card, now) {
+      var tc = card._tc;
+      if (!tc) return;
+      var state = tc.state;
+      var dt = clamp((now - tc.last) / 1000 || 0, 0, 0.05);
+      tc.last = now;
+      var busy = false;
+
+      var inputX = tc.inside ? tc.nx : 0;
+      var inputY = tc.inside ? tc.ny : 0;
+      var lifted = tc.inside ? 1 : 0;
+
+      busy = step(state, "rx", -inputY * AMPLITUDE, OMEGA, ZETA, dt) || busy;
+      busy = step(state, "ry", inputX * AMPLITUDE, OMEGA, ZETA, dt) || busy;
+      busy = step(state, "lift", lifted, OMEGA, 0.9, dt) || busy;
+
+      var scale = 1 + (SCALE_HOVER - 1) * state.lift;
+      var rx = state.rx, ry = state.ry;
+      card.style.transform = "translateZ(0) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg) scale(" + scale.toFixed(3) + ")";
+      card.style.setProperty("--tc-px", (Math.sin(ry * Math.PI / 180) * PARALLAX).toFixed(4));
+      card.style.setProperty("--tc-py", (-Math.sin(rx * Math.PI / 180) * PARALLAX).toFixed(4));
+
+      var reach = Math.max(AMPLITUDE, 1);
+      card.style.setProperty("--tc-gx", (50 + (ry / reach) * 46).toFixed(2) + "%");
+      card.style.setProperty("--tc-gy", (50 - (rx / reach) * 46).toFixed(2) + "%");
+      var energy = Math.min(1, Math.hypot(rx, ry) / reach);
+      card.style.setProperty("--tc-glare", (GLARE * Math.max(state.lift, energy)).toFixed(3));
+
+      var glare = card.querySelector(".card__glare");
+      var edge = card.querySelector(".card__edge");
+      var shadow = card.querySelector(".card__shadow");
+      var active = state.lift > 0.05;
+      if (glare) glare.style.opacity = active ? "1" : "0";
+      if (edge) edge.style.opacity = active ? "1" : "0";
+      if (shadow) {
+        var radiansY = ry * Math.PI / 180;
+        var radiansX = rx * Math.PI / 180;
+        var offX = -Math.sin(radiansY) * 18;
+        var offY = 10 + 14 * state.lift + Math.sin(radiansX) * 14;
+        var sp = scale * (0.86 + 0.04 * state.lift);
+        shadow.style.transform = "translate3d(" + offX.toFixed(1) + "px, " + offY.toFixed(1) + "px, 0) scale(" + sp.toFixed(3) + ")";
+        shadow.style.opacity = (SHADOW * (0.55 + 0.45 * state.lift)).toFixed(3);
+      }
+      card.style.zIndex = active ? 10 : 1;
+
+      if (busy) { tc.raf = requestAnimationFrame(function (n) { frame(card, n); }); }
+      else { tc.raf = 0; }
+    }
+
+    function wake(card) {
+      var tc = card._tc;
+      if (!tc || tc.raf) return;
+      tc.last = performance.now();
+      tc.raf = requestAnimationFrame(function (n) { frame(card, n); });
+    }
+
+    function refresh() {
+      var grid = document.querySelector(".grid");
+      if (!grid) return;
+      var found = grid.querySelectorAll(".card[data-tc]");
+      cards = [];
+      found.forEach(function (c) { bind(c); cards.push(c); });
+    }
+
+    // hook into renderList
+    var _origRenderList = null;
+    // find renderList callers and inject refresh
+    var origSet = window.setTimeout;
+    window.setTimeout = function (fn, ms) {
+      return origSet.call(window, function () {
+        fn();
+        refresh();
+      }, ms);
+    };
+
+    // observe grid DOM
+    var gridObs = new MutationObserver(function () { refresh(); });
+    function hookGrid() {
+      var g = document.querySelector(".grid");
+      if (g) { gridObs.observe(g, { childList: true, subtree: false }); refresh(); }
+      else origSet(hookGrid, 200);
+    }
+    hookGrid();
+  })();
 
   var qTimer = null;
   qEl.addEventListener("input", function () {
