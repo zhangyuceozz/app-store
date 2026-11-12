@@ -1288,7 +1288,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=190"></script>
+<script src="apps.js?v=192"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2131,11 +2131,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
+    { type: "fix",    text: "Agent Desktop icon.ico 转 .png，修复 fan 卡片图标加载失败", date: "2026-11-12" },
     { type: "change", text: "下载卡换回 TiltedCard 3D 倾斜 + spring + glare + rim + edge", date: "2026-11-12" },
     { type: "fix",    text: "公告页 HoldButton 重复 id 导致长按失效", date: "2026-11-12" },
     { type: "change", text: "公告页按钮换回 HoldButton 液态填充 + crest 波浪", date: "2026-11-12" },
     { type: "change", text: "彩蛋改成拖拽不算，pointerup + 距离判定", date: "2026-11-12" },
-    { type: "change", text: "deploy.ps1 自动校验 + 线上验证", date: "2026-11-12" },
   ];
 
   (function renderSplashLog() {

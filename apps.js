@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -394,7 +394,7 @@ const APPS = [
     date: "2026-10-18",
     tagline: "Windows 系统优化与定制",
     description: "Winhance 是一个 C# 开源应用，用于清理、优化和定制你的 Windows 体验。软件管理、系统优化、界面定制、自定义 ISO 制作——一站式搞定。",
-    icon: "apps/winhance/icon.ico",
+    icon: "apps/winhance/icon.png",
     preview: "apps/winhance/preview.jpg",
     downloads: [
       { platform: "Windows", file: "/dl/apps/winhance/download/Winhance.Installer.exe", size: "61.5 MB" },
@@ -517,7 +517,7 @@ const APPS = [
     date: "2026-10-23",
     tagline: "全能视频下载命令行工具",
     description: "yt-dlp 是一个功能强大的命令行视频下载工具，支持 YouTube、Bilibili、Twitter、TikTok、Vimeo 等数千个网站的视频和音频下载。基于 Python，开源免费，持续更新。",
-    icon: "apps/yt-dlp/icon.ico",
+    icon: "apps/yt-dlp/icon.png",
     preview: "apps/yt-dlp/preview.jpg",
     downloads: [
       { platform: "Windows (x64)",  file: "/dl/apps/yt-dlp/download/yt-dlp.exe",          size: "17.0 MB" },
@@ -545,7 +545,7 @@ const APPS = [
     date: "2026-11-04",
     tagline: "让 AI Agent 直接操作你的桌面（Rust 原生）",
     description: "Agent Desktop 是 Vercel Labs 开源的 Rust 项目——给 Claude Code / Codex / Cursor / TRAE 等 Agent 一套真正的桌面控制力。不是基于像素识别（容易出错），而是通过操作系统原生的 Accessibility Tree（Windows UI Automation / macOS AXUIElement / Linux AT-SPI）拿到任何应用的真实 UI 结构，精准点击按钮、读取菜单、输入文字、截屏。底层是 Rust 写的桌面代理，Agent 通过 MCP 协议调用，动作可重试、有 ref 稳定引用。+4.2k⭐ 本周爆火，MIT 协议。",
-    icon: "apps/agent-desktop/icon.ico",
+    icon: "apps/agent-desktop/icon.png",
     preview: "apps/agent-desktop/preview.jpg",
     downloads: [
       { platform: "Windows (x64)",      file: "/dl/apps/agent-desktop/download/agent-desktop-v1.1.0-x86_64-pc-windows-msvc.tar.gz", size: "—" },
