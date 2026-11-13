@@ -890,7 +890,7 @@
   .bounce-cards {
     position: relative;
     width: 100%;
-    height: 280px;
+    height: 260px;
     overflow: visible;
     touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
@@ -964,66 +964,78 @@
     letter-spacing: .03em;
     align-self: flex-start;
   }
-  /* Preloader — 遮罩层 */
+  /* Preloader — 公告页遮罩 */
   .preloader {
     position: fixed; inset: 0; z-index: 9999;
     display: flex; align-items: center; justify-content: center;
     background: var(--bg);
-    transition: transform .55s ease, opacity .4s ease, visibility .55s;
+    transition: opacity .4s ease;
   }
   .preloader.hide {
-    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+    display: flex !important;
+  }
+  @keyframes splashFade {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
   }
   .splash-inner {
     display: flex; flex-direction: column;
-    gap: 22px; padding: 40px 48px 32px;
-    width: 100%; max-width: 560px;
-    height: min(78vh, 720px);
-    overflow: visible;
+    gap: 28px;
+    padding: 48px 52px 40px;
+    width: 100%; max-width: 540px;
+    animation: splashFade .6s cubic-bezier(.22,1,.36,1) both;
   }
-  .splash-head {
-    font-size: 18px; font-weight: 600; color: var(--ink);
-    flex-shrink: 0; letter-spacing: .01em;
-  }
-  @keyframes splashIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: none; }
+  .splash-brand {
+    font-family: var(--display);
+    font-size: 13px; font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted);
+    flex-shrink: 0;
   }
   .splash-title {
     font-family: var(--display); font-size: 11px; font-weight: 600;
     letter-spacing: .22em; text-transform: uppercase;
     color: var(--muted); flex-shrink: 0;
-    margin-top: 2px;
+    position: relative;
+    padding-bottom: 14px;
+  }
+  .splash-title::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 1px; background: var(--line);
   }
 
-  /* 公告页更新日志 — 竖向条列（纯文本，无边框，可滚） */
+  /* 公告页更新日志 — 竖向条列（纯文本，左边数字，右边日期） */
   .splash-log {
-    display: flex; flex-direction: column; gap: 9px;
-    flex: 1; min-height: 0;
+    display: flex; flex-direction: column; gap: 6px;
+    max-height: 280px;
     overflow-y: auto;
-    max-height: 260px;
+    padding-right: 4px;
   }
-  .splash-log::-webkit-scrollbar { width: 5px; }
-  .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+  .splash-log::-webkit-scrollbar { width: 4px; }
+  .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
 
   .log-group {
-    display: flex; align-items: baseline; gap: 8px;
-    padding: 0; height: auto;
-    border: none; border-radius: 0;
-    background: transparent;
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid transparent;
     font-size: 13px; font-weight: 500;
     line-height: 1.5;
-    opacity: 0; transform: translateY(10px);
+    opacity: 0; transform: translateY(8px);
     will-change: transform, opacity;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform .35s cubic-bezier(.22,1,.36,1), opacity .35s ease;
   }
-  .log-group.show { opacity: 1; transform: translateY(0); }
+  .log-group.show { opacity: 1; transform: none; }
+  .log-group:hover { border-bottom-color: var(--line); }
 
   .log-group .log-num {
-    font-size: 12px; font-weight: 500; color: var(--muted);
+    font-size: 11px; font-weight: 600; color: var(--muted);
     font-variant-numeric: tabular-nums;
     flex-shrink: 0;
-    min-width: 18px;
+    min-width: 22px;
+    letter-spacing: .02em;
   }
 
   .log-group .log-text {
@@ -1031,102 +1043,71 @@
     flex: 1; min-width: 0;
   }
   .log-group .log-date {
-    font-size: 11px; font-weight: 500; letter-spacing: .01em;
-    padding: 0; border-radius: 0;
-    background: transparent; border: none;
+    font-size: 11px; font-weight: 500;
     color: var(--muted);
     white-space: nowrap; flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
   }
 
-  /* 公告页 SlideCommit —— 滑块确认进入主站（React Bits 风格，原生 JS+CSS 移植） */
-  /* 公告页 HoldButton —— 液态填充 + crest 波浪 + glow（React Bits 风格，原生 JS+CSS） */
+  /* HoldButton — 深灰底 + 中性蓝填充 + 白字 */
   .splash-hold {
-    --hb-radius: 14px;
-    --hb-bg: var(--ink);
     --hb-fill: #3b82f6;
-    --hb-text: #3b82f6;
-    --hb-fill-text: #ffffff;
     --hb-hold: 1500ms;
-    --hb-release: 200ms;
-    --hb-press: 0.97;
-    --hb-wave: 6px;
-    --hb-w: 0px; --hb-h: 0px;
-    --hb-p: 0;
-    --hb-cycles: 1.36;
-    --hb-shadow: inset 0 1px 0 rgba(255,255,255,.06);
-    --hb-glow: inset 0 1px 0 rgba(255,255,255,.06), 0 10px 32px -6px color-mix(in srgb, var(--hb-fill) 70%, transparent);
-    position: relative;
-    display: inline-grid; place-items: center; isolation: isolate;
-    margin: 0; border: 0; border-radius: var(--hb-radius);
-    background: var(--hb-bg); color: var(--hb-text);
-    font-family: inherit; font-weight: 500; letter-spacing: .01em; line-height: 1;
-    box-shadow: var(--hb-shadow); cursor: pointer; outline: none;
-    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    margin: 8px 0 0; border: 1px solid var(--line); border-radius: 14px;
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    color: var(--ink);
+    font-family: inherit; font-weight: 600; letter-spacing: .01em; font-size: 15px;
+    line-height: 1; cursor: pointer; outline: none;
+    user-select: none; -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-    transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 160ms ease, box-shadow var(--hb-release) cubic-bezier(.23,1,.32,1);
-    width: 100%; height: 52px; padding: 0 28px; font-size: 15px;
+    overflow: hidden; width: 100%; height: 54px; padding: 0 28px;
+    transition: transform 180ms cubic-bezier(.23,1,.32,1),
+                background .25s ease,
+                border-color .25s ease,
+                color .2s ease;
   }
-  .splash-hold[data-phase="holding"] { transform: scale(var(--hb-press)); }
-  .splash-hold[data-phase="holding"], .splash-hold[data-phase="done"] {
-    box-shadow: var(--hb-glow);
-    transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 160ms ease, box-shadow var(--hb-hold) linear;
+  .splash-hold:hover {
+    background: color-mix(in srgb, var(--ink) 14%, transparent);
+    border-color: color-mix(in srgb, var(--ink) 24%, transparent);
   }
-  .splash-hold__pulse { position: absolute; inset: 0; z-index: 0; border-radius: var(--hb-radius); pointer-events: none; opacity: 0; }
-  .splash-hold[data-phase="done"] .splash-hold__pulse {
-    animation: hb-pulse 600ms cubic-bezier(.23,1,.32,1) forwards;
+  .splash-hold:active { transform: scale(.97); }
+  .splash-hold[data-phase="holding"],
+  .splash-hold[data-phase="done"] { color: #ffffff; border-color: transparent; }
+  .splash-hold__fill {
+    position: absolute; inset: 0; z-index: 0;
+    background: var(--hb-fill); border-radius: inherit;
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform var(--hb-hold) linear;
   }
-  @keyframes hb-pulse {
-    from { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--hb-fill) 55%, transparent); }
-    to   { opacity: 0; box-shadow: 0 0 0 14px color-mix(in srgb, var(--hb-fill) 0%, transparent); }
-  }
-  .splash-hold__label {
-    position: relative; z-index: 2; display: grid; place-items: center;
-  }
+  .splash-hold[data-phase="holding"] .splash-hold__fill { transform: scaleX(1); }
+  .splash-hold[data-phase="done"] .splash-hold__fill { transform: scaleX(1); }
+  .splash-hold__label { position: relative; z-index: 1; display: inline-flex; align-items: center; }
   .splash-hold__label > span {
-    grid-area: 1/1; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+    display: inline-flex; align-items: center; white-space: nowrap;
     transition: opacity 200ms ease, filter 200ms ease;
   }
   .splash-hold__done { opacity: 0; filter: blur(2px); }
   .splash-hold[data-phase="done"] .splash-hold__idle { opacity: 0; filter: blur(2px); }
   .splash-hold[data-phase="done"] .splash-hold__done { opacity: 1; filter: blur(0); }
-  .splash-hold__clip {
-    position: absolute; inset: 0; z-index: 3;
-    clip-path: inset(0 round var(--hb-radius)); pointer-events: none;
+  .splash-hint {
+    text-align: center; font-size: 11px; font-weight: 500;
+    color: var(--muted);
+    margin-top: -4px;
   }
-  .splash-hold__fill {
-    position: absolute; inset: 0; display: grid; place-items: center;
-    background: var(--hb-fill); color: var(--hb-fill-text);
-    clip-path: inset(0 calc((1 - var(--hb-p)) * (100% + 0.75 * var(--hb-wave)) - var(--hb-p) * 0.25 * var(--hb-wave)) 0 0);
-  }
-  .splash-hold__crest {
-    position: absolute; inset: 0; display: grid; place-items: center;
-    background: var(--hb-fill); color: var(--hb-fill-text);
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2720%27 height=%27200%27 viewBox=%270 0 20 200%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z%27/%3E%3C/svg%3E");
-    -webkit-mask-repeat: repeat-y;
-    -webkit-mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
-    -webkit-mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
-    -webkit-mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2720%27 height=%27200%27 viewBox=%270 0 20 200%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z%27/%3E%3C/svg%3E");
-    mask-repeat: repeat-y;
-    mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
-    mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
-    mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
-  }
-  .splash-hint { text-align: center; font-size: 11px; font-weight: 500; letter-spacing: .1em; color: var(--muted); }
   @media (prefers-reduced-motion: reduce) {
-    .splash-hold { transform: none !important; transition: background-color 160ms ease, box-shadow var(--hb-release) ease; }
-    .splash-hold__fill { clip-path: inset(0); opacity: 0; transition: opacity var(--hb-release) ease; }
-    .splash-hold__crest { display: none; }
-    .splash-hold[data-phase="holding"] .splash-hold__fill, .splash-hold[data-phase="done"] .splash-hold__fill { opacity: 1; transition: opacity var(--hb-hold) linear; }
-    .splash-hold__pulse { animation: none !important; }
-    .splash-hold__label > span { filter: none !important; }
+    .splash-hold__fill { transition: none; }
+    .splash-hold[data-phase="holding"] .splash-hold__fill { transform: scaleX(1); }
   }
-  @media (max-width: 720px) { .splash-hold { height: 46px; font-size: 13px; padding: 0 22px; } }
+  @media (max-width: 720px) {
+    .splash-hold { height: 48px; font-size: 14px; padding: 0 22px; border-radius: 12px; }
+  }
 
 
   @media (max-width: 720px) {
-    .splash-inner { padding: 24px 22px 20px; max-width: 100%; height: min(85vh, 680px); gap: 0; }
-    .splash-hold { height: 46px; font-size: 13px; }
+    .splash-inner { padding: 32px 24px 28px; max-width: 100%; gap: 22px; }
+    .splash-hold { height: 48px; font-size: 14px; padding: 0 22px; border-radius: 12px; }
     .wrap { padding: 0 20px; }
     .top { height: auto; flex-wrap: wrap; padding: 14px 0; gap: 12px 16px; }
     .search { order: 4; flex-basis: 100%; max-width: none; }
@@ -1155,30 +1136,18 @@
 
 <div class="preloader" id="preloader">
   <div class="splash-inner">
-    <div class="splash-head">新增软件</div>
+    <div class="splash-brand">Chovy Store</div>
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <button type="button" class="splash-hold" id="splash-hold"
-            data-phase="idle" aria-describedby="splash-hold-sr">
-      <span class="splash-hold__pulse" aria-hidden="true"></span>
+    <button type="button" class="splash-hold" id="splash-hold" data-phase="idle">
+      <span class="splash-hold__fill"></span>
       <span class="splash-hold__label">
         <span class="splash-hold__idle">长按进入主站</span>
-        <span class="splash-hold__done">正在进入...</span>
+        <span class="splash-hold__done">正在进入…</span>
       </span>
-      <span class="splash-hold__clip" aria-hidden="true">
-        <span class="splash-hold__fill">
-          <span class="splash-hold__label"><span class="splash-hold__idle">长按进入主站</span><span class="splash-hold__done">正在进入...</span></span>
-        </span>
-        <span class="splash-hold__crest" aria-hidden="true">
-          <span class="splash-hold__label"><span class="splash-hold__idle">长按进入主站</span><span class="splash-hold__done">正在进入...</span></span>
-        </span>
-      </span>
-      <span id="splash-hold-sr" class="hold-sr">长按 1.5 秒进入主站</span>
     </button>
-      </div>
-    </div>
-    <p class="splash-hint">往里进往里进</p>
+    <p class="splash-hint">按住 1.5 秒即可进入</p>
   </div>
 </div>
 
@@ -1287,7 +1256,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=220"></script>
+<script src="apps.js?v=221"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1985,119 +1954,76 @@
     })();
   }, { once: true });
 
-  // ======== 公告页 SlideCommit —— 滑块确认进入主站（原生 JS+CSS） ========
-  // ======== 公告页 HoldButton —— 液态填充 + crest 波浪 + glow ========
+  // ======== 公告页 HoldButton —— 极简状态机 ========
   (function () {
     var btn = document.getElementById("splash-hold");
     if (!btn) return;
-    var holdMs = 1500, releaseMs = 200, resetMs = 0;
-    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
-    var phase = "idle", inputKind = null;
-    var gesture = { pointerId: null, start: 0 };
-    var timers = { complete: 0, reset: 0 };
-    var motion = { raf: 0, p: 0, from: 0, to: 0, start: 0 };
+    var HOLD_MS = 1500, phase = "idle", timer = 0;
 
-    btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
-    btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
-    var ro = new ResizeObserver(function () {
-      btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
-      btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
-    });
-    ro.observe(btn);
+    function setPhase(ph) { phase = ph; btn.setAttribute("data-phase", ph); }
 
-    function setPhase(ph, kind) {
-      phase = ph; inputKind = kind || inputKind;
-      btn.setAttribute("data-phase", ph);
-    }
-    function clearTimers() {
-      clearTimeout(timers.complete); clearTimeout(timers.reset);
-    }
-    function drive(to, dur, ease) {
-      cancelAnimationFrame(motion.raf);
-      motion.from = motion.p; motion.to = to; motion.start = performance.now();
-      function step(now) {
-        var t = dur > 0 ? Math.min(1, (now - motion.start) / dur) : 1;
-        motion.p = motion.from + (motion.to - motion.from) * ease(t);
-        btn.style.setProperty("--hb-p", motion.p.toFixed(4));
-        if (t < 1) { motion.raf = requestAnimationFrame(step); return; }
-        motion.raf = 0;
-        if (motion.to === 1) complete();
-      }
-      motion.raf = requestAnimationFrame(step);
-    }
     function complete() {
       if (phase !== "holding") return;
-      clearTimers();
+      clearTimeout(timer);
       setPhase("done");
       var splash = document.getElementById("preloader");
       if (splash) {
         splash.classList.add("hide");
-        setTimeout(function () { if (splash.parentNode) splash.remove(); }, 100);
+        setTimeout(function () { if (splash.parentNode) splash.remove(); }, 400);
       }
-      if (resetMs > 0) {
-        timers.reset = setTimeout(function () {
-          setPhase("idle");
-          drive(0, releaseMs, EASE_OUT);
-        }, resetMs);
-      }
-    }
-    function begin(kind) {
-      if (phase !== "idle") return false;
-      gesture.start = performance.now();
-      setPhase("holding", kind);
-      drive(1, holdMs, function (t) { return t; });
-      timers.complete = setTimeout(complete, holdMs + 100);
-      return true;
-    }
-    function release() {
-      if (phase !== "holding") return;
-      clearTimers();
-      setPhase("idle");
-      drive(0, releaseMs, EASE_OUT);
     }
 
-    function endPointer() {
-      if (gesture.pointerId === null) return;
-      gesture.pointerId = null;
-      release();
+    function begin() {
+      if (phase !== "idle") return false;
+      setPhase("holding");
+      timer = setTimeout(complete, HOLD_MS);
+      return true;
     }
+
+    function release() {
+      if (phase !== "holding") return;
+      clearTimeout(timer);
+      setPhase("idle");
+    }
+
+    var curPointerId = null;
     btn.addEventListener("pointerdown", function (e) {
-      if (e.button !== 0 || !e.isPrimary || gesture.pointerId !== null) return;
-      if (!begin("pointer")) return;
-      gesture.pointerId = e.pointerId;
-      try { btn.setPointerCapture(e.pointerId); } catch {}
+      if (e.button !== 0 || !e.isPrimary) return;
+      if (curPointerId !== null) return;
+      if (!begin()) return;
+      curPointerId = e.pointerId;
+      try { btn.setPointerCapture(e.pointerId); } catch (_) {}
       e.preventDefault();
     });
-    btn.addEventListener("pointerup", endPointer);
-    btn.addEventListener("pointercancel", endPointer);
-    btn.addEventListener("lostpointercapture", endPointer);
+    btn.addEventListener("pointerup", function () { curPointerId = null; release(); });
+    btn.addEventListener("pointercancel", function () { curPointerId = null; release(); });
+    btn.addEventListener("lostpointercapture", function () { curPointerId = null; release(); });
     btn.addEventListener("pointerleave", function (e) {
-      if (e.pointerType !== "touch") endPointer();
+      if (e.pointerType !== "touch") { curPointerId = null; release(); }
     });
+
     btn.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && inputKind === "key") release();
-      if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); begin("key"); }
+      if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); begin(); }
+      if (e.key === "Escape") release();
     });
     btn.addEventListener("keyup", function (e) {
-      if ((e.key === " " || e.key === "Enter") && inputKind === "key") { e.preventDefault(); release(); }
+      if ((e.key === " " || e.key === "Enter")) { e.preventDefault(); release(); }
     });
     btn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
-    window.addEventListener("blur", function () { if (phase === "holding") release(); });
+    window.addEventListener("blur", function () { release(); });
     document.addEventListener("visibilitychange", function () {
-      if (document.hidden && phase === "holding") release();
+      if (document.hidden) release();
     });
-
-    btn.style.setProperty("--hb-p", "0");
   })();
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
+    { type: "change", text: "公告页整体重设计：HoldButton 深灰底+蓝填充，BounceCards 尺寸收敛", date: "2026-11-13" },
+    { type: "fix",    text: "清理重复 HTML 块（1094 行垃圾），修复 splash-inner 闭合标签结构", date: "2026-11-13" },
+    { type: "change", text: "HoldButton JS 极简：砍掉 ResizeObserver + drive rAF，纯 CSS transition", date: "2026-11-13" },
     { type: "fix",    text: "openApp 结尾手动 __tcRefresh + refresh selector 改成 [data-tc]", date: "2026-11-13" },
-    { type: "change", text: "详情页下载按钮也加 data-tc 3D 倾斜", date: "2026-11-13" },
-    { type: "fix",    text: "TiltedCard 最简重写：直接绑监听器 + perspective + transform transition", date: "2026-11-13" },
-    { type: "fix",    text: "TiltedCard IIFE 移到 renderList(true) 之后", date: "2026-11-13" },
-    { type: "fix",    text: "审计修复 + splash display:none + 下载按钮蓝色", date: "2026-11-12" },
+    { type: "fix",    text: "详情页下载按钮也加 data-tc 3D 倾斜", date: "2026-11-13" },
   ];
 
   (function renderSplashLog() {
@@ -2135,19 +2061,19 @@
 
     // 参数（按用户给的配置）
     var cfg = {
-      cardSize: 260,
-      spread: 130,
-      rotation: 12,
-      arc: 80,
+      cardSize: 220,
+      spread: 110,
+      rotation: 10,
+      arc: 70,
       animationDelay: 0.4,
       animationStagger: 0.06,
       bounciness: 0.6,
       enableHover: true,
-      pushDistance: 160,
-      hoverScale: 1.06,
+      pushDistance: 140,
+      hoverScale: 1.05,
       borderWidth: 0,
       borderColor: "transparent",
-      radius: 25,
+      radius: 22,
       shadow: true
     };
     var cardSize = cfg.cardSize;
