@@ -907,7 +907,8 @@
     gap: 28px;
     padding: 48px 52px 40px;
     width: 100%; max-width: 540px;
-    animation: splashFade .6s cubic-bezier(.22,1,.36,1) both;
+    animation: splashFade .6s cubic-bezier(.22,1,.36,1) forwards;
+    opacity: 1 !important;
   }
   .splash-brand {
     font-family: var(--display);
@@ -991,21 +992,32 @@
   .shredder__slit {
     position: absolute;
     left: 0; right: 0; bottom: 0;
-    height: 3px;
-    background: #3f3f46;
-    border-radius: 999px;
+    height: 44px;
+    background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--ink) 8%, transparent) 40%, color-mix(in srgb, var(--ink) 16%, transparent) 100%);
+    border-radius: 8px 8px 14px 14px;
     pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
   }
-  .shredder__slit::before,
-  .shredder__slit::after {
-    content: "";
-    position: absolute; top: -1px; bottom: -1px;
-    width: 10px;
-    background: linear-gradient(90deg, transparent, #3f3f46);
-    pointer-events: none;
+  .shredder__slit::before {
+    content: "粉碎区";
+    font-size: 10px; font-weight: 600; letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: .55;
   }
-  .shredder__slit::before { left: -10px; }
-  .shredder__slit::after { right: -10px; transform: scaleX(-1); }
+  .shredder__slit[data-active] {
+    background: linear-gradient(180deg, transparent 0%, rgba(59,130,246,.18) 30%, rgba(59,130,246,.35) 100%);
+    box-shadow: 0 -2px 18px rgba(59,130,246,.18);
+  }
+  .shredder__slit[data-active]::before {
+    color: #3b82f6; opacity: 1;
+    animation: shred-pulse .6s ease-in-out infinite;
+  }
+  @keyframes shred-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
 
   /* HoldButton — 粉碎所有日志后才激活 */
   .splash-hold {
@@ -1234,7 +1246,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=227"></script>
+<script src="apps.js?v=228"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1977,23 +1989,40 @@
       e.preventDefault();
     });
 
-    listEl.addEventListener("pointermove", function (e) {
+    var slitEl = root.querySelector(".shredder__slit");
+
+    listEl.addEventListener("pointermove", updateDrag);
+    root.addEventListener("pointermove", updateDrag);
+    function updateDrag(e) {
       if (!dragged) return;
       dragged.el.style.left = (e.clientX - dragged.offX) + "px";
       dragged.el.style.top  = (e.clientY - dragged.offY) + "px";
-    });
+      // Proximity glow on slit
+      if (slitEl) {
+        var itemRect = dragged.el.getBoundingClientRect();
+        var slitRect = slitEl.getBoundingClientRect();
+        if ((itemRect.top + itemRect.height) > slitRect.top - 20) {
+          slitEl.setAttribute("data-active", "");
+        } else {
+          slitEl.removeAttribute("data-active");
+        }
+      }
+    }
 
-    listEl.addEventListener("pointerup", function (e) {
+    function clearSlit() { if (slitEl) slitEl.removeAttribute("data-active"); }
+
+    listEl.addEventListener("pointerup", onPointerUp);
+    root.addEventListener("pointerup", onPointerUp);
+    document.addEventListener("pointerup", onPointerUp);
+    function onPointerUp() {
       if (!dragged) return;
       var el = dragged.el;
-      // Is it below the slit?
       var slit = root.querySelector(".shredder__slit");
       var slitRect = slit.getBoundingClientRect();
       var itemRect = el.getBoundingClientRect();
       var belowSlit = (itemRect.top + itemRect.height) > slitRect.top;
 
       if (belowSlit) {
-        // SHRED!
         el.classList.remove("is-dragging");
         el.classList.add("is-gone");
         el.style.left = ""; el.style.top = ""; el.style.width = "";
@@ -2003,19 +2032,61 @@
           checkReady();
         }, 600);
       } else {
-        // Snap back
         el.classList.remove("is-dragging");
         el.style.left = ""; el.style.top = ""; el.style.width = "";
       }
       dragged = null;
-    });
+      clearSlit();
+    }
 
     listEl.addEventListener("pointercancel", function () {
       if (!dragged) return;
       dragged.el.classList.remove("is-dragging");
       dragged.el.style.left = ""; dragged.el.style.top = ""; dragged.el.style.width = "";
       dragged = null;
+      clearSlit();
     });
+  })();
+
+  // ======== 按钮激活庆祝粒子 ========
+  (function celebration() {
+    var checkInterval = setInterval(function () {
+      var btn = document.getElementById("splash-hold");
+      if (!btn) { clearInterval(checkInterval); return; }
+      if (btn.hasAttribute("data-ready")) {
+        clearInterval(checkInterval);
+        burst(btn);
+      }
+    }, 200);
+
+    function burst(btn) {
+      var rect = btn.getBoundingClientRect();
+      var cx = rect.left + rect.width / 2;
+      var cy = rect.top + rect.height / 2;
+      var colors = ["#3b82f6", "#60a5fa", "#93c5fd", "#38bdf8", "#a78bfa"];
+      for (var i = 0; i < 18; i++) {
+        var p = document.createElement("span");
+        var angle = Math.random() * Math.PI * 2;
+        var dist = 60 + Math.random() * 100;
+        var dx = Math.cos(angle) * dist;
+        var dy = Math.sin(angle) * dist;
+        var size = 4 + Math.random() * 6;
+        p.style.cssText =
+          "position:fixed;z-index:99999;pointer-events:none;" +
+          "width:" + size + "px;height:" + size + "px;border-radius:50%;" +
+          "background:" + colors[Math.floor(Math.random() * colors.length)] + ";" +
+          "left:" + cx + "px;top:" + cy + "px;" +
+          "transform:translate(-50%,-50%);" +
+          "transition:transform .7s cubic-bezier(.15,.7,.3,1),opacity .5s ease;" +
+          "opacity:1;box-shadow:0 0 6px currentColor;color:inherit;";
+        document.body.appendChild(p);
+        requestAnimationFrame(function (pp, ddx, ddy) {
+          pp.style.transform = "translate(calc(-50% + " + ddx + "px), calc(-50% + " + ddy + "px)) scale(.3)";
+          pp.style.opacity = "0";
+        }(p, dx, dy));
+        setTimeout(function (pp) { pp.remove(); }, 800);
+      }
+    }
   })();
 
   // ======== HoldButton — 粉碎所有日志后才激活 ========
