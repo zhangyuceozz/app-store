@@ -1019,7 +1019,7 @@
     50% { transform: scale(1.08); }
   }
 
-  /* HoldButton — 粉碎所有日志后才激活 */
+  /* HoldButton — 三层特效：激活 pop + 长按 glow + 完成 flash */
   .splash-hold {
     --hb-fill: #3b82f6;
     --hb-hold: 1500ms;
@@ -1033,28 +1033,62 @@
     -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     overflow: hidden; width: 100%; height: 50px; padding: 0 28px;
     transition: transform 180ms cubic-bezier(.23,1,.32,1),
-                background .25s ease,
-                border-color .25s ease,
-                color .2s ease;
+                background .35s cubic-bezier(.22,1,.36,1),
+                border-color .35s ease,
+                color .3s ease,
+                box-shadow .35s ease;
   }
+
+  /* ====== 状态 1：激活瞬间 pop + flash ====== */
+  @keyframes btnActivate {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.09); box-shadow: 0 0 0 4px rgba(59,130,246,.25), 0 12px 32px -8px rgba(59,130,246,.3); }
+    70%  { transform: scale(0.97); }
+    100% { transform: scale(1); }
+  }
+  @keyframes btnGlowPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 6px 18px -4px rgba(0,0,0,.1); }
+    50%      { box-shadow: 0 0 0 6px rgba(59,130,246,.18), 0 10px 24px -6px rgba(59,130,246,.22); }
+  }
+  @keyframes btnHoldingGlow {
+    0%, 100% { box-shadow: 0 0 20px -4px rgba(59,130,246,.35), inset 0 0 0 1px rgba(255,255,255,.1); }
+    50%      { box-shadow: 0 0 32px -2px rgba(59,130,246,.55), inset 0 0 0 1px rgba(255,255,255,.25); }
+  }
+  @keyframes btnDoneFlash {
+    0%   { filter: brightness(1); transform: scale(1); }
+    25%  { filter: brightness(1.6); transform: scale(1.06); }
+    55%  { filter: brightness(1.15); }
+    100% { filter: brightness(1); transform: scale(0.9); opacity: 0; }
+  }
+
   .splash-hold[data-ready] {
     cursor: pointer;
-    border: 1px solid var(--line);
-    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    border: 1.5px solid var(--line);
+    background: color-mix(in srgb, var(--ink) 10%, transparent);
     color: var(--ink);
     font-weight: 600; font-size: 15px;
     height: 54px;
+    animation: btnActivate .6s cubic-bezier(.22,1,.36,1),
+               btnGlowPulse 2.4s ease-in-out .6s infinite;
   }
   .splash-hold[data-ready]:hover {
-    background: color-mix(in srgb, var(--ink) 14%, transparent);
-    border-color: color-mix(in srgb, var(--ink) 24%, transparent);
+    background: color-mix(in srgb, var(--ink) 16%, transparent);
+    border-color: color-mix(in srgb, var(--ink) 30%, transparent);
     transform: translateY(-1px);
+    animation-play-state: paused;
   }
   .splash-hold[data-ready]:active { transform: scale(.97) translateY(0); }
-  .splash-hold[data-phase="holding"],
-  .splash-hold[data-phase="done"] {
+
+  /* ====== 状态 2：长按 holding 发光 ====== */
+  .splash-hold[data-phase="holding"] {
     color: #ffffff; border-color: transparent;
+    animation: btnHoldingGlow .8s ease-in-out infinite;
   }
+  .splash-hold[data-phase="done"] {
+    animation: btnDoneFlash .5s cubic-bezier(.4,0,.2,1) forwards;
+  }
+
+  /* ====== Fill 层：蓝色 scaleX + 径向光晕 ====== */
   .splash-hold__fill {
     position: absolute; inset: 0; z-index: 0;
     background: var(--hb-fill); border-radius: inherit;
@@ -1062,28 +1096,42 @@
     transform: scaleX(0);
     transition: transform var(--hb-hold) linear;
   }
-  .splash-hold[data-phase="holding"] .splash-hold__fill { transform: scaleX(1); }
+  .splash-hold[data-phase="holding"] .splash-hold__fill,
   .splash-hold[data-phase="done"] .splash-hold__fill { transform: scaleX(1); }
-  .splash-hold__label { position: relative; z-index: 1; display: inline-flex; align-items: center; }
+
+  .splash-hold__label {
+    position: relative; z-index: 1; display: inline-flex; align-items: center;
+  }
   .splash-hold__idle, .splash-hold__ready, .splash-hold__done {
     display: inline-flex; align-items: center; white-space: nowrap;
-    transition: opacity 200ms ease, filter 200ms ease;
+    transition: opacity 300ms ease, filter 300ms ease;
   }
-  .splash-hold__ready, .splash-hold__done { opacity: 0; filter: blur(2px); position: absolute; }
-  .splash-hold[data-ready] .splash-hold__idle { opacity: 0; filter: blur(2px); }
-  .splash-hold[data-ready] .splash-hold__ready { opacity: 1; filter: none; position: relative; }
+  .splash-hold__ready, .splash-hold__done {
+    position: absolute; opacity: 0; filter: blur(3px);
+  }
+  .splash-hold[data-ready] .splash-hold__idle { opacity: 0; filter: blur(3px); }
+  .splash-hold[data-ready] .splash-hold__ready {
+    opacity: 1; filter: none; position: relative;
+    animation: btnTextPop .4s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes btnTextPop {
+    0%   { transform: scale(.92); filter: blur(4px); opacity: 0; }
+    100% { transform: scale(1); filter: blur(0); opacity: 1; }
+  }
   .splash-hold[data-phase="done"] .splash-hold__idle,
-  .splash-hold[data-phase="done"] .splash-hold__ready { opacity: 0; filter: blur(2px); }
+  .splash-hold[data-phase="done"] .splash-hold__ready { opacity: 0; filter: blur(3px); }
   .splash-hold[data-phase="done"] .splash-hold__done { opacity: 1; filter: blur(0); position: relative; }
 
   .splash-hint {
     text-align: center; font-size: 11px; font-weight: 500;
-    color: var(--muted);
-    margin-top: -4px;
+    color: var(--muted); margin-top: -4px;
   }
   @media (prefers-reduced-motion: reduce) {
     .splash-hold__fill { transition: none; }
     .splash-hold[data-phase="holding"] .splash-hold__fill { transform: scaleX(1); }
+    .splash-hold[data-ready],
+    .splash-hold[data-phase="holding"],
+    .splash-hold[data-phase="done"] { animation: none; }
   }
   @media (max-width: 720px) {
     .splash-hold { height: 46px; font-size: 13px; padding: 0 22px; border-radius: 12px; }
@@ -1246,7 +1294,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=229"></script>
+<script src="apps.js?v=230"></script>
 <script>
 (function () {
   var esc = function (s) {
