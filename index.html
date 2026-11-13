@@ -957,148 +957,222 @@
   .log-row .log-text { font-size: 12.5px; color: var(--ink); line-height: 1.5; flex: 1; min-width: 0; }
   .log-row .log-date { font-size: 11px; font-weight: 500; color: var(--muted); white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 
-  /* HoldButton — 三层特效：激活 pop + 长按 glow + 完成 flash */
-  .splash-hold {
+  /* HoldButton — React Bits 完整移植（wave crest + glow + pulse + drive rAF） */
+  .hold-button {
+    --hb-radius: 14px;
+    --hb-bg: #27272a;
     --hb-fill: #3b82f6;
+    --hb-text: #f5f5f5;
+    --hb-fill-text: #ffffff;
     --hb-hold: 1500ms;
-    position: relative; display: inline-flex; align-items: center; justify-content: center;
-    margin: 8px 0 0; border: 1px dashed var(--line); border-radius: 14px;
-    background: transparent;
-    color: var(--muted);
-    font-family: inherit; font-weight: 500; letter-spacing: .01em; font-size: 14px;
-    line-height: 1; cursor: not-allowed; outline: none;
-    user-select: none; -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-    overflow: hidden; width: 100%; height: 50px; padding: 0 28px;
-    transition: transform 180ms cubic-bezier(.23,1,.32,1),
-                background .35s cubic-bezier(.22,1,.36,1),
-                border-color .35s ease,
-                color .3s ease,
-                box-shadow .35s ease;
-    animation: btnIdleBreath 3.2s ease-in-out infinite;
-  }
-  .splash-hold::before {
-    content: "";
-    position: absolute; inset: 0; z-index: -1;
-    border-radius: inherit;
-    background: repeating-linear-gradient(
-      90deg, transparent 0, transparent 6px,
-      var(--line) 6px, var(--line) 7px
-    );
-    opacity: .5;
-    animation: btnDashFlow 2.4s linear infinite;
-  }
-  @keyframes btnIdleBreath {
-    0%, 100% { opacity: .85; }
-    50%      { opacity: 1; }
-  }
-  @keyframes btnDashFlow {
-    0%   { background-position: 0 0; }
-    100% { background-position: 14px 0; }
-  }
+    --hb-release: 200ms;
+    --hb-press: 0.97;
+    --hb-wave: 4px;
+    --hb-w: 0px;
+    --hb-h: 0px;
+    --hb-cycles: 1.4;
+    --hb-p: 0;
+    --hb-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --hb-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --hb-glow: inset 0 1px 0 rgba(255,255,255,.06),
+               0 10px 32px -6px color-mix(in srgb, var(--hb-fill) 70%, transparent);
 
-  /* ====== 状态 1：激活瞬间 pop + flash ====== */
-  @keyframes btnActivate {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(1.09); box-shadow: 0 0 0 4px rgba(59,130,246,.25), 0 12px 32px -8px rgba(59,130,246,.3); }
-    70%  { transform: scale(0.97); }
-    100% { transform: scale(1); }
-  }
-  @keyframes btnGlowPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 6px 18px -4px rgba(0,0,0,.1); }
-    50%      { box-shadow: 0 0 0 6px rgba(59,130,246,.18), 0 10px 24px -6px rgba(59,130,246,.22); }
-  }
-  @keyframes btnHoldingGlow {
-    0%, 100% { box-shadow: 0 0 20px -4px rgba(59,130,246,.35), inset 0 0 0 1px rgba(255,255,255,.1); }
-    50%      { box-shadow: 0 0 32px -2px rgba(59,130,246,.55), inset 0 0 0 1px rgba(255,255,255,.25); }
-  }
-  @keyframes btnDoneFlash {
-    0%   { filter: brightness(1); transform: scale(1); }
-    25%  { filter: brightness(1.6); transform: scale(1.06); }
-    55%  { filter: brightness(1.15); }
-    100% { filter: brightness(1); transform: scale(0.9); opacity: 0; }
-  }
-
-  .splash-hold[data-ready] {
-    cursor: pointer;
-    border: 1.5px solid var(--line);
-    background: color-mix(in srgb, var(--ink) 10%, transparent);
-    color: var(--ink);
-    font-weight: 600; font-size: 15px;
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    isolation: isolate;
+    margin: 8px 0 0;
+    border: 0;
+    border-radius: var(--hb-radius);
+    background: var(--hb-bg);
+    color: var(--hb-text);
+    font-family: inherit;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    font-size: 15px;
+    line-height: 1;
     height: 54px;
-    animation: btnActivate .6s cubic-bezier(.22,1,.36,1),
-               btnGlowPulse 2.4s ease-in-out .6s infinite;
-  }
-  .splash-hold[data-ready]::before { opacity: 0; animation: none; }
-  .splash-hold[data-ready]:hover {
-    background: color-mix(in srgb, var(--ink) 16%, transparent);
-    border-color: color-mix(in srgb, var(--ink) 30%, transparent);
-    transform: translateY(-1px);
-    animation-play-state: paused;
-  }
-  .splash-hold[data-ready]:active { transform: scale(.97) translateY(0); }
-
-  /* ====== 状态 2：长按 holding 发光 ====== */
-  .splash-hold[data-phase="holding"] {
-    color: #ffffff; border-color: transparent;
-    animation: btnHoldingGlow .8s ease-in-out infinite;
-  }
-  .splash-hold[data-phase="done"] {
-    animation: btnDoneFlash .5s cubic-bezier(.4,0,.2,1) forwards;
+    padding: 0 28px;
+    width: 100%;
+    box-shadow: var(--hb-shadow);
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition:
+      transform 160ms var(--hb-ease-out),
+      background-color 160ms ease,
+      box-shadow var(--hb-release) var(--hb-ease-out);
   }
 
-  /* ====== Fill 层：蓝色 scaleX + 径向光晕 ====== */
-  .splash-hold__fill {
-    position: absolute; inset: 0; z-index: 0;
-    background: var(--hb-fill); border-radius: inherit;
-    transform-origin: left center;
-    transform: scaleX(0);
-    transition: transform var(--hb-hold) linear;
+  .hold-button:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--hb-bg) 92%, #fff);
   }
-  .splash-hold[data-phase="holding"] .splash-hold__fill,
-  .splash-hold[data-phase="done"] .splash-hold__fill { transform: scaleX(1); }
 
-  .splash-hold__label {
-    position: relative; z-index: 1; display: inline-flex; align-items: center;
+  .hold-button[data-phase='holding'] {
+    transform: scale(var(--hb-press));
   }
-  .splash-hold__idle, .splash-hold__ready, .splash-hold__done {
-    display: inline-flex; align-items: center; white-space: nowrap;
-    transition: opacity 300ms ease, filter 300ms ease;
+
+  .hold-button[data-glow='true'][data-phase='holding'],
+  .hold-button[data-glow='true'][data-phase='done'] {
+    box-shadow: var(--hb-glow);
   }
-  .splash-hold__ready, .splash-hold__done {
-    position: absolute; opacity: 0; filter: blur(3px);
+
+  .hold-button[data-glow='true'][data-phase='holding'] {
+    transition:
+      transform 160ms var(--hb-ease-out),
+      background-color 160ms ease,
+      box-shadow var(--hb-hold) linear;
   }
-  .splash-hold[data-ready] .splash-hold__idle { opacity: 0; filter: blur(3px); }
-  .splash-hold[data-ready] .splash-hold__ready {
-    opacity: 1; filter: none; position: relative;
-    animation: btnTextPop .4s cubic-bezier(.22,1,.36,1);
+
+  .hold-button:focus-visible {
+    outline: 2px solid var(--hb-fill);
+    outline-offset: 3px;
   }
-  @keyframes btnTextPop {
-    0%   { transform: scale(.92); filter: blur(4px); opacity: 0; }
-    100% { transform: scale(1); filter: blur(0); opacity: 1; }
+
+  .hold-button:disabled {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
   }
-  .splash-hold[data-phase="done"] .splash-hold__idle,
-  .splash-hold[data-phase="done"] .splash-hold__ready { opacity: 0; filter: blur(3px); }
-  .splash-hold[data-phase="done"] .splash-hold__done { opacity: 1; filter: blur(0); position: relative; }
+
+  /* ===== Pulse — done 瞬间光环扩散 ===== */
+  .hold-button__pulse {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: var(--hb-radius);
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .hold-button[data-glow='true'][data-phase='done'] .hold-button__pulse {
+    animation: hb-pulse 600ms var(--hb-ease-out) forwards;
+  }
+
+  @keyframes hb-pulse {
+    from {
+      opacity: 1;
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--hb-fill) 55%, transparent);
+    }
+    to {
+      opacity: 0;
+      box-shadow: 0 0 0 14px color-mix(in srgb, var(--hb-fill) 0%, transparent);
+    }
+  }
+
+  /* ===== Label 三层：idle / done + fill 内同构 ===== */
+  .hold-button__label {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+  }
+
+  .hold-button__label > span {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: opacity 200ms ease, filter 200ms ease;
+  }
+
+  .hold-button__done {
+    opacity: 0;
+    filter: blur(2px);
+  }
+
+  .hold-button[data-phase='done'] .hold-button__idle {
+    opacity: 0;
+    filter: blur(2px);
+  }
+
+  .hold-button[data-phase='done'] .hold-button__done {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  /* ===== Clip — 裁剪层（含 fill + crest） ===== */
+  .hold-button__clip {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    clip-path: inset(0 round var(--hb-radius));
+    pointer-events: none;
+  }
+
+  .hold-button__fill {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--hb-fill);
+    color: var(--hb-fill-text);
+    clip-path: inset(
+      0 calc((1 - var(--hb-p)) * (100% + 0.75 * var(--hb-wave)) - var(--hb-p) * 0.25 * var(--hb-wave)) 0 0
+    );
+  }
+
+  /* ===== Crest — SVG mask 波浪前进边缘 ===== */
+  .hold-button__crest {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--hb-fill);
+    color: var(--hb-fill-text);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='200' viewBox='0 0 20 200' preserveAspectRatio='none'%3E%3Cpath d='M0 0H10C18 8 18 25.3 10 33.3S2 58.7 10 66.7S18 92 10 100S2 125.3 10 133.3S18 158.7 10 166.7S2 192 10 200H0Z'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: repeat-y;
+    mask-repeat: repeat-y;
+    -webkit-mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
+    mask-size: var(--hb-wave) calc(var(--hb-h) * 2);
+    -webkit-mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
+    mask-position-x: calc(-1 * var(--hb-wave) + var(--hb-p) * (var(--hb-w) + var(--hb-wave)));
+    -webkit-mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
+    mask-position-y: calc(-1 * var(--hb-p) * var(--hb-cycles) * var(--hb-h));
+  }
+
+  .hold-button__label--fill {
+    z-index: auto;
+  }
 
   .splash-hint {
     text-align: center; font-size: 11px; font-weight: 500;
     color: var(--muted); margin-top: -4px;
   }
+
   @media (prefers-reduced-motion: reduce) {
-    .splash-hold { animation: none; }
-    .splash-hold::before { animation: none; opacity: .5; }
-    .splash-hold__fill { transition: none; }
-    .splash-hold[data-phase="holding"] .splash-hold__fill { transform: scaleX(1); }
-    .splash-hold[data-ready],
-    .splash-hold[data-phase="holding"],
-    .splash-hold[data-phase="done"] { animation: none; }
-  }
-  @media (max-width: 720px) {
-    .splash-hold { height: 46px; font-size: 13px; padding: 0 22px; border-radius: 12px; }
-    .splash-hold[data-ready] { height: 48px; font-size: 14px; padding: 0 22px; border-radius: 12px; }
+    .hold-button {
+      transition: background-color 160ms ease,
+                  box-shadow var(--hb-release) ease;
+      transform: none !important;
+    }
+    .hold-button__fill {
+      clip-path: inset(0);
+      opacity: 0;
+      transition: opacity var(--hb-release) ease;
+    }
+    .hold-button__crest { display: none; }
+    .hold-button[data-phase='holding'] .hold-button__fill,
+    .hold-button[data-phase='done'] .hold-button__fill {
+      opacity: 1;
+      transition: opacity var(--hb-hold) linear;
+    }
+    .hold-button__pulse { animation: none !important; }
+    .hold-button__label > span {
+      transition: opacity 200ms ease;
+      filter: none !important;
+    }
   }
 
+  @media (max-width: 720px) {
+    .hold-button { height: 48px; font-size: 14px; padding: 0 22px; border-radius: 12px; }
+  }
 
   @media (max-width: 720px) {
     .splash-inner { padding: 32px 24px 28px; max-width: 100%; gap: 22px; }
@@ -1135,12 +1209,25 @@
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
     <div class="splash-log" id="splash-log"></div>
-    <button type="button" class="splash-hold" id="splash-hold" data-phase="idle" data-ready aria-disabled="false">
-      <span class="splash-hold__fill"></span>
-      <span class="splash-hold__label">
-        <span class="splash-hold__idle">将所有日志拖进下方粉碎</span>
-        <span class="splash-hold__ready">长按进入主站</span>
-        <span class="splash-hold__done">正在进入…</span>
+    <button type="button" class="splash-hold hold-button" id="splash-hold" data-phase="idle" data-glow="true" data-direction="right" aria-disabled="false">
+      <span class="hold-button__pulse"></span>
+      <span class="hold-button__label">
+        <span class="hold-button__idle">长按进入主站</span>
+        <span class="hold-button__done">正在进入…</span>
+      </span>
+      <span class="hold-button__clip">
+        <span class="hold-button__fill">
+          <span class="hold-button__label hold-button__label--fill">
+            <span class="hold-button__idle">长按进入主站</span>
+            <span class="hold-button__done">正在进入…</span>
+          </span>
+        </span>
+        <span class="hold-button__crest">
+          <span class="hold-button__label hold-button__label--fill">
+            <span class="hold-button__idle">长按进入主站</span>
+            <span class="hold-button__done">正在进入…</span>
+          </span>
+        </span>
       </span>
     </button>
     <p class="splash-hint" id="splash-hint">按住 1.5 秒进入主站</p>
@@ -1252,7 +1339,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=233"></script>
+<script src="apps.js?v=234"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1960,17 +2047,46 @@
     });
   })();
 
-  // ======== HoldButton ========
+  // ======== HoldButton — React Bits drive() rAF 原版 ========
   (function () {
     var btn = document.getElementById("splash-hold");
     if (!btn) return;
-    var HOLD_MS = 1500, phase = "idle", timer = 0;
+
+    var HOLD_MS = 1500, RELEASE_MS = 200;
+    var LINEAR = function (t) { return t; };
+    var EASE_OUT = function (t) { return 1 - Math.pow(1 - t, 3); };
+
+    var phase = "idle", motion = { raf: 0, p: 0, from: 0, to: 0, start: 0 };
 
     function setPhase(ph) { phase = ph; btn.setAttribute("data-phase", ph); }
 
+    // 测量尺寸 → --hb-w / --hb-h（crest mask 依赖）
+    function measure() {
+      btn.style.setProperty("--hb-w", btn.offsetWidth + "px");
+      btn.style.setProperty("--hb-h", btn.offsetHeight + "px");
+    }
+    measure();
+    if (window.ResizeObserver) { new ResizeObserver(measure).observe(btn); }
+
+    // rAF 驱动 fill 进度 --hb-p
+    function drive(to, duration, ease) {
+      cancelAnimationFrame(motion.raf);
+      motion.from = motion.p;
+      motion.to = to;
+      motion.start = performance.now();
+      var step = function (now) {
+        var t = duration > 0 ? Math.min(1, (now - motion.start) / duration) : 1;
+        motion.p = motion.from + (motion.to - motion.from) * ease(t);
+        btn.style.setProperty("--hb-p", motion.p.toFixed(4));
+        if (t < 1) { motion.raf = requestAnimationFrame(step); return; }
+        motion.raf = 0;
+        if (motion.to === 1) complete();
+      };
+      motion.raf = requestAnimationFrame(step);
+    }
+
     function complete() {
       if (phase !== "holding") return;
-      clearTimeout(timer);
       setPhase("done");
       var splash = document.getElementById("preloader");
       if (splash) {
@@ -1981,12 +2097,12 @@
     function begin() {
       if (phase !== "idle") return;
       setPhase("holding");
-      timer = setTimeout(complete, HOLD_MS);
+      drive(1, HOLD_MS, LINEAR);
     }
     function release() {
       if (phase !== "holding") return;
-      clearTimeout(timer);
       setPhase("idle");
+      drive(0, RELEASE_MS, EASE_OUT);
     }
 
     btn.addEventListener("pointerdown", function (e) {
