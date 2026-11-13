@@ -1246,7 +1246,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=228"></script>
+<script src="apps.js?v=229"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2080,10 +2080,12 @@
           "transition:transform .7s cubic-bezier(.15,.7,.3,1),opacity .5s ease;" +
           "opacity:1;box-shadow:0 0 6px currentColor;color:inherit;";
         document.body.appendChild(p);
-        requestAnimationFrame(function (pp, ddx, ddy) {
-          pp.style.transform = "translate(calc(-50% + " + ddx + "px), calc(-50% + " + ddy + "px)) scale(.3)";
-          pp.style.opacity = "0";
-        }(p, dx, dy));
+        (function (pp, ddx, ddy) {
+          requestAnimationFrame(function () {
+            pp.style.transform = "translate(calc(-50% + " + ddx + "px), calc(-50% + " + ddy + "px)) scale(.3)";
+            pp.style.opacity = "0";
+          });
+        })(p, dx, dy);
         setTimeout(function (pp) { pp.remove(); }, 800);
       }
     }
