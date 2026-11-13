@@ -538,60 +538,8 @@
     min-height: 0;
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     box-shadow: var(--s-1);
-    transform-style: preserve-3d;
   }
-  /* TiltedCard layers (React Bits style) */
-  .card__shadow {
-    position: absolute; inset: 0; margin: auto;
-    max-width: 100%; max-height: 100%;
-    background: rgba(0,0,0,.55);
-    filter: blur(20px); opacity: 0; pointer-events: none;
-    will-change: transform, opacity;
-  }
-  .card__glare {
-    position: absolute; inset: 0; z-index: 5; pointer-events: none;
-    background: radial-gradient(
-      farthest-corner circle at var(--tc-gx,50%) var(--tc-gy,50%),
-      rgba(255,255,255,calc(var(--tc-glare,0)*0.34)) 0%,
-      rgba(255,255,255,calc(var(--tc-glare,0)*0.202)) 27%,
-      rgba(255,255,255,calc(var(--tc-glare,0)*0.003)) 54%,
-      rgba(255,255,255,0) 60%);
-    mix-blend-mode: screen;
-  }
-  .card__rim {
-    position: absolute; inset: 0; z-index: 6;
-    border-radius: inherit; pointer-events: none;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), inset 0 1px 0 rgba(255,255,255,.12);
-  }
-  .card__edge {
-    position: absolute; inset: 0; z-index: 7;
-    box-sizing: border-box; padding: 1px; border-radius: inherit; pointer-events: none;
-    background: radial-gradient(
-      farthest-side circle at var(--tc-gx,50%) var(--tc-gy,50%),
-      rgba(255,255,255,calc(var(--tc-glare,0)*0.85)) 0%,
-      rgba(255,255,255,calc(var(--tc-glare,0)*0.43)) 36%,
-      rgba(255,255,255,calc(var(--tc-glare,0)*0.02)) 72%,
-      rgba(255,255,255,0) 85%);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  }
-  .card[data-tc] { isolation: isolate; overflow: visible; }
-  .card[data-tc] .c-preview img,
-  .card[data-tc] .c-icon,
-  .card[data-tc] .c-name,
-  .card[data-tc] .c-meta,
-  .card[data-tc] .c-date,
-  .card[data-tc] .c-dl-btn {
-    transform: translate3d(
-      calc(var(--tc-px,0) * var(--tc-depth,0) * 1px),
-      calc(var(--tc-py,0) * var(--tc-depth,0) * 1px), 0);
-  }
-  .card[data-tc] .c-preview { --tc-depth: -24; }
-  .card[data-tc] .c-icon    { --tc-depth: 6; }
-  .card[data-tc] .c-name    { --tc-depth: 4; }
-  .card[data-tc] .c-meta    { --tc-depth: 3; }
-  .card[data-tc] .c-dl-btn  { --tc-depth: 12; }
+  .card[data-tc] { isolation: isolate; }
 
 
 
@@ -1278,7 +1226,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=222"></script>
+<script src="apps.js?v=223"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -1591,7 +1539,6 @@
           "</div>" +
         "</div>" +
         (firstDl ? '<button class="c-dl-btn" type="button" data-file="' + esc(firstDl) + '">获取</button>' : "") +
-        '<div class="card__shadow" aria-hidden="true"></div><span class="card__glare" aria-hidden="true"></span><span class="card__rim" aria-hidden="true"></span><span class="card__edge" aria-hidden="true"></span>' +
       "</div>"
     );
   }
@@ -1900,14 +1847,14 @@
   buildBranchedMenu();
   renderList(true); // 首次加载跳过淡入淡出
 
-  // ======== TiltedCard — 3D 倾斜（最简直接版） ========
+  // ======== TiltedCard — 3D 倾斜（仅 rotate + scale，无光影） ========
   // 必须在 renderList(true) 之后运行
   (function () {
     function bindOne(card) {
       if (card._tcBound) return;
       card._tcBound = true;
 
-      var AMP = 10, GLARE = 0.4, SHADOW = 0.4, PARALLAX = 1;
+      var AMP = 10;
 
       function onMove(e) {
         var rect = card.getBoundingClientRect();
@@ -1919,25 +1866,12 @@
         var rx = (-ny * AMP).toFixed(3);
         var ry = (nx * AMP).toFixed(3);
         card.style.transform = "translate3d(0,0,0) rotateX(" + rx + "deg) rotateY(" + ry + "deg) scale(1.04)";
-        card.style.setProperty("--tc-gx", (50 + nx * 46).toFixed(1) + "%");
-        card.style.setProperty("--tc-gy", (50 - ny * 46).toFixed(1) + "%");
-        card.style.setProperty("--tc-glare", GLARE.toString());
         card.setAttribute("data-active", "");
-
-        // shadow
-        var sh = card.querySelector(".card__shadow");
-        if (sh) {
-          sh.style.transform = "translate3d(" + (-nx * 18).toFixed(1) + "px," + (14 - ny * 10).toFixed(1) + "px,0) scale(1.03,1.04)";
-          sh.style.opacity = SHADOW.toString();
-        }
       }
 
       function onLeave() {
         card.style.transform = "";
-        card.style.setProperty("--tc-glare", "0");
         card.removeAttribute("data-active");
-        var sh = card.querySelector(".card__shadow");
-        if (sh) { sh.style.transform = ""; sh.style.opacity = ""; }
       }
 
       card.addEventListener("pointermove", onMove, { passive: true });
@@ -2041,11 +1975,11 @@
   // ======== 公告页：更新日志渲染 ========
   // 每条改动带类型（new/change/fix）+ 日期
   var SPLASH_LOG = [
+    { type: "change", text: "删除卡片光影特效：glare/rim/edge/shadow + depth 3D 视差，仅保留 rotateX/Y 3D 倾斜", date: "2026-11-13" },
     { type: "change", text: "公告页整体重设计：HoldButton 深灰底+蓝填充，BounceCards 尺寸收敛", date: "2026-11-13" },
     { type: "fix",    text: "清理重复 HTML 块（1094 行垃圾），修复 splash-inner 闭合标签结构", date: "2026-11-13" },
     { type: "change", text: "HoldButton JS 极简：砍掉 ResizeObserver + drive rAF，纯 CSS transition", date: "2026-11-13" },
     { type: "fix",    text: "openApp 结尾手动 __tcRefresh + refresh selector 改成 [data-tc]", date: "2026-11-13" },
-    { type: "fix",    text: "详情页下载按钮也加 data-tc 3D 倾斜", date: "2026-11-13" },
   ];
 
   (function renderSplashLog() {
