@@ -989,10 +989,15 @@
   }
   .splash-brand {
     font-family: var(--display);
-    font-size: 13px; font-weight: 600;
-    letter-spacing: .06em; text-transform: uppercase;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .22em; text-transform: uppercase;
     color: var(--muted);
     flex-shrink: 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .splash-brand::before {
+    content: "";
+    width: 22px; height: 1px; background: var(--line);
   }
   .splash-title {
     font-family: var(--display); font-size: 11px; font-weight: 600;
@@ -1018,17 +1023,30 @@
   .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
 
   .log-group {
+    position: relative;
     display: flex; align-items: center; gap: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid transparent;
+    padding: 9px 0 9px 10px;
+    border-radius: 4px;
     font-size: 13px; font-weight: 500;
     line-height: 1.5;
     opacity: 0; transform: translateY(8px);
     will-change: transform, opacity;
-    transition: transform .35s cubic-bezier(.22,1,.36,1), opacity .35s ease;
+    transition: transform .35s cubic-bezier(.22,1,.36,1),
+                opacity .35s ease,
+                background .2s ease;
+  }
+  .log-group::before {
+    content: "";
+    position: absolute; left: 0; top: 50%;
+    width: 2px; height: 0;
+    background: var(--ink);
+    border-radius: 1px;
+    transform: translateY(-50%);
+    transition: height .25s cubic-bezier(.22,1,.36,1);
   }
   .log-group.show { opacity: 1; transform: none; }
-  .log-group:hover { border-bottom-color: var(--line); }
+  .log-group:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+  .log-group:hover::before { height: 14px; }
 
   .log-group .log-num {
     font-size: 11px; font-weight: 600; color: var(--muted);
@@ -1070,10 +1088,14 @@
   .splash-hold:hover {
     background: color-mix(in srgb, var(--ink) 14%, transparent);
     border-color: color-mix(in srgb, var(--ink) 24%, transparent);
+    transform: translateY(-1px);
   }
-  .splash-hold:active { transform: scale(.97); }
+  .splash-hold:active { transform: scale(.97) translateY(0); }
   .splash-hold[data-phase="holding"],
-  .splash-hold[data-phase="done"] { color: #ffffff; border-color: transparent; }
+  .splash-hold[data-phase="done"] {
+    color: #ffffff; border-color: transparent;
+    box-shadow: 0 8px 28px -8px rgba(59,130,246,.4);
+  }
   .splash-hold__fill {
     position: absolute; inset: 0; z-index: 0;
     background: var(--hb-fill); border-radius: inherit;
@@ -1256,7 +1278,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=221"></script>
+<script src="apps.js?v=222"></script>
 <script>
 (function () {
   var esc = function (s) {
