@@ -935,89 +935,27 @@
     height: 1px; background: var(--line);
   }
 
-  /* Shredder — 极简拖拽粉碎 */
-  .shredder {
-    position: relative;
-    flex: 1; min-height: 0;
-    touch-action: none;
-  }
-  .shredder__list {
-    margin: 0; padding: 0;
-    list-style: none;
-    display: flex; flex-direction: column;
-    gap: 6px;
+  /* 公告页更新日志 */
+  .splash-log {
+    display: flex; flex-direction: column; gap: 6px;
     max-height: 280px; overflow-y: auto;
+    padding-right: 4px;
   }
-  .shredder__list::-webkit-scrollbar { width: 4px; }
-  .shredder__list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
-
-  .shredder__item {
-    position: relative;
+  .splash-log::-webkit-scrollbar { width: 4px; }
+  .splash-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+  .log-row {
     display: flex; align-items: center; gap: 12px;
     padding: 9px 0 9px 10px;
     border-radius: 4px;
-    font-size: 13px; font-weight: 500;
-    line-height: 1.5;
+    font-size: 13px; font-weight: 500; line-height: 1.5;
     opacity: 0; transform: translateY(8px);
     transition: transform .35s cubic-bezier(.22,1,.36,1), opacity .35s ease, background .2s ease;
-    cursor: grab;
-    user-select: none;
   }
-  .shredder__item.show { opacity: 1; transform: none; }
-  .shredder__item:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
-
-  .shredder__item.is-dragging {
-    cursor: grabbing;
-    position: fixed;
-    z-index: 9999;
-    pointer-events: none;
-    filter: drop-shadow(0 14px 22px rgba(0,0,0,.28));
-    background: var(--card);
-    transition: none !important;
-  }
-  .shredder__item.is-gone {
-    pointer-events: none;
-    animation: shred-gone .6s cubic-bezier(.5,-0.2,.5,.2) forwards;
-  }
-  @keyframes shred-gone {
-    0%   { transform: rotate(0deg) scale(1); opacity: 1; }
-    60%  { transform: rotate(180deg) scale(0.3); opacity: 0.6; }
-    100% { transform: rotate(540deg) scale(0); opacity: 0; }
-  }
-
-  .shredder__item .sl-num { font-size: 11px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; min-width: 22px; letter-spacing: .02em; }
-  .shredder__item .sl-text { font-size: 12.5px; color: var(--ink); line-height: 1.5; flex: 1; min-width: 0; }
-  .shredder__item .sl-date { font-size: 11px; font-weight: 500; color: var(--muted); white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-
-  .shredder__slit {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 44px;
-    background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--ink) 8%, transparent) 40%, color-mix(in srgb, var(--ink) 16%, transparent) 100%);
-    border-radius: 8px 8px 14px 14px;
-    pointer-events: none;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
-  }
-  .shredder__slit::before {
-    content: "粉碎区";
-    font-size: 10px; font-weight: 600; letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    opacity: .55;
-  }
-  .shredder__slit[data-active] {
-    background: linear-gradient(180deg, transparent 0%, rgba(59,130,246,.18) 30%, rgba(59,130,246,.35) 100%);
-    box-shadow: 0 -2px 18px rgba(59,130,246,.18);
-  }
-  .shredder__slit[data-active]::before {
-    color: #3b82f6; opacity: 1;
-    animation: shred-pulse .6s ease-in-out infinite;
-  }
-  @keyframes shred-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-  }
+  .log-row.show { opacity: 1; transform: none; }
+  .log-row:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+  .log-row .log-num { font-size: 11px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; min-width: 22px; letter-spacing: .02em; }
+  .log-row .log-text { font-size: 12.5px; color: var(--ink); line-height: 1.5; flex: 1; min-width: 0; }
+  .log-row .log-date { font-size: 11px; font-weight: 500; color: var(--muted); white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 
   /* HoldButton — 三层特效：激活 pop + 长按 glow + 完成 flash */
   .splash-hold {
@@ -1196,10 +1134,7 @@
     <div class="splash-brand">Chovy Store</div>
     <div class="bounce-cards" id="bounce-cards"></div>
     <div class="splash-title">更新日志</div>
-    <div class="shredder" id="shredder">
-      <ul class="shredder__list" id="shredder-list"></ul>
-      <div class="shredder__slit"></div>
-    </div>
+    <div class="splash-log" id="splash-log"></div>
     <button type="button" class="splash-hold" id="splash-hold" data-phase="idle" data-ready aria-disabled="false">
       <span class="splash-hold__fill"></span>
       <span class="splash-hold__label">
@@ -1208,7 +1143,7 @@
         <span class="splash-hold__done">正在进入…</span>
       </span>
     </button>
-    <p class="splash-hint" id="splash-hint">拖动任意日志行向下，穿过底部 slit 即可粉碎</p>
+    <p class="splash-hint" id="splash-hint">按住 1.5 秒进入主站</p>
   </div>
 </div>
 
@@ -1317,7 +1252,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=232"></script>
+<script src="apps.js?v=233"></script>
 <script>
 (function () {
   var esc = function (s) {
@@ -2001,175 +1936,37 @@
     })();
   }, { once: true });
 
-  // ======== 公告页 SPLASH_LOG + Shredder + HoldButton 极简联动 ========
+  // ======== 公告页 SPLASH_LOG 渲染 + HoldButton ========
   var SPLASH_LOG = [
-    { text: "Shredder 拖拽粉碎 — 拖日志进 slit 解锁进入", date: "2026-11-13" },
+    { text: "删除 Shredder 粉碎交互 — 日志回归纯展示", date: "2026-11-13" },
     { text: "删除卡片光影特效：glare / rim / edge / shadow", date: "2026-11-13" },
     { text: "公告页整体重设计 + HoldButton 极简", date: "2026-11-13" },
     { text: "清理 1094 行重复 HTML 垃圾", date: "2026-11-13" },
     { text: "brand 头像光晕特效删除", date: "2026-11-13" },
   ];
 
-  (function initShredder() {
-    var root = document.getElementById("shredder");
-    if (!root) return;
-    var listEl = document.getElementById("shredder-list");
-    var btn = document.getElementById("splash-hold");
-    var hint = document.getElementById("splash-hint");
-
-    var items = SPLASH_LOG.map(function (s, i) { return { id: i + 1, text: s.text, date: s.date }; });
-    var dragged = null;   // currently dragged element
-    var goneCount = 0;
-
-    // Build DOM
-    items.forEach(function (item, idx) {
-      var li = document.createElement("li");
-      li.className = "shredder__item";
-      li.dataset.id = item.id;
-      li.innerHTML =
-        '<span class="sl-num">' + (idx + 1) + '.</span>' +
-        '<span class="sl-text">' + esc(item.text) + '</span>' +
-        '<span class="sl-date">' + timeAgo(item.date) + '</span>';
-      listEl.appendChild(li);
-      setTimeout(function () { li.classList.add("show"); }, 100 + idx * 80);
-    });
-
-    function checkReady() {
-      if (goneCount >= items.length && btn && !btn.hasAttribute("data-ready")) {
-        btn.setAttribute("data-ready", "");
-        if (hint) hint.textContent = "全部粉碎，长按进入主站";
-      }
-    }
-
-    // Pointer events — delegated on list
-    listEl.addEventListener("pointerdown", function (e) {
-      var item = e.target.closest(".shredder__item:not(.is-gone)");
-      if (!item || e.button !== 0) return;
-      var rect = item.getBoundingClientRect();
-      dragged = {
-        el: item,
-        offX: e.clientX - rect.left,
-        offY: e.clientY - rect.top,
-        w: rect.width, h: rect.height
-      };
-      item.classList.add("is-dragging");
-      item.style.left = rect.left + "px";
-      item.style.top = rect.top + "px";
-      item.style.width = rect.width + "px";
-      try { item.setPointerCapture(e.pointerId); } catch (_) {}
-      e.preventDefault();
-    });
-
-    var slitEl = root.querySelector(".shredder__slit");
-
-    listEl.addEventListener("pointermove", updateDrag);
-    root.addEventListener("pointermove", updateDrag);
-    function updateDrag(e) {
-      if (!dragged) return;
-      dragged.el.style.left = (e.clientX - dragged.offX) + "px";
-      dragged.el.style.top  = (e.clientY - dragged.offY) + "px";
-      // Proximity glow on slit
-      if (slitEl) {
-        var itemRect = dragged.el.getBoundingClientRect();
-        var slitRect = slitEl.getBoundingClientRect();
-        if ((itemRect.top + itemRect.height) > slitRect.top - 20) {
-          slitEl.setAttribute("data-active", "");
-        } else {
-          slitEl.removeAttribute("data-active");
-        }
-      }
-    }
-
-    function clearSlit() { if (slitEl) slitEl.removeAttribute("data-active"); }
-
-    listEl.addEventListener("pointerup", onPointerUp);
-    root.addEventListener("pointerup", onPointerUp);
-    document.addEventListener("pointerup", onPointerUp);
-    function onPointerUp() {
-      if (!dragged) return;
-      var el = dragged.el;
-      var slit = root.querySelector(".shredder__slit");
-      var slitRect = slit.getBoundingClientRect();
-      var itemRect = el.getBoundingClientRect();
-      var belowSlit = (itemRect.top + itemRect.height) > slitRect.top;
-
-      if (belowSlit) {
-        el.classList.remove("is-dragging");
-        el.classList.add("is-gone");
-        el.style.left = ""; el.style.top = ""; el.style.width = "";
-        setTimeout(function () {
-          el.remove();
-          goneCount++;
-          checkReady();
-        }, 600);
-      } else {
-        el.classList.remove("is-dragging");
-        el.style.left = ""; el.style.top = ""; el.style.width = "";
-      }
-      dragged = null;
-      clearSlit();
-    }
-
-    listEl.addEventListener("pointercancel", function () {
-      if (!dragged) return;
-      dragged.el.classList.remove("is-dragging");
-      dragged.el.style.left = ""; dragged.el.style.top = ""; dragged.el.style.width = "";
-      dragged = null;
-      clearSlit();
+  (function renderSplashLog() {
+    var el = document.getElementById("splash-log");
+    if (!el) return;
+    SPLASH_LOG.forEach(function (s, i) {
+      var row = document.createElement("div");
+      row.className = "log-row";
+      row.innerHTML =
+        '<span class="log-num">' + (i + 1) + '.</span>' +
+        '<span class="log-text">' + esc(s.text) + '</span>' +
+        '<span class="log-date">' + timeAgo(s.date) + '</span>';
+      el.appendChild(row);
+      setTimeout(function () { row.classList.add("show"); }, 100 + i * 80);
     });
   })();
 
-  // ======== 按钮激活庆祝粒子 ========
-  (function celebration() {
-    var checkInterval = setInterval(function () {
-      var btn = document.getElementById("splash-hold");
-      if (!btn) { clearInterval(checkInterval); return; }
-      if (btn.hasAttribute("data-ready")) {
-        clearInterval(checkInterval);
-        burst(btn);
-      }
-    }, 200);
-
-    function burst(btn) {
-      var rect = btn.getBoundingClientRect();
-      var cx = rect.left + rect.width / 2;
-      var cy = rect.top + rect.height / 2;
-      var colors = ["#3b82f6", "#60a5fa", "#93c5fd", "#38bdf8", "#a78bfa"];
-      for (var i = 0; i < 18; i++) {
-        var p = document.createElement("span");
-        var angle = Math.random() * Math.PI * 2;
-        var dist = 60 + Math.random() * 100;
-        var dx = Math.cos(angle) * dist;
-        var dy = Math.sin(angle) * dist;
-        var size = 4 + Math.random() * 6;
-        p.style.cssText =
-          "position:fixed;z-index:99999;pointer-events:none;" +
-          "width:" + size + "px;height:" + size + "px;border-radius:50%;" +
-          "background:" + colors[Math.floor(Math.random() * colors.length)] + ";" +
-          "left:" + cx + "px;top:" + cy + "px;" +
-          "transform:translate(-50%,-50%);" +
-          "transition:transform .7s cubic-bezier(.15,.7,.3,1),opacity .5s ease;" +
-          "opacity:1;box-shadow:0 0 6px currentColor;color:inherit;";
-        document.body.appendChild(p);
-        (function (pp, ddx, ddy) {
-          requestAnimationFrame(function () {
-            pp.style.transform = "translate(calc(-50% + " + ddx + "px), calc(-50% + " + ddy + "px)) scale(.3)";
-            pp.style.opacity = "0";
-          });
-        })(p, dx, dy);
-        setTimeout(function (pp) { pp.remove(); }, 800);
-      }
-    }
-  })();
-
-  // ======== HoldButton — 粉碎所有日志后才激活 ========
+  // ======== HoldButton ========
   (function () {
     var btn = document.getElementById("splash-hold");
     if (!btn) return;
     var HOLD_MS = 1500, phase = "idle", timer = 0;
 
     function setPhase(ph) { phase = ph; btn.setAttribute("data-phase", ph); }
-    function isReady() { return btn.hasAttribute("data-ready"); }
 
     function complete() {
       if (phase !== "holding") return;
@@ -2182,7 +1979,7 @@
       }
     }
     function begin() {
-      if (phase !== "idle" || !isReady()) return;
+      if (phase !== "idle") return;
       setPhase("holding");
       timer = setTimeout(complete, HOLD_MS);
     }
@@ -2193,7 +1990,6 @@
     }
 
     btn.addEventListener("pointerdown", function (e) {
-      if (!isReady()) return;
       if (e.button !== 0 || !e.isPrimary) return;
       begin();
       try { btn.setPointerCapture(e.pointerId); } catch (_) {}
@@ -2202,11 +1998,8 @@
     btn.addEventListener("pointerup", release);
     btn.addEventListener("pointercancel", release);
     btn.addEventListener("lostpointercapture", release);
-    btn.addEventListener("pointerleave", function (e) {
-      if (e.pointerType !== "touch") release();
-    });
+    btn.addEventListener("pointerleave", function (e) { if (e.pointerType !== "touch") release(); });
     btn.addEventListener("keydown", function (e) {
-      if (!isReady()) return;
       if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); begin(); }
       if (e.key === "Escape") release();
     });
@@ -2215,9 +2008,7 @@
     });
     btn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
     window.addEventListener("blur", release);
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) release();
-    });
+    document.addEventListener("visibilitychange", function () { if (document.hidden) release(); });
   })();
 
 
