@@ -1037,6 +1037,26 @@
                 border-color .35s ease,
                 color .3s ease,
                 box-shadow .35s ease;
+    animation: btnIdleBreath 3.2s ease-in-out infinite;
+  }
+  .splash-hold::before {
+    content: "";
+    position: absolute; inset: 0; z-index: -1;
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+      90deg, transparent 0, transparent 6px,
+      var(--line) 6px, var(--line) 7px
+    );
+    opacity: .5;
+    animation: btnDashFlow 2.4s linear infinite;
+  }
+  @keyframes btnIdleBreath {
+    0%, 100% { opacity: .85; }
+    50%      { opacity: 1; }
+  }
+  @keyframes btnDashFlow {
+    0%   { background-position: 0 0; }
+    100% { background-position: 14px 0; }
   }
 
   /* ====== 状态 1：激活瞬间 pop + flash ====== */
@@ -1071,6 +1091,7 @@
     animation: btnActivate .6s cubic-bezier(.22,1,.36,1),
                btnGlowPulse 2.4s ease-in-out .6s infinite;
   }
+  .splash-hold[data-ready]::before { opacity: 0; animation: none; }
   .splash-hold[data-ready]:hover {
     background: color-mix(in srgb, var(--ink) 16%, transparent);
     border-color: color-mix(in srgb, var(--ink) 30%, transparent);
@@ -1127,6 +1148,8 @@
     color: var(--muted); margin-top: -4px;
   }
   @media (prefers-reduced-motion: reduce) {
+    .splash-hold { animation: none; }
+    .splash-hold::before { animation: none; opacity: .5; }
     .splash-hold__fill { transition: none; }
     .splash-hold[data-phase="holding"] .splash-hold__fill { transform: scaleX(1); }
     .splash-hold[data-ready],
@@ -1294,7 +1317,7 @@
   </div>
 </div>
 
-<script src="apps.js?v=230"></script>
+<script src="apps.js?v=231"></script>
 <script>
 (function () {
   var esc = function (s) {
