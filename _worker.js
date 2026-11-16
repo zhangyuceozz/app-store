@@ -86,6 +86,10 @@ const MAP = {
   // dsh-our-free-model v2.8.3（Ebony-Vinyl，免费 AI 模型桌面客户端，2026-11-12）
   "Our.Free.Model_2.8.3_x64-setup.exe": "/Ebony-Vinyl/dsh-our-free-model/releases/download/v2.8.3/Our.Free.Model_2.8.3_x64-setup.exe",
   "Our.Free.Model_2.8.3_aarch64.dmg": "/Ebony-Vinyl/dsh-our-free-model/releases/download/v2.8.3/Our.Free.Model_2.8.3_aarch64.dmg",
+  // CompressO v4.2.0（codeforreal1，FFmpeg 跨平台媒体压缩，2026-11-16）
+  "CompressO_4.2.0_x64.exe": "/codeforreal1/compressO/releases/download/v4.2.0/CompressO_4.2.0_x64.exe",
+  "CompressO_4.2.0_aarch64.dmg": "/codeforreal1/compressO/releases/download/v4.2.0/CompressO_4.2.0_aarch64.dmg",
+  "CompressO_4.2.0_x64.dmg": "/codeforreal1/compressO/releases/download/v4.2.0/CompressO_4.2.0_x64.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {

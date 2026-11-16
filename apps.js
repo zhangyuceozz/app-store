@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -721,6 +721,32 @@ const APPS = [
       "支持 Claude TUI 交互模式（v2.8.3 刚修复了 45 秒互等 bug）。",
       "内置 DeepSeek V4.1 Flash、Kimi K3 等多个前沿模型，可在设置里切换。",
       "适合日常问答、代码生成、文档写作、翻译等场景。",
+    ],
+  },
+  {
+    id: "compresso",
+    name: "CompressO",
+    category: "多媒体",
+    date: "2026-11-16",
+    tagline: "FFmpeg 驱动的跨平台视频 / 图片 / 音频压缩神器",
+    description: "CompressO（发音像 Espresso）是 codeforreal1 开源的跨平台媒体压缩工具——视频、图片、音频一键压到很小体积，本地离线，零网络请求。Tauri + React 写的，FFmpeg / pngquant / jpegoptim / gifski 做后端，4941⭐，v4.2.0 刚更新（修复 Windows 拖拽图片崩溃）。支持批量压缩、裁剪 / 分割、字幕嵌入、元数据修改、CLI 命令行、MCP Server 供 AI Agent 调用。AGPL-3.0，跨 Win / Mac / Linux。",
+    icon: "apps/compresso/icon.png",
+    preview: "apps/compresso/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)",         file: "/dl/apps/compresso/download/CompressO_4.2.0_x64.exe", size: "—" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/compresso/download/CompressO_4.2.0_aarch64.dmg", size: "—" },
+      { platform: "macOS (Intel)",         file: "/dl/apps/compresso/download/CompressO_4.2.0_x64.dmg", size: "—" },
+    ],
+    install: [
+      "Windows：双击 CompressO_4.2.0_x64.exe 安装。",
+      "macOS：双击 .dmg 把 CompressO 拖进「应用程序」。如提示 Gatekeeper，终端执行 xattr -cr /Applications/CompressO.app 即可。",
+    ],
+    usage: [
+      "主窗口拖入视频 / 图片 / 音频文件，选好输出格式和压缩强度，点 Compress 就行。",
+      "支持批量压缩、裁剪 / 分割视频、字幕嵌入、元数据修改。",
+      "设置里可以开启 CLI 命令行工具，压缩任务也能通过终端命令执行。",
+      "内置 MCP Server，Claude 等 AI Agent 可直接调用 compress / list_presets 工具。",
+      "完全离线，不发送任何网络请求。",
     ],
   },
 ];
