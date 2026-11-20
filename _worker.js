@@ -90,6 +90,14 @@ const MAP = {
   "CompressO_4.2.0_x64.exe": "/codeforreal1/compressO/releases/download/v4.2.0/CompressO_4.2.0_x64.exe",
   "CompressO_4.2.0_aarch64.dmg": "/codeforreal1/compressO/releases/download/v4.2.0/CompressO_4.2.0_aarch64.dmg",
   "CompressO_4.2.0_x64.dmg": "/codeforreal1/compressO/releases/download/v4.2.0/CompressO_4.2.0_x64.dmg",
+  // Zen Browser v1.24.1b（zen-browser，Firefox 内核极简垂直标签浏览器，2026-11-18）
+  "zen.installer.exe": "/zen-browser/desktop/releases/download/1.24.1b/zen.installer.exe",
+  "zen.installer-arm64.exe": "/zen-browser/desktop/releases/download/1.24.1b/zen.installer-arm64.exe",
+  "zen.macos.dmg": "/zen-browser/desktop/releases/download/1.24.1b/zen.macos.dmg",
+  // Oink v0.3.7（oinkvm，跨设备键鼠/剪贴板/拖拽/音频共享，2026-11-20）
+  "Oink-0.3.7-windows-x64.msi": "/oinkvm/oink/releases/download/v0.3.7/Oink-0.3.7-windows-x64.msi",
+  "Oink-0.3.7-macos-x64.dmg": "/oinkvm/oink/releases/download/v0.3.7/Oink-0.3.7-macos-x64.dmg",
+  "Oink-0.3.7-macos-arm64.dmg": "/oinkvm/oink/releases/download/v0.3.7/Oink-0.3.7-macos-arm64.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {

@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -747,6 +747,62 @@ const APPS = [
       "设置里可以开启 CLI 命令行工具，压缩任务也能通过终端命令执行。",
       "内置 MCP Server，Claude 等 AI Agent 可直接调用 compress / list_presets 工具。",
       "完全离线，不发送任何网络请求。",
+    ],
+  },
+  {
+    id: "zen-browser",
+    name: "Zen Browser",
+    category: "网络通信",
+    date: "2026-11-18",
+    tagline: "Firefox 内核的极简垂直标签浏览器，让专注回归",
+    description: "Zen Browser 是社区驱动的开源极简浏览器——基于 Firefox (Gecko) 内核，但去掉了所有干扰：自动隐藏的垂直标签栏、Workspaces 工作区分组（每个工作区独立标签+历史）、Glance 侧栏速览（Ctrl+E 弹出预览面板）、Space 多身份配置（一个浏览器多套登录）、Zen Mods 主题定制（磨砂玻璃 / 动态纹理 / 圆角改直角）。MPL-2.0 协议，Win/Mac/Linux 三平台，当前跟随 Firefox 159，111k+⭐。",
+    icon: "apps/zen-browser/icon.png",
+    preview: "apps/zen-browser/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)",        file: "/dl/apps/zen-browser/download/zen.installer.exe", size: "—" },
+      { platform: "Windows (ARM64)",      file: "/dl/apps/zen-browser/download/zen.installer-arm64.exe", size: "—" },
+      { platform: "macOS (Universal)",     file: "/dl/apps/zen-browser/download/zen.macos.dmg", size: "—" },
+    ],
+    install: [
+      "Windows：双击 zen.installer.exe 安装，无需管理员权限。",
+      "macOS：双击 .dmg 把 Zen Browser 拖进「应用程序」。首次打开如提示 Gatekeeper，右键应用 → 打开即可。",
+      "安装后首次启动会引导导入 Chrome / Edge / Firefox 的书签、密码和历史。",
+    ],
+    usage: [
+      "左侧垂直标签栏默认自动隐藏，鼠标移到最左边滑出——省屏幕空间。",
+      "Ctrl+Space：打开命令面板，搜标签、历史、书签、工作区。",
+      "Ctrl+E：弹出 Glance 侧栏速览面板，快速查看链接预览、翻译、摘要。",
+      "Ctrl+Shift+数字键：切换 Workspace 工作区，每个工作区独立一套标签组。",
+      "设置 → Zen Mods：改主题纹理（磨砂/颗粒/动态）、圆角大小、标签密度。",
+      "内置跟踪保护严格模式 + 总览面板（Ctrl+Shift+D）一键查看本站被拦了多少跟踪器。",
+    ],
+  },
+  {
+    id: "oink",
+    name: "Oink",
+    category: "效率办公",
+    date: "2026-11-20",
+    tagline: "跨 Mac/PC 共享键鼠、剪贴板、拖拽和音频，像一台电脑一样用",
+    description: "Oink 是开源跨设备协同工具——把多台 Mac 和 PC 拼成一张共享桌面：键盘鼠标无缝穿越、剪贴板实时同步、拖拽文件直接传、音频也能跨设备共享。零配置，不用注册账号，同局域网自动发现。Rust 写的，MIT 协议，当前 v0.3.7 刚发布，13.1k+⭐。名字来自「一头猪指挥一群猪」的隐喻。",
+    icon: "apps/oink/icon.png",
+    preview: "apps/oink/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)",        file: "/dl/apps/oink/download/Oink-0.3.7-windows-x64.msi", size: "—" },
+      { platform: "macOS (Intel)",         file: "/dl/apps/oink/download/Oink-0.3.7-macos-x64.dmg", size: "—" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/oink/download/Oink-0.3.7-macos-arm64.dmg", size: "—" },
+    ],
+    install: [
+      "Windows：双击 .msi 安装包，按向导下一步即可。",
+      "macOS：双击 .dmg 把 Oink 拖进「应用程序」。如提示 Gatekeeper，右键 → 打开。",
+      "所有设备安装同一版本，同局域网下自动互相发现，无需配对。",
+    ],
+    usage: [
+      "两台设备都开 Oink，确认互相出现在列表里。",
+      "鼠标移到屏幕边缘，就会飞到另一台设备的屏幕上。",
+      "Ctrl+C 在 A 复制，Ctrl+V 在 B 直接粘贴——剪贴板自动同步。",
+      "文件拖拽：A 的文件管理器直接拖到 B 的桌面，瞬间传完。",
+      "音频共享：一台设备的声音可以从另一台的音响出来。",
+      "右键系统托盘图标 → 可以指定某台设备作为主鼠/主键盘。",
     ],
   },
 ];
