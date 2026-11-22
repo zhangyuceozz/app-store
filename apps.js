@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -803,6 +803,34 @@ const APPS = [
       "文件拖拽：A 的文件管理器直接拖到 B 的桌面，瞬间传完。",
       "音频共享：一台设备的声音可以从另一台的音响出来。",
       "右键系统托盘图标 → 可以指定某台设备作为主鼠/主键盘。",
+    ],
+  },
+  {
+    id: "solomd",
+    name: "SoloMD",
+    category: "效率办公",
+    date: "2026-11-22",
+    tagline: "开源 Markdown 编辑器，比 Typora/Obsidian 小 3-7 倍，内置本地 AI 和 MCP Server",
+    description: "SoloMD 是极简开源 Markdown 编辑器——纯所见即所得、9 种格式一键导出、5 端加密同步（Mac/Win/Linux/iOS/Android）、Wiki 链接、本地 RAG 语义搜索、20+ AI 服务商接入、内置 16 工具 MCP Server。~14-30MB 安装包，比 Typora 和 Obsidian 小 3-7 倍，MIT 协议，Tauri 2 + Rust + Vue 3 技术栈，v5.3.3 刚发布，1.7k+⭐。",
+    icon: "apps/solomd/icon.png",
+    preview: "apps/solomd/preview.jpg",
+    downloads: [
+      { platform: "Windows (x64)",        file: "/dl/apps/solomd/download/SoloMD_5.3.3_x64_en-US.msi", size: "—" },
+      { platform: "Windows (ARM64)",      file: "/dl/apps/solomd/download/SoloMD_5.3.3_arm64_en-US.msi", size: "—" },
+      { platform: "macOS (Universal)",     file: "/dl/apps/solomd/download/SoloMD_5.3.3_universal.dmg", size: "—" },
+    ],
+    install: [
+      "Windows：双击 .msi 安装包，按向导下一步即可。",
+      "macOS：双击 .dmg 把 SoloMD 拖进「应用程序」。如提示 Gatekeeper，右键 → 打开。",
+      "无需注册账号，启动即开即用。",
+    ],
+    usage: [
+      "纯 WYSIWYG：所见即所得，选中文字后右侧浮出格式工具条。",
+      "Live / Source / Split / Preview：四种模式一键切换。",
+      "导出 PDF/Word/EPUB/HTML/LaTeX：内置 9 种格式，无需 Pandoc。",
+      "Vault 加密同步：跨 Mac/Win/Linux/iOS/Android 五端加密同步。",
+      "本地 AI：自动发现 Ollama / LM Studio / vLLM 本地模型。",
+      "MCP Server：16 工具让 AI Agent 直接操作 Markdown 文件。",
     ],
   },
 ];

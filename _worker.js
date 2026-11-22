@@ -98,6 +98,10 @@ const MAP = {
   "Oink-0.3.7-windows-x64.msi": "/oinkvm/oink/releases/download/v0.3.7/Oink-0.3.7-windows-x64.msi",
   "Oink-0.3.7-macos-x64.dmg": "/oinkvm/oink/releases/download/v0.3.7/Oink-0.3.7-macos-x64.dmg",
   "Oink-0.3.7-macos-arm64.dmg": "/oinkvm/oink/releases/download/v0.3.7/Oink-0.3.7-macos-arm64.dmg",
+  // SoloMD v5.3.3（zhitongblog，开源 Markdown 编辑器，比 Typora/Obsidian 小 3-7 倍，2026-11-22）
+  "SoloMD_5.3.3_x64_en-US.msi": "/zhitongblog/solomd/releases/download/v5.3.3/SoloMD_5.3.3_x64_en-US.msi",
+  "SoloMD_5.3.3_arm64_en-US.msi": "/zhitongblog/solomd/releases/download/v5.3.3/SoloMD_5.3.3_arm64_en-US.msi",
+  "SoloMD_5.3.3_universal.dmg": "/zhitongblog/solomd/releases/download/v5.3.3/SoloMD_5.3.3_universal.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {
