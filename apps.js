@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================
 //  应用商店 · 数据文件（上架新应用，只改这个文件）
 //
 //  上架流程（安装包走 GitHub Releases 托管）：
@@ -831,6 +831,33 @@ const APPS = [
       "Vault 加密同步：跨 Mac/Win/Linux/iOS/Android 五端加密同步。",
       "本地 AI：自动发现 Ollama / LM Studio / vLLM 本地模型。",
       "MCP Server：16 工具让 AI Agent 直接操作 Markdown 文件。",
+    ],
+  },
+  {
+    id: "openclaw",
+    name: "OpenClaw",
+    category: "开发工具",
+    date: "2026-11-24",
+    tagline: "开源个人 AI Agent：管邮箱、发邮件、值机，从 WhatsApp/Telegram 就能控制",
+    description: "OpenClaw 是爆火的开源个人 AI Agent 框架——让 AI 帮你管邮箱、发邮件、管理日历、航班值机，所有操作从 WhatsApp、Telegram 或任何聊天 App 就能触发。OpenClaw 6 个月从零做到 3300+ 参会者的社区，GitHub fastest growing project，非盈利 501(c)(3) 基金会托管。桌面端支持 Win/Mac/Linux，也有 npm one-liner 安装。数据完全自己掌控，无订阅、无 hosted tier、无 token 限制。",
+    icon: "apps/openclaw/icon.png",
+    preview: "apps/openclaw/preview.png",
+    downloads: [
+      { platform: "Windows (x64)",     file: "/dl/apps/openclaw/download/OpenClawCompanion-Setup-x64.exe", size: "—" },
+      { platform: "Windows (ARM64)",   file: "/dl/apps/openclaw/download/OpenClawCompanion-Setup-arm64.exe", size: "—" },
+      { platform: "macOS (Apple Silicon)", file: "/dl/apps/openclaw/download/OpenClaw-2026.11.6-arm64.dmg", size: "—" },
+      { platform: "macOS (Intel)",     file: "/dl/apps/openclaw/download/OpenClaw-2026.11.6-x86_64.dmg", size: "—" },
+    ],
+    install: [
+      "Windows：双击 OpenClawCompanion-Setup-x64.exe 安装。",
+      "macOS：双击 .dmg 把 OpenClaw 拖进「应用程序」。",
+      "或一行命令：npm i -g openclaw && openclaw onboard（跨平台通用）。",
+      "首次启动 openclaw onboard 引导配置，选择要连接的聊天 App（WhatsApp / Telegram）。",
+    ],
+    usage: [
+      "从 WhatsApp / Telegram 给 OpenClaw 发消息就能触发任务：查邮箱、发邮件、日历、值机。",
+      "数据完全本地，不经过任何第三方服务器。",
+      "支持自己装插件扩展能力，或用社区插件库。",
     ],
   },
 ];

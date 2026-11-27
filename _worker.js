@@ -102,6 +102,11 @@ const MAP = {
   "SoloMD_5.3.3_x64_en-US.msi": "/zhitongblog/solomd/releases/download/v5.3.3/SoloMD_5.3.3_x64_en-US.msi",
   "SoloMD_5.3.3_arm64_en-US.msi": "/zhitongblog/solomd/releases/download/v5.3.3/SoloMD_5.3.3_arm64_en-US.msi",
   "SoloMD_5.3.3_universal.dmg": "/zhitongblog/solomd/releases/download/v5.3.3/SoloMD_5.3.3_universal.dmg",
+  // OpenClaw v2026.11（开源个人 AI Agent，GitHub fastest growing，2026-11-24）
+  "OpenClawCompanion-Setup-x64.exe": "/openclaw/openclaw-windows-node/releases/download/v2026.11.3/OpenClawCompanion-Setup-x64.exe",
+  "OpenClawCompanion-Setup-arm64.exe": "/openclaw/openclaw-windows-node/releases/download/v2026.11.3/OpenClawCompanion-Setup-arm64.exe",
+  "OpenClaw-2026.11.6-arm64.dmg": "/openclaw/openclaw/releases/download/v2026.11.6/OpenClaw-2026.11.6-arm64.dmg",
+  "OpenClaw-2026.11.6-x86_64.dmg": "/openclaw/openclaw/releases/download/v2026.11.6/OpenClaw-2026.11.6-x86_64.dmg",
 };
 
 async function fetchUpstream(upstreamPath) {
